@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<script src="../../js/c/util.js"></script>
+<script src="../../js/c/table.js"></script>
+<style type="text/css" media="all">
+<!--
+@import url("../../css/c/main.css");
+-->
+</style>
+</head>
+
+<body>
+
+
+<div style="border: 1px solid #000">
+<form name="form1" id="form1" action="/c.do?action=list.TestListXml">
+编号：<input type="text" name="srw_id" value="" />姓名：<input type="text"
+	name="srw_l_name" value="" /> 性别：<select name="srw_sex">
+	<option value="">全部</option>
+	<option value="f">f</option>
+	<option value="m">m</option>
+</select><input type="button" onclick="v_t1.toSearch(document.form1)"
+	name="search" value="搜索A" /></form>
+<span id="aaa"></span></div>
+</body>
+</html>
+<script>
+function bb(str)
+{
+	if(str == "f"){
+		return "<font color='#fff000'>" + str + "</font>";
+	}else{
+		return "<font color='#000fff'>" + str + "</font>";	
+	}
+}
+/*
+var c1 = new Ecol("c1");
+var c2 = new Ecol("c2");
+
+var h = new Erow("h");
+
+var r1 = new Erow("r1");
+var r2 = new Erow("r2");
+var r3 = new Erow("r3");
+
+h.addcol(c1);
+h.addcol(c2);
+
+r1.addcol(c1);
+r1.addcol(c2);
+
+r2.addcol(c1);
+r2.addcol(c2);
+
+r3.addcol(c1);
+r3.addcol(c2);
+//alert(r1)
+var t = new Etable();
+t.addhead(h);
+t.addrow(r1);
+t.addrow(r2);
+t.addrow(r3);
+//alert(t.toListString())
+t.writeListTable();
+*/
+
+var v_t1 = new Etable("t1","aaa",null,null,null,"yes","/c.do?action=list.TestListXml");
+
+var c1 = new Ecol("编号","id","aa");
+var c2 = new Ecol("姓名","name","aa");
+var c3 = new Ecol("性别","sex","aa","bb");
+var h = new Erow("h");
+h.addcol (c1);
+h.addcol (c2);
+h.addcol (c3);
+v_t1.addhead(h,null);
+//alert (tt.head)
+v_t1.loadXML("/c.do?action=list.TestListXml&page=1");
+
+//tt.writeListTable();
+//loadXML("demo.xml",abc)
+
+</script>

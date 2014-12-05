@@ -1,0 +1,78 @@
+<html>
+<head>
+<script>
+function c()
+{
+	var url = '/c.do?action=ajaxaction.AjaxCommitDemo';
+	loadXML(url,parseXML);
+}
+//解析xml的方法
+function parseXML(xmldoc)
+{
+	var info = xmldoc.getElementsByTagName('rs')[0];
+	var buf ="";
+	
+	buf = info.getAttribute('message');
+
+	document.getElementById("xmloutput").innerHTML =  buf;
+}
+
+function loadXML(url, handler,args)
+{
+	if (window.ActiveXObject && !window.XMLHttpRequest)
+	{
+		window.XMLHttpRequest = function() 
+		{
+			return new ActiveXObject((navigator.userAgent.toLowerCase().indexOf('msie 5') != -1) ? 'Microsoft.XMLHTTP' : 'Msxml2.XMLHTTP');
+		};
+	}
+	
+	if (!window.ActiveXObject && window.XMLHttpRequest)
+	{
+		window.ActiveXObject = function(type) 
+		{
+			switch (type.toLowerCase())
+			{
+				case 'microsoft.xmlhttp':
+				case 'msxml2.xmlhttp':
+				return new XMLHttpRequest();
+			}
+			return null;
+		};
+	}
+	
+	var req = new XMLHttpRequest();
+	if (req)
+	{
+		req.onreadystatechange = function()
+		{
+			if (req.readyState == 4 && (req.status == 200 || req.status == 304))
+			{
+				
+				handler(req.responseXML,args);
+			}
+		};
+		req.open('POST', url,true);
+		var c = "test="+parent.document.getElementById("test").value+"中文测试&test2=中文测试######################################################################"
+		req.setRequestHeader("Content-Length",c.length);
+  		req.setRequestHeader("CONTENT-TYPE","application/x-www-form-urlencoded");
+		
+		req.send(c);
+	}
+}
+
+
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<p><textarea name="test" cols="10" rows="10" id="test">中文测试aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</textarea>
+</p>
+<p><input type="button" name="Button" value="提交数据" onClick="c()" />
+</p>
+<div id="xmloutput"></div>
+</div>
+
+</body>
+</html>

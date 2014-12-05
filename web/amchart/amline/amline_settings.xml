@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Value between [] brackets, for example [#FFFFFF] shows default value which is used if this parameter is not set -->
+<!-- This means, that if you are happy with this value, you can delete this line at all and reduce file size -->
+<!-- value or explanation between () brackets shows the range or type of values you should use for this parameter -->
+<!-- the top left corner has coordinates x = 0, y = 0                                                                -->
+<!-- "!" before x or y position (for example: <x>!20</x>) means that the coordinate will be calculated from the right side or the bottom -->
+
+<settings> 
+  <legend>
+    <values>
+      <width>44</width>
+      <align>left</align>
+      <enabled>true</enabled>
+      <text><![CDATA[: {value}]]></text>
+     </values>
+  </legend>
+  <graphs>
+		<graph gid="0">
+			<line_width>2</line_width>
+			<color>#058DC7</color>
+		</graph>
+		<graph gid="1">
+			<line_width>2</line_width>
+			<color>#50B432</color>	
+		</graph>
+		<graph gid="2">
+			<line_width>2</line_width>
+	    <color>#ED561B</color>
+		</graph>   
+		<graph gid="3">
+			<line_width>2</line_width>
+	    <color>#EDEF00</color>
+		</graph>   
+		<graph gid="4">
+	      <color>#24CBE5</color>
+	     <line_width>2</line_width>
+		</graph>   
+		<graph gid="5">
+	      <color>#64E572</color>
+	     <line_width>2</line_width>
+		</graph>   
+		<graph gid="6">
+	      <color>#FF9655</color>
+	     <line_width>2</line_width>
+		</graph>   
+		<graph gid="7">
+	      <color>#FFF263</color>
+	     <line_width>2</line_width>
+		</graph>   
+		<graph gid="8">
+	      <color>#6AF9C4</color>
+	     <line_width>2</line_width>
+		</graph>   
+		<graph gid="9">
+	      <color>#B2DEFF</color>
+	     <line_width>2</line_width>
+		</graph>
+  	<graph gid="10">
+      <color>#FFCC00</color>
+      <line_width>2</line_width>                       
+  	</graph>
+  	<graph gid="11">
+      <color>#ccc</color>
+      <line_width>2</line_width>                               
+		</graph>
+  </graphs>
+</settings>

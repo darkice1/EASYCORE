@@ -1,0 +1,75 @@
+<html>
+<head>
+<style>
+* {
+	font-family: 'Verdana';
+	font-size:12px;
+}
+#pb_percentText {
+	position:relative;
+	top:-2px
+}
+</style>
+</head>
+<body>
+<script src="../util.js"></script>
+<script src="progressbar.js"></script>
+<center>
+<span id="pbtext"></span><br>
+<span id="pb"></span>
+</center>
+<script>
+//alert (parent);
+var n = location.href.substr(location.href.indexOf("?")+1);
+var url = "/c?action=tools.ProgressBar&n="+n;
+//alert( location.href+" "+url);
+var ppb = new JS_BRAMUS.jsProgressBar($('pb'),0,{
+									barImage:Array('/images/progressbar/percentImage_back4.png',
+										'/images/progressbar/percentImage_back3.png',
+										'/images/progressbar/percentImage_back2.png','/images/progressbar/percentImage_back1.png')});
+var tid;							
+function loadpb()
+{
+	clearTimeout(tid);
+	var list= getRowList(url+"&"+Math.random());
+	r = list[0];
+	$('pbtext').innerHTML = r.getAttribute("text");
+	curpg = parseFloat(r.getAttribute("curpg"));
+	maxpg = parseFloat(r.getAttribute("maxpg"));
+	
+	
+	if (curpg>=maxpg)
+	{
+		ppb.setPercentage(100);
+		slog(url+"&a=c&"+Math.random());
+		tid = setTimeout("closepb()",500);
+	}
+	else
+	{
+		ppb.setPercentage(curpg/maxpg*100);
+		tid = setTimeout("loadpb()",2000);
+	}
+}
+
+loadpb();
+
+function closepb()
+{
+	clearTimeout(tid);
+	try
+	{
+		if (parent.document.getElementById("bgDiv")!=null)
+		{
+			parent.document.body.removeChild(parent.document.getElementById("bgDiv"));
+			parent.document.getElementById("msgDiv").removeChild(parent.document.getElementById("msgTitle"));
+			parent.document.body.removeChild(parent.document.getElementById("msgDiv"));
+		}
+	}
+	catch(e)
+	{
+		alert(e)
+	}
+}
+</script>
+</body>
+</html>
