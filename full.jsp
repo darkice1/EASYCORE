@@ -3,7 +3,7 @@
 	src="/js/wysiwyg/tiny_mce/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 	//layer,
-	
+
 	var value;
 	
 	tinyMCE.init({
