@@ -6,11 +6,6 @@ USERNUMBER=5000
 STARTDATE=2006-01-01
 
 #数据库连接
-DBTYPE=MYSQL
-DBVERSION=5.0
-DBUSER=root
-DBPASSWORD=bips2008
-DBURL=jdbc:mysql://woso100.com:3307/fib?useUnicode=true&characterEncoding=UTF-8
 
 DBCACHE=/Users/Neo/Desktop/dbcache
 
