@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rs count='10' pageSize='3' pageNum='2' pageCount='4'>
+	<r c1='1001' c2='fdsafsd' c3='1' />
+	<r c1='1002' c2='cccccc234' c3='2222222222221' />
+	<r c1='1003' c2='测试33334' c3='测试' />
+</rs>
