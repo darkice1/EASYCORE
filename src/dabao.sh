@@ -1,4 +1,4 @@
-cd  /Users/Neo/Documents/eclipse\ workspace/EASYCORE/web/WEB-INF/classes/
+cd  /Users/Neo/Documents/git/EASYCORE/web/WEB-INF/classes/
 jar cvf easy.jar easy/*
 cp easy.jar /Users/Neo/Documents/svn/5pv/5PVREAL/libs
 cp easy.jar /Users/Neo/Documents/svn/91duan/Project/91DUANREAL/libs
