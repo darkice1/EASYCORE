@@ -550,37 +550,31 @@ public class Format
 		
 		if (ip != null)
 		{
-			String[] ips = ip.split("[.]",4);
-			try
+			int lastpos = 0,pos;
+			for (int i=0;i<4;i++)
 			{
-				for (int i=0,len=ips.length; i< len; i++)
+				pos = ip.indexOf(".",lastpos);
+				long l = 0;
+				try
 				{
-					String s = ips[i].trim();
-					long l = 0;
-					try
+					if (pos >0)
 					{
-						l = Long.parseLong(s);
+						l = Long.parseLong(ip.substring(lastpos,pos));
 					}
-					catch (Exception e)
+					else
 					{
-						//Log.OutException(e);
+						l = Long.parseLong(ip.substring(lastpos));
 					}
-					
-					num += l<<((3l-i)*8);
+					lastpos = pos+1;
+				}
+				catch (NumberFormatException e)
+				{
+					//Log.OutException(e);
+					break;
 				}
 				
-				/*
-				num = 16777216L * Long.parseLong(ips[0]) + 65536L
-								* Long.parseLong(ips[1]) + 256 * Long.parseLong(ips[2])
-								+ Long.parseLong(ips[3]);
-				*/
+				num += l<<((3l-i)*8);				
 			}
-			catch (Exception e)
-			{
-				Log.OutException(e,ip);
-			}
-
-			ips = null;
 		}
 		
 		return num;
@@ -1018,10 +1012,29 @@ public class Format
 	/*
 	 public static void main(String[] args)
 	 {
-			long a = Format.ip2long("192.168.1.2");
-			System.out.println(a);
-	 }
-	 */
+		//System.out.println(Long.valueOf("123,"));
+
+		 
+		 //*
+		 long st = System.currentTimeMillis();
+		 for (int i=0; i<1000000;i++)
+		 {
+			 //Format.ipToLong("192.168.1.2"); 
+			 Format.ip2long("192.168.1.2"); 
+		 }
+		 System.out.println(System.currentTimeMillis()-st);
+		 //*/
+		//long a = Format.ip2long("192.168.1.2");
+		//System.out.println(a);
+		/*
+		192.168.1.2   3232235778
+
+		3074337170
+		183.62.169.146
+		*/
+	//}
+
+	// */
 	/*
 	 public static void main(String[] args)
 	 {
