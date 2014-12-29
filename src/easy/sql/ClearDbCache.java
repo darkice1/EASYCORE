@@ -29,6 +29,8 @@ public class ClearDbCache implements FileFilter
 		File[] fs =  file.listFiles(cdb);
 		int total = fs.length;
 		int idx = 0;
+		int delnum = 0;
+
 		for (File f : fs)
 		{
 			idx++;
@@ -38,7 +40,8 @@ public class ClearDbCache implements FileFilter
 				CDataSet cds = (CDataSet)JFile.readGZipObject(rpath);
 				if (cds.getEndtime() < System.currentTimeMillis())
 				{
-					Log.OutLog("[%d/%d]删除[%s][%s]",idx,total,rpath,f.delete());
+					delnum++;
+					Log.OutLog("[%d/%d][%d]删除[%s][%s]",idx,total,delnum,rpath,f.delete());
 				}
 			}
 			catch (ClassNotFoundException e)
