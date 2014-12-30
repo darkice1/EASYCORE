@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketException;
@@ -164,56 +166,33 @@ public class JFile
 		return readAllText(null);
 	}
 
-	public String readAllText(String chartset)
+	public byte[] readAllBytes()
 	{
+		byte[] content = null;
 		try
 		{
-			BufferedReader p_in = null;
+			BufferedInputStream p_in = null;
 			if (filename != null)
 			{
-				if (chartset == null)
-				{
-					p_in = new BufferedReader(new FileReader(filename));
-				}
-				else
-				{
-					p_in = new BufferedReader(new InputStreamReader(
-									new FileInputStream(filename), chartset));
-				}
-
+				p_in = new BufferedInputStream(new FileInputStream(filename));
 			}
 			else if (in != null)
 			{
-				if (chartset == null)
-				{
-					p_in = new BufferedReader(new InputStreamReader(in));
-				}
-				else
-				{
-					if ("zh-cn".equals(chartset))
-					{
-						chartset = "gbk";
-					}
-					p_in = new BufferedReader(new InputStreamReader(in,chartset));
-				}
+				p_in = new BufferedInputStream(in);
 			}
 
-			StringBuffer buf = new StringBuffer();
-			if (p_in != null)
-			{
-				int byteread = 0;
-				int bufsize = 102400;
-				char charbuf[] = new char[bufsize];
-
-				while ((byteread = p_in.read(charbuf)) != -1)
-				{
-					buf.append(charbuf, 0, byteread);
-					charbuf = new char[bufsize];
-				}
-				p_in.close();
-				return new String(buf);
-			}
-			return null;
+			 ByteArrayOutputStream out = new ByteArrayOutputStream(1024);        
+		       
+			 //System.out.println("Available bytes:" + in.available());        
+		       
+			 byte[] temp = new byte[1024];        
+			 int size = 0;        
+			 while ((size = p_in.read(temp)) != -1) 
+			 {        
+				 out.write(temp, 0, size);        
+			}     
+		    
+			content = out.toByteArray();
 		}
 		catch (SocketException ex)
 		{
@@ -225,6 +204,37 @@ public class JFile
 			ex.printStackTrace();
 			return null;
 		}
+		
+		return content;
+	}
+
+	public String readAllText(String chartset)
+	{
+		String con = null;
+
+		byte[] buf = readAllBytes();
+		if (chartset == null)
+		{
+			chartset = Format.getChartset(buf);
+		}
+		
+		if (chartset == null)
+		{
+			con = new String(buf);
+		}
+		else
+		{
+			try
+			{
+				con = new String(buf,chartset);
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				Log.OutException(e);
+			}
+		}
+		
+		return con;
 	}
 
 	/**
@@ -247,7 +257,8 @@ public class JFile
 	public static void writeObject(OutputStream out, Object obj)
 					throws IOException
 	{
-		ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(out));
+		ObjectOutputStream os = new ObjectOutputStream(
+						new BufferedOutputStream(out));
 		os.writeObject(obj);
 		os.reset();
 		os.flush();
@@ -594,19 +605,18 @@ public class JFile
 							timeout, null);
 		}
 	}
-	
+
 	public static HashMap<String, String> loadHttpFilePost(String url,
-					HashMap<String, String> head, String chartset,
-					int timeout, byte[] post) throws ConnectException,
-					IOException
+					HashMap<String, String> head, String chartset, int timeout,
+					byte[] post) throws ConnectException, IOException
 	{
-		return loadHttpFilePost( url, head,  chartset, timeout,post,true);
+		return loadHttpFilePost(url, head, chartset, timeout, post, true);
 	}
 
 	public static HashMap<String, String> loadHttpFilePost(String url,
-					HashMap<String, String> head, String chartset,
-					int timeout, byte[] post,boolean followredirects) throws ConnectException,
-					IOException
+					HashMap<String, String> head, String chartset, int timeout,
+					byte[] post, boolean followredirects)
+					throws ConnectException, IOException
 	{
 		if (head == null)
 		{
@@ -643,11 +653,11 @@ public class JFile
 			{
 				uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
 			}
-			
+
 			Iterator<Entry<String, String>> iter = head.entrySet().iterator();
 			while (iter.hasNext())
 			{
-				Entry<String,String> entry =  iter.next();
+				Entry<String, String> entry = iter.next();
 				String key = entry.getKey();
 				String val = entry.getValue();
 				uc.setRequestProperty(key, val);
@@ -659,25 +669,27 @@ public class JFile
 				out.write(post);
 				out.flush();
 			}
-			
+
 			int code = uc.getResponseCode();
-			
-			if ((code == 302 ||  code == 301) && followredirects)
+
+			if ((code == 302 || code == 301) && followredirects)
 			{
 				url = uc.getHeaderField("Location");
 				Proxy.closeProxy();
-				return loadHttpFilePost(url, head, chartset,timeout, post,followredirects);
+				return loadHttpFilePost(url, head, chartset, timeout, post,
+								followredirects);
 			}
-			
+
 			all.put("resonpsenmessgae", uc.getResponseMessage());
-			all.put("code", ""+code);
+			all.put("code", "" + code);
 			all.put("url", url);
-			
-			Map<String,List<String>> heads = uc.getHeaderFields();
-			Iterator<Entry<String, List<String>>> headiter = heads.entrySet().iterator();
+
+			Map<String, List<String>> heads = uc.getHeaderFields();
+			Iterator<Entry<String, List<String>>> headiter = heads.entrySet()
+							.iterator();
 			while (headiter.hasNext())
 			{
-				Entry<String,List<String>> entry =  headiter.next();
+				Entry<String, List<String>> entry = headiter.next();
 				String key = entry.getKey();
 				List<String> hvlist = entry.getValue();
 				StringBuffer buf = new StringBuffer();
@@ -685,10 +697,9 @@ public class JFile
 				{
 					buf.append(String.format("%s\n", v));
 				}
-				
+
 				all.put(key, buf.toString().trim());
 			}
-			
 
 			JFile file;
 			try
@@ -730,13 +741,13 @@ public class JFile
 			}
 
 			all.put("html", httpstr);
-			
+
 			Proxy.closeProxy();
 			return all;
 		}
 		catch (IOException e)
 		{
-			Log.OutException(e, String.format("url[%s]",url));
+			Log.OutException(e, String.format("url[%s]", url));
 			Proxy.closeProxy();
 			throw e;
 		}
@@ -747,12 +758,12 @@ public class JFile
 					String useragent, String chartset, String ref, int timeout,
 					byte[] post) throws ConnectException, IOException
 	{
-		HashMap<String,String> request = new HashMap<String,String>();
+		HashMap<String, String> request = new HashMap<String, String>();
 
 		if (cookie != null)
 		{
 			request.put(COOKIE, cookie);
-		}		
+		}
 		if (useragent != null)
 		{
 			request.put(USER_AGENT, useragent);
@@ -762,8 +773,8 @@ public class JFile
 			request.put(REFERER, ref);
 		}
 
-		
-		return JFile.loadHttpFilePost(url, request, chartset, timeout, post).get("html");
+		return JFile.loadHttpFilePost(url, request, chartset, timeout, post)
+						.get("html");
 	}
 
 	public static String loadHttpFile(String url, String cookie,
@@ -774,9 +785,8 @@ public class JFile
 						null);
 	}
 
-
-	public static void saveHttpFile(final String url,final String localpath,final String ref)
-					throws IOException
+	public static void saveHttpFile(final String url, final String localpath,
+					final String ref) throws IOException
 	{
 		Proxy.initCfgProxy();
 		URL u = new URL(url);
@@ -803,10 +813,11 @@ public class JFile
 		fs.close();
 		Proxy.closeProxy();
 	}
-	
-	public static void saveHttpFile(final String url, final String localpath) throws IOException
+
+	public static void saveHttpFile(final String url, final String localpath)
+					throws IOException
 	{
-		saveHttpFile(url,localpath,null);
+		saveHttpFile(url, localpath, null);
 	}
 
 	public void close()

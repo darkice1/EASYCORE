@@ -203,11 +203,6 @@ public class EHttpClient
 		
 		//System.out.println(charset);
 		
-		if (charset == null)
-		{
-			charset = "utf-8";
-		}
-
 		// System.out.println(charset);
 		// String responseString = new
 		// String(EntityUtils.toString(entity).getBytes("gbk"));
@@ -219,6 +214,9 @@ public class EHttpClient
 		// InputStreamReader(entity.getContent(), charset));
 		// br.close();
 		JFile file = new JFile(entity.getContent());
+		//byte[] con = file.readAllBytes();
+		//System.out.println(Format.getEncode(con));
+		//String html = new String(con,"gbk");
 		String html = file.readAllText(charset);
 
 		return html;
@@ -490,8 +488,7 @@ public class EHttpClient
 				agent = tagent;
 			}
 
-			Iterator<Entry<String, String>> paramsfields = head.entrySet()
-							.iterator();
+			Iterator<Entry<String, String>> paramsfields = head.entrySet().iterator();
 			while (paramsfields.hasNext())
 			{
 				Entry<String, String> e = paramsfields.next();
@@ -518,6 +515,18 @@ public class EHttpClient
 
 		// System.out.println(result);
 		return result;
+	}
+	
+	public void close()
+	{
+		try
+		{
+			client.close();
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
 	}
 
 	public String getCookieString(String key, String domain)
@@ -573,6 +582,9 @@ public class EHttpClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
+		EHttpClient c = new EHttpClient();
+		System.out.println(c.get("http://login.sina.com.cn/member/testify/testify.php?entry=account"));
+		//System.out.println(c.get("http://woso100.com"));
 		// EHttpClient c = new EHttpClient();
 		// c.setProxy("127.0.0.1", 8087);
 		// c.setProxy("121.196.129.91", 30002);
