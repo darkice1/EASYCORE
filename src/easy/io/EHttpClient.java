@@ -40,6 +40,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -59,6 +60,7 @@ public class EHttpClient
 	// private CloseableHttpClient client = HttpClients.custom().build();
 	private String agent = WebAgent.getRandAgent();
 	private RequestConfig requestconfig;
+	private PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 
 	// private HttpClient client = HttpsClient.getInstance();
 
@@ -67,14 +69,18 @@ public class EHttpClient
 		init(null, null);
 	}
 
+	public EHttpClient(final String host, final Integer port)
+	{
+		init(host, port);
+	}
+
 	public void setProxy(final String host, final Integer port)
 	{
 		if (host != null && "".equals(host) == false && port != null)
 		{
 			// System.out.println(host+"##"+port);
 			HttpHost proxy = new HttpHost(host, port);
-			DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(
-							proxy);
+			DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
 			httpbuilder.setRoutePlanner(routePlanner);
 			client = httpbuilder.build();
 
@@ -88,6 +94,9 @@ public class EHttpClient
 
 		try
 		{
+			cm.setMaxTotal(1000);  
+			cm.setDefaultMaxPerRoute(20);  
+			
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
 							null, new TrustStrategy()
 							{
@@ -105,6 +114,8 @@ public class EHttpClient
 
 			httpbuilder.setDefaultCookieStore(cookieStore);
 			httpbuilder.setSSLSocketFactory(sslsf);
+			httpbuilder.setConnectionManager(cm);
+			
 			client = httpbuilder.build();
 		}
 		catch (KeyManagementException | NoSuchAlgorithmException
@@ -114,11 +125,6 @@ public class EHttpClient
 		}
 
 		setConnectionTimeout(30 * 1000);
-	}
-
-	public EHttpClient(final String host, final Integer port)
-	{
-		init(host, port);
 	}
 
 	public BasicCookieStore getCookieStore()
