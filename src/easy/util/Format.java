@@ -203,53 +203,57 @@ public class Format
 
 		return toXMLString(ds, pi, -1);
 	}
-	
+
 	/**
 	 * list转json.
+	 * 
 	 * @param list
 	 * @return
 	 */
 	public static String listToJsonString(List<Row> list)
 	{
-		return listToJsonString(list,null);
+		return listToJsonString(list, null);
 	}
-	
+
 	/**
 	 * 讲row list转成json
+	 * 
 	 * @param list
-	 * @param addjson 新增json属性
+	 * @param addjson
+	 *            新增json属性
 	 * @return
 	 */
-	public static String listToJsonString(List<Row> list,JSONObject addjson)
+	public static String listToJsonString(List<Row> list, JSONObject addjson)
 	{
 		JSONObject json = new JSONObject();
 
 		JSONArray array = new JSONArray();
-		
+
 		for (Row r : list)
 		{
-			HashMap<String,String> map = new HashMap<String,String>();
+			HashMap<String, String> map = new HashMap<String, String>();
 			for (String col : r.getColsNameList())
 			{
 				map.put(col, r.getString(col));
 			}
 			array.add(map);
 		}
-		
-		if (addjson!=null)
-		{//		Iterator<Entry<String, String>> paramsfields = params.entrySet().iterator();
+
+		if (addjson != null)
+		{// Iterator<Entry<String, String>> paramsfields =
+			// params.entrySet().iterator();
 
 			@SuppressWarnings("rawtypes")
-			Iterator iter =addjson.keys();
+			Iterator iter = addjson.keys();
 			while (iter.hasNext())
 			{
-				String key =  (String) iter.next();
-				json.put(key,addjson.get(key));
+				String key = (String) iter.next();
+				json.put(key, addjson.get(key));
 			}
 		}
 		json.put("total", list.size());
 		json.put("result", array);
-		
+
 		return json.toString();
 	}
 
@@ -539,21 +543,22 @@ public class Format
 		return min;
 	}
 
-	/** 
-     * ip地址转成整数. 
-     * @param ip 
-     * @return 
-     */
+	/**
+	 * ip地址转成整数.
+	 * 
+	 * @param ip
+	 * @return
+	 */
 	public static long ip2long(String ip)
 	{
 		long num = 0;
-		
+
 		if (ip != null)
 		{
-			String[] ips = ip.split("[.]",4);
+			String[] ips = ip.split("[.]", 4);
 			try
 			{
-				for (int i=0,len=ips.length; i< len; i++)
+				for (int i = 0, len = ips.length; i < len; i++)
 				{
 					String s = ips[i].trim();
 					long l = 0;
@@ -563,26 +568,26 @@ public class Format
 					}
 					catch (Exception e)
 					{
-						//Log.OutException(e);
+						// Log.OutException(e);
 					}
-					
-					num += l<<((3l-i)*8);
+
+					num += l << ((3l - i) * 8);
 				}
-				
+
 				/*
-				num = 16777216L * Long.parseLong(ips[0]) + 65536L
-								* Long.parseLong(ips[1]) + 256 * Long.parseLong(ips[2])
-								+ Long.parseLong(ips[3]);
-				*/
+				 * num = 16777216L * Long.parseLong(ips[0]) + 65536L
+				 * Long.parseLong(ips[1]) + 256 * Long.parseLong(ips[2]) +
+				 * Long.parseLong(ips[3]);
+				 */
 			}
 			catch (Exception e)
 			{
-				Log.OutException(e,ip);
+				Log.OutException(e, ip);
 			}
 
 			ips = null;
 		}
-		
+
 		return num;
 	}
 
@@ -825,29 +830,33 @@ public class Format
 		BASE64Encoder en = new sun.misc.BASE64Encoder();
 		return en.encode(buf);
 	}
-	
+
 	public static byte[] decodeBase64(final String str) throws IOException
 	{
-		BASE64Decoder decoder = new BASE64Decoder(); 
+		BASE64Decoder decoder = new BASE64Decoder();
 		return decoder.decodeBuffer(str);
 	}
-	
-	public static String encodeDes(String mykey,String encryptedString) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException
+
+	public static String encodeDes(String mykey, String encryptedString)
+					throws UnsupportedEncodingException, InvalidKeyException,
+					NoSuchAlgorithmException, NoSuchPaddingException,
+					InvalidKeySpecException
 	{
 		byte[] keyAsBytes = mykey.getBytes("utf-8");
 		DESKeySpec myKeySpec = new DESKeySpec(keyAsBytes);
-		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory.getInstance("DES");
+		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
+						.getInstance("DES");
 		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
 
 		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
-		
+
 		String encryptedText = null;
 		try
 		{
 			cipher.init(Cipher.ENCRYPT_MODE, key);
 			byte[] plainText = cipher.doFinal(encryptedString.getBytes());
-			
-			encryptedText = new String (Base64UrlSafe.encodeBase64(plainText));
+
+			encryptedText = new String(Base64UrlSafe.encodeBase64(plainText));
 		}
 		catch (Exception e)
 		{
@@ -855,22 +864,26 @@ public class Format
 		}
 		return encryptedText;
 	}
-	
-	public static String decodeDes(String mykey,String encryptedString) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException
+
+	public static String decodeDes(String mykey, String encryptedString)
+					throws UnsupportedEncodingException, InvalidKeyException,
+					NoSuchAlgorithmException, NoSuchPaddingException,
+					InvalidKeySpecException
 	{
 		byte[] keyAsBytes = mykey.getBytes("utf-8");
 		KeySpec myKeySpec = new DESKeySpec(keyAsBytes);
-		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory.getInstance("DES");
+		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
+						.getInstance("DES");
 		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
 		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
-		
+
 		String decryptedText = null;
 		try
 		{
 			cipher.init(Cipher.DECRYPT_MODE, key);
 			byte[] encryptedText = Base64UrlSafe.decodeBase64(encryptedString);
 			byte[] plainText = cipher.doFinal(encryptedText);
-			decryptedText = new String (plainText);
+			decryptedText = new String(plainText);
 		}
 		catch (Exception e)
 		{
@@ -927,7 +940,8 @@ public class Format
 
 	public static List<String> getUrls(final String str)
 	{
-		final Pattern URLPAT = Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+		final Pattern URLPAT = Pattern
+						.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
 		List<String> list = new LinkedList<String>();
 		Matcher matcher = URLPAT.matcher(str);
 		while (matcher.find())
@@ -936,14 +950,17 @@ public class Format
 		}
 		return list;
 	}
-	
+
 	public static List<String> getAts(final String str)
 	{
 		List<String> list = new LinkedList<String>();
 
 		if (str != null)
 		{
-			final Pattern ATPAT = Pattern.compile(String.format("@[[^@\\s%s]0-9]{1,20}", "`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"));
+			final Pattern ATPAT = Pattern
+							.compile(String.format(
+											"@[[^@\\s%s]0-9]{1,20}",
+											"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"));
 			Matcher matcher = ATPAT.matcher(str);
 			while (matcher.find())
 			{
@@ -999,68 +1016,69 @@ public class Format
 	{
 		return getMyIpAll().get("ip");
 	}
-	
+
 	public static String getDomain(final String url)
 	{
 		String t[] = url.split("/");
 		String domain = "";
-		
+
 		if (t.length >= 3)
 		{
 			domain = new String(t[2]);
 		}
-		
+
 		t = null;
-		
+
 		return domain;
 	}
-	
+
+	public static String getChartset(byte[] bytes)
+	{
+		String code = null;
+		if (bytes == null || bytes.length < 2)
+		{
+			return code;
+		}
+
+		int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
+		switch (p)
+		{
+			case 0xefbb:
+				code = "UTF-8";
+				break;
+			case 0xfffe:
+				code = "Unicode";
+				break;
+			case 0xfeff:
+				code = "UTF-16BE";
+				break;
+			default:
+				code = "GBK";
+		}
+		return code;
+
+	}
 	/*
-	 public static void main(String[] args)
-	 {
-			long a = Format.ip2long("192.168.1.2");
-			System.out.println(a);
-	 }
+	 * public static void main(String[] args) { long a =
+	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
 	 */
 	/*
-	 public static void main(String[] args)
-	 {
-		 try
-		{
-			HashMap<String,Row> map = new HashMap<String,Row>();
-			Row r = new Row();
-			r.putString("rrr", "rvrv");
-			map.put("aaa", r);
-			System.out.println(Format.getMapString(map));
-			
-			String key = "aa123456";
-			String str = encodeDes(key,"http://s.click.taobao.com/t?e=m%3D2%26s%3DWXz%2BpQdcHYccQipKwQzePOeEDrYVVa64Qih%2F7PxfOKS5VBFTL4hn2dFYoGP7L3a4NGaA%2Fv7qa0ST6eDNmvF6jBLOI4%2FU6Dke38XymDefB1EyH37S5WIg5fE%2FJZ20M53%2Bcy7llBOuH5ssPuCO17knxsYOae24fhW0");
-			System.out.println(str);
-			System.out.println(decodeDes(key,str));
-			
-			//http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk/zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
-			System.out.println(decodeDes("UlTdTr8Y","tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk/zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p"));
-		}
-		catch (InvalidKeyException e)
-		{
-			Log.OutException(e);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			Log.OutException(e);
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			Log.OutException(e);
-		}
-		catch (NoSuchPaddingException e)
-		{
-			Log.OutException(e);
-		}
-		catch (InvalidKeySpecException e)
-		{
-			Log.OutException(e);
-		}
-	 }
+	 * public static void main(String[] args) { try { HashMap<String,Row> map =
+	 * new HashMap<String,Row>(); Row r = new Row(); r.putString("rrr", "rvrv");
+	 * map.put("aaa", r); System.out.println(Format.getMapString(map));
+	 * 
+	 * String key = "aa123456"; String str = encodeDes(key,
+	 * "http://s.click.taobao.com/t?e=m%3D2%26s%3DWXz%2BpQdcHYccQipKwQzePOeEDrYVVa64Qih%2F7PxfOKS5VBFTL4hn2dFYoGP7L3a4NGaA%2Fv7qa0ST6eDNmvF6jBLOI4%2FU6Dke38XymDefB1EyH37S5WIg5fE%2FJZ20M53%2Bcy7llBOuH5ssPuCO17knxsYOae24fhW0"
+	 * ); System.out.println(str); System.out.println(decodeDes(key,str));
+	 * 
+	 * //http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk
+	 * /zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
+	 * System.out.println(decodeDes("UlTdTr8Y",
+	 * "tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk/zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p"
+	 * )); } catch (InvalidKeyException e) { Log.OutException(e); } catch
+	 * (UnsupportedEncodingException e) { Log.OutException(e); } catch
+	 * (NoSuchAlgorithmException e) { Log.OutException(e); } catch
+	 * (NoSuchPaddingException e) { Log.OutException(e); } catch
+	 * (InvalidKeySpecException e) { Log.OutException(e); } }
 	 */
 }
