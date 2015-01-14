@@ -32,6 +32,9 @@ import javax.crypto.spec.DESKeySpec;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
+import org.mozilla.universalchardet.UniversalDetector;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 import easy.io.JFile;
@@ -1035,6 +1038,17 @@ public class Format
 	public static String getChartset(byte[] bytes)
 	{
 		String code = null;
+		
+		UniversalDetector detector =  new UniversalDetector(null);
+	    detector.handleData(bytes, 0, bytes.length);  
+	    detector.dataEnd();  
+	    code = detector.getDetectedCharset();  
+	    detector.reset();  
+	    if (code == null) 
+	    {  
+	    	code = "utf-8";  
+	    }  
+		/*
 		if (bytes == null || bytes.length < 2)
 		{
 			return code;
@@ -1055,6 +1069,7 @@ public class Format
 			default:
 				code = "GBK";
 		}
+		*/
 		return code;
 
 	}
