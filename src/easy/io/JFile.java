@@ -213,11 +213,13 @@ public class JFile
 		String con = null;
 
 		byte[] buf = readAllBytes();
+		//System.out.println("chartset1"+chartset);
 		if (chartset == null)
 		{
 			chartset = Format.getChartset(buf);
 		}
-		
+		//System.out.println("chartset2"+chartset);
+
 		if (chartset == null)
 		{
 			con = new String(buf);
