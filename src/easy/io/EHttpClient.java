@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -32,6 +36,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -96,13 +101,13 @@ public class EHttpClient
 		{
 			cm.setMaxTotal(1000);  
 			cm.setDefaultMaxPerRoute(20);  
-			
+			//httpbuilder.setConnectionManager(cm);
+
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
 							null, new TrustStrategy()
 							{
 								@Override
-								public boolean isTrusted(
-												java.security.cert.X509Certificate[] chain,
+								public boolean isTrusted(X509Certificate[] chain,
 												String authType)
 												throws java.security.cert.CertificateException
 								{
@@ -110,11 +115,32 @@ public class EHttpClient
 								}
 							}).build();
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-							sslContext);
+							sslContext,new X509HostnameVerifier() {  
+								  
+		                        @Override  
+		                        public boolean verify(String arg0, SSLSession arg1) {  
+		                            return true;  
+		                        }  
+		  
+		                        @Override  
+		                        public void verify(String host, SSLSocket ssl)  
+		                                throws IOException {  
+		                        }  
+		  
+		                        @Override  
+		                        public void verify(String host, X509Certificate cert)  
+		                                throws SSLException {  
+		                        }  
+		  
+		                        @Override  
+		                        public void verify(String host, String[] cns,  
+		                                String[] subjectAlts) throws SSLException {  
+		                        }  
+		  
+		                    });
 
 			httpbuilder.setDefaultCookieStore(cookieStore);
 			httpbuilder.setSSLSocketFactory(sslsf);
-			httpbuilder.setConnectionManager(cm);
 			
 			client = httpbuilder.build();
 		}
