@@ -435,7 +435,7 @@ public class EHttpClient
 		{
 			info.put("html", dump(entity));
 		}
-		// post.abort();
+		post.abort();
 
 		return info;
 	}
@@ -544,6 +544,7 @@ public class EHttpClient
 		String html = dump(entity, chartset);
 		result.put("code",""+response.getStatusLine().getStatusCode());
 		result.put("html", html);
+		get.abort();
 
 		// System.out.println(result);
 		return result;
