@@ -382,6 +382,54 @@ public class BaseTable
 		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(),sqlbuf.toString());
 	}
 	
+	/**
+	 * 
+	 * @param fields 后面需要操作字段
+	 * @param ops操作符 如果少写以最后一个为准
+	 * @return
+	 */
+	public String getInsertUpdateOnDuplPro(String fields,String ops)
+	{
+		String[] fs = fields.split(",");
+		String[] os = ops.split(",");
+		StringBuffer buf = new StringBuffer();
+		
+		int olen = os.length-1;
+		for (int i=0,len=fs.length; i<len; i++)
+		{
+			String f = fs[i];
+			String fv = params.get(f);
+			
+			if (fv == null)
+			{
+				fv = proparams.get(f);
+			}
+			
+			if (fv != null)
+			{
+				String o;
+				if (i<=olen)
+				{
+					o = os[i];
+				}
+				else
+				{
+					o = os[olen];
+				}
+				buf.append(f);
+				buf.append("=");
+				buf.append(f);
+				buf.append(o);
+				buf.append(fv);
+				buf.append(",");
+			}
+		}
+		
+		buf.setLength(buf.length()-1);
+		
+		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(),buf.toString());
+	}
+	
 	public String getInsertUpdateOnDupl(String updateString)
 	{
 		//sql.executeUpdate(String.format("%s ON DUPLICATE KEY UPDATE %s", r.toString(),updateString));	
@@ -552,7 +600,18 @@ public class BaseTable
 	{
 		this.where = where;
 	}
-	
+/*
+	public static void main(String[] args)
+	{
+		BaseTable bt = new BaseTable();
+		bt.setTablename("test");
+		bt.Add("aa", "1");
+		bt.Add("bb", "2");
+		
+		System.out.println(bt.getInsertUpdateOnDuplPro("aa,bb", "+,-"));
+		
+	}
+*/
 //	@Override
 //	protected void finalize() throws Throwable
 //	{
