@@ -41,9 +41,9 @@ public class Log
 	protected final static boolean WRITEERROR = Config.getProperty("WRITEERROR","false").equals("true")?true:false;
 	protected final static boolean WRITESQL = Config.getProperty("WRITESQL","false").equals("true")?true:false;
 
-	protected final static boolean OUTLOG = Config.getProperty("OUTLOG","false").equals("true")?true:false;
-	protected final static boolean OUTERROR = Config.getProperty("OUTERROR","false").equals("true")?true:false;
-	protected final static boolean OUTSQL = Config.getProperty("OUTSQL","false").equals("true")?true:false;
+	protected final static boolean OUTLOG = Config.getProperty("OUTLOG","true").equals("true")?true:false;
+	protected final static boolean OUTERROR = Config.getProperty("OUTERROR","true").equals("true")?true:false;
+	protected final static boolean OUTSQL = Config.getProperty("OUTSQL","true").equals("true")?true:false;
 	static 
 	{
 		if (WRITELOG)
