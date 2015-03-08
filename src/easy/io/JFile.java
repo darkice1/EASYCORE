@@ -143,7 +143,7 @@ public class JFile
 			{
 				List<String> list = new ArrayList<String>();
 
-				String s = new String(p_in.readLine());
+				String s = p_in.readLine();
 				while (s != null)
 				{
 					list.add(s);
