@@ -11,4 +11,5 @@ cp easy.jar /Users/Neo/Documents/eclipse\ workspace/Niuniu/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/EXCHANGETOOLS/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AllEx/WebRoot/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AFASURL/ROOT/WEB-INF/lib
-mv easy.jar /Users/Neo/Documents/eclipse\ workspace/WOSOPROXY/war/WEB-INF/lib
+cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AFASURL/ROOT/WEB-INF/lib
+mv easy.jar /Users/Neo/Documents/eclipse\ workspace/KejetExChange/lib

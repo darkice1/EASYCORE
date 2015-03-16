@@ -67,7 +67,7 @@ public abstract class ListXmlAction extends Action
 	 */
 	public String getInitSqlString(final String sqlstr)
 	{
-		String newsql;
+		String newsql = sql;
 		
 		StringBuffer tmpSql = new StringBuffer();
 		boolean isset = false;
@@ -129,7 +129,7 @@ public abstract class ListXmlAction extends Action
 			newsql = String.format("SELECT * FROM (%s) t2 ORDER BY %s", sqlstr,order);
 		}
 		
-		newsql = String.format("%s LIMIT %d,%d", sql,(pageNum-1)*pagesize,pagesize);
+		newsql = String.format("%s LIMIT %d,%d", newsql,(pageNum-1)*pagesize,pagesize);
 		
 		return newsql;
 	}
