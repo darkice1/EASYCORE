@@ -1,7 +1,9 @@
 package easy.sql;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileLock;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -189,7 +191,8 @@ public abstract class Sql
 
 			String md5 = Format.Md5(String.format("%s %s %s %s %s",user,password,jdbcurl,jdbcurl, sql));
 			String path = String.format("%s/%s.db", CACHEPATH,md5);
-			
+			//System.out.println(path);
+
 			boolean neednew = false;
 			if (JFile.exists(path))
 			{
@@ -252,7 +255,13 @@ public abstract class Sql
 				cds.setDataSet(ds);
 				cds.setSql(sql);
 				
-				JFile.writeGZipObject(path, cds);
+				FileOutputStream fo = new FileOutputStream(path);
+				FileLock fl = fo.getChannel().tryLock();
+				if (fl != null)
+				{
+					JFile.writeGZipObject(fo, cds);
+				}
+				fo.close();
 				
 				cds = null;
 			}
