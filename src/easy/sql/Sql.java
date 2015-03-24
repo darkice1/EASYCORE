@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -256,11 +257,19 @@ public abstract class Sql
 				cds.setSql(sql);
 				
 				FileOutputStream fo = new FileOutputStream(path);
-				FileLock fl = fo.getChannel().tryLock();
-				if (fl != null)
+				try
 				{
-					JFile.writeGZipObject(fo, cds);
+					FileLock fl = fo.getChannel().tryLock();
+					if (fl != null)
+					{
+						JFile.writeGZipObject(fo, cds);
+					}
 				}
+				catch (OverlappingFileLockException e)
+				{
+					//Log.OutException(e);
+				}
+
 				fo.close();
 				
 				cds = null;
