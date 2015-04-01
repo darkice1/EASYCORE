@@ -28,7 +28,7 @@ public class CPSql extends Sql
 	protected String poolurl;
 	protected String dbclass;
 	
-	protected static boolean USEPOOL = "true".equals(Config.getProperty("USEDBPPOOL","true"));
+	protected boolean usepool;
 
 	/**
 	 * @see easy.sql.Sql#init()
@@ -39,6 +39,8 @@ public class CPSql extends Sql
 		password = Config.getProperty("DBPASSWORD");
 		jdbcurl = Config.getProperty("DBURL");
 		dbclass = Config.getProperty("DBCLASS");
+		
+		usepool = "true".equals(Config.getProperty("USEDBPPOOL","true"));
 	}
 	
 //	protected void finalize() throws Throwable
@@ -76,7 +78,7 @@ public class CPSql extends Sql
 		
 		try
         {
-			if (USEPOOL)
+			if (usepool)
 			{
 	        	Class.forName(POOLCLASS);
 				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
