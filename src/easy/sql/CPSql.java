@@ -28,7 +28,7 @@ public class CPSql extends Sql
 	protected String poolurl;
 	protected String dbclass;
 	
-	protected boolean usepool;
+	protected boolean usepool = true;
 
 	/**
 	 * @see easy.sql.Sql#init()
@@ -84,7 +84,7 @@ public class CPSql extends Sql
 			}
 			else
 			{
-	        	Class.forName(POOLCLASS);
+	        	Class.forName(dbclass);
 				conn = DriverManager.getConnection(jdbcurl,user,password);
 			}
 			stmt = conn.createStatement(resultSetType,resultSetConncurrency);
