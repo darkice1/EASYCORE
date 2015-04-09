@@ -65,7 +65,6 @@ public class CPSql extends Sql
 		info.setProperty("proxool.house-keeping-test-sql", "select 1");
 		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","60000"));
 		
-		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("DBBUILDTHROTTLE","5"));
 		info.setProperty("proxool.maximum-connection-lifetime",  Config.getProperty("DBMAXCONNECTIONLIFTIME","60000"));
 		info.setProperty("proxool.house-keeping-sleep-time",  Config.getProperty("DBMAXKEEPINGSLEEPTIME","30000"));
 		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
