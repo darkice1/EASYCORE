@@ -28,9 +28,9 @@ public class EDate
 		TimeZone.setDefault(TIMEZONE);
 	}
 	
-	private final static SimpleDateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private final static SimpleDateFormat LOGFORMAT = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-	private final static SimpleDateFormat SQLDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final SimpleDateFormat LOGFORMAT = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+	private final SimpleDateFormat SQLDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	
 //	@Override
 //	protected void finalize() throws Throwable
@@ -159,12 +159,12 @@ public class EDate
 	
 	public static String getString()
 	{
-		return DATEFORMAT.format (new Date());
+		return new EDate().DATEFORMAT.format (new Date());
 	}
 
 	public static String toString (Date p_date)
 	{
-		return DATEFORMAT.format (p_date);
+		return new EDate().DATEFORMAT.format (p_date);
 	}
 	
 	/**
@@ -174,7 +174,7 @@ public class EDate
 	 */
 	public static String getSQLDate (Date date)
 	{
-		return SQLDATEFORMAT.format (date);
+		return new EDate().SQLDATEFORMAT.format (date);
 	}
 	
 	public String getSQLDate ()
@@ -189,12 +189,12 @@ public class EDate
 	 */
 	public static String getLogDate(Date date)
 	{
-		return LOGFORMAT.format(date);
+		return new EDate().LOGFORMAT.format(date);
 	}
 	
 	public static String getLogDate()
 	{
-		return LOGFORMAT.format(new Date());
+		return new EDate().LOGFORMAT.format(new Date());
 	}
 
 	public String toString ()
