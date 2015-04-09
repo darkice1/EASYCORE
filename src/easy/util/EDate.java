@@ -235,7 +235,7 @@ public class EDate
 		 SimpleDateFormat myFmt=new SimpleDateFormat(format);
 		 return myFmt.format(date);
 	}
-	
+
 	public void setTime(long time)
 	{
 		date.setTime(time);
