@@ -64,11 +64,18 @@ public class Commander extends HttpServlet
 			Action actionInstance;
 			try
 			{
-				actionInstance= (Action)Class.forName("easy.action." + actionName + "Action").newInstance();
+				actionInstance = (Action)Class.forName(packageName + actionName).newInstance();		
 			}
 			catch (ClassNotFoundException cnfe)
 			{
-				actionInstance = (Action)Class.forName(packageName + actionName + "Action").newInstance();		
+				try
+				{
+					actionInstance = (Action)Class.forName(actionName).newInstance();		
+				}
+				catch (ClassNotFoundException cnfe2)
+				{
+					actionInstance = (Action)Class.forName(packageName + actionName + "Action").newInstance();		
+				}
 			}			
 			actionInstance.init(new Request(request),new Response(response));
 			actionInstance.Perform();
