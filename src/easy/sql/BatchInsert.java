@@ -156,6 +156,12 @@ public class BatchInsert
 		return count;
 	}
 	
+	public void clear()
+	{
+		idx = 0;
+		sqllist.clear();		
+	}
+	
 //	@Override
 //	protected void finalize() throws Throwable
 //	{
