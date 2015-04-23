@@ -122,10 +122,12 @@ public abstract class Action
 
 		if (url != null)
 		{
+			/*
 			if (url.indexOf("http") != 0)
 			{
 				url = request.getContextPath()+url;
 			}
+			*/
 			
 			if (isForward)
 			{
