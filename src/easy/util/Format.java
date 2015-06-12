@@ -470,7 +470,7 @@ public class Format
 				if (po!=null && po.getClass().isArray())
 				{
 					buf.append(f.getName());
-					buf.append("[");
+					buf.append(":[");
 					for (int i=0,len=Array.getLength(po);i<len;i++)
 					{
 						buf.append(Array.get(po, i));
