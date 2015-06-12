@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.net.ConnectException;
@@ -288,6 +289,24 @@ public class Format
 		return buf.toString();
 	}
 
+
+	public static <E>String toListString(E[] array)
+	{
+		StringBuffer buf = new StringBuffer();
+		for (E e : array)
+		{        
+			buf.append(e);
+			buf.append(",");
+        }
+		int len = buf.length();
+		if (len > 0)
+		{
+			buf.setLength(len-1);
+		}
+
+		return buf.toString();
+	}
+	
 	/**
 	 * 返回list输出字符串，使用,分割
 	 * 
@@ -311,7 +330,7 @@ public class Format
 	 * @param list
 	 * @return
 	 */
-	public static String toListString(List<String> list)
+	public static String toListString(List<?> list)
 	{
 		return toListString(list, ",");
 	}
@@ -325,7 +344,7 @@ public class Format
 	 *            分割字符
 	 * @return
 	 */
-	public static String toListString(List<String> list, String splitstr)
+	public static String toListString(List<?> list, String splitstr)
 	{
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0, len = list.size(); i < len; i++)
@@ -435,7 +454,7 @@ public class Format
 	 * @param o
 	 * @return
 	 */
-	public static String toNormalString(Object o)
+	public static String beanToString(Object o)
 	{
 		StringBuffer buf = new StringBuffer();
 		Field[] fields = o.getClass().getDeclaredFields();
@@ -446,7 +465,24 @@ public class Format
 			f.setAccessible(true);
 			try
 			{
-				buf.append(String.format("%s:%s\r\n", f.getName(), f.get(o)));
+				Object po  = f.get(o);
+				//System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
+				if (po!=null && po.getClass().isArray())
+				{
+					buf.append(f.getName());
+					buf.append("[");
+					for (int i=0,len=Array.getLength(po);i<len;i++)
+					{
+						buf.append(Array.get(po, i));
+						buf.append(",");
+					}
+					buf.setLength(buf.length()-1);
+					buf.append("]\n");
+				}
+				else
+				{
+					buf.append(String.format("%s:[%s]\n", f.getName(), po));
+				}
 			}
 			catch (IllegalArgumentException e)
 			{
