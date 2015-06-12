@@ -471,12 +471,16 @@ public class Format
 				{
 					buf.append(f.getName());
 					buf.append(":[");
-					for (int i=0,len=Array.getLength(po);i<len;i++)
+					int len=Array.getLength(po);
+					for (int i=0;i<len;i++)
 					{
 						buf.append(Array.get(po, i));
 						buf.append(",");
 					}
-					buf.setLength(buf.length()-1);
+					if (len >0)
+					{
+						buf.setLength(buf.length()-1);
+					}
 					buf.append("]\n");
 				}
 				else
