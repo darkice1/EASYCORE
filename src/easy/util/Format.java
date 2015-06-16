@@ -292,16 +292,21 @@ public class Format
 
 	public static <E>String toListString(E[] array)
 	{
+		return toListString(array,",");
+	}
+	
+	public static <E>String toListString(E[] array, String splitstr)
+	{
 		StringBuffer buf = new StringBuffer();
 		for (E e : array)
 		{        
 			buf.append(e);
-			buf.append(",");
+			buf.append(splitstr);
         }
 		int len = buf.length();
 		if (len > 0)
 		{
-			buf.setLength(len-1);
+			buf.setLength(len-splitstr.length());
 		}
 
 		return buf.toString();
