@@ -127,13 +127,13 @@ public class Row implements Comparable<Row>,Serializable
 	}
 	public Double getDouble(String key)
 	{
-		String value = row.get(key).getValue();
-		if (value == null)
-		{
-			return null;
-		}
 		try
 		{
+			String value = row.get(key).getValue();
+			if (value == null)
+			{
+				return null;
+			}
 			return Double.parseDouble(value);
 		}
 		catch (NumberFormatException ex)
