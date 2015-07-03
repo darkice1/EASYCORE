@@ -555,13 +555,28 @@ public class DataSet implements Serializable
 	 * @param list join数据
 	 * @param srckeys 源关联key, 分割
 	 * @param keys 源关联key, 分割
+	 */
+	public static void join(List<Row> srclist,List<Row> list,String srckeys,String keys)
+	{
+		join(srclist,list, srckeys, keys, null);
+	}
+	/**
+	 * 
+	 * @param srclist 源数据
+	 * @param list join数据
+	 * @param srckeys 源关联key, 分割
+	 * @param keys 源关联key, 分割
 	 * @param 向srclist增加字段, 分割
 	 */
 	public static void join(List<Row> srclist,List<Row> list,String srckeys,String keys,String addfields)
 	{
 		String[] sks = srckeys.split(",");
 		String[] ks = keys.split(",");
-		String[] fs = addfields.split(",");
+		String[] fs = null;
+		if (addfields != null)
+		{
+			fs = addfields.split(",");
+		}
 
 		boolean isok;
 		for (Row sr : srclist)
@@ -581,13 +596,50 @@ public class DataSet implements Serializable
 				
 				if (isok)
 				{
-					for (String f : fs)
+					if (fs != null)
 					{
-						sr.putString(f, r.getString(f));
+						for (String f : fs)
+						{
+							sr.putString(f, r.getString(f));
+						}
 					}
+					else
+					{
+						String tfs[] = r.getColsNameList();
+						for (String f : tfs)
+						{
+							sr.putString(f, r.getString(f));
+						}
+					}
+
 					break;
 				}
 			}
 		}
 	}
+	
+//	public static void main(String[] args)
+//	{
+//		List<Row>  srclist = new ArrayList<Row>();
+//		List<Row>  list = new ArrayList<Row>();
+//
+//		for (int i=0;i<=10;i++)
+//		{
+//			Row sr = new Row();
+//			Row r = new Row();
+//			
+//			sr.putString("a", ""+i);
+//			r.putString("b", ""+i);
+//			r.putString("c", "ccc"+i);
+//
+//			srclist.add(sr);
+//			list.add(r);
+//		}
+//		
+//		//System.out.println(srclist);
+//		//System.out.println(list);
+//
+//		join(srclist,list,"a","b");
+//		System.out.println(srclist);
+//	}
 }
