@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -675,11 +674,9 @@ public class Format
 		StringBuffer buf = new StringBuffer();
 		int len = NUMLOWSTRING.length();
 		// LOWSTRING
-		Random r = new Random();
-
 		for (int i = 0; i < num; i++)
 		{
-			int pos = r.nextInt(len);
+			int pos = (int) (Math.random() * len);
 			buf.append(NUMLOWSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();
@@ -697,11 +694,9 @@ public class Format
 		StringBuffer buf = new StringBuffer();
 		int len = LOWSTRING.length();
 		// LOWSTRING
-		Random r = new Random();
-
 		for (int i = 0; i < num; i++)
 		{
-			int pos = r.nextInt(len);
+			int pos = (int) (Math.random() * len);
 			buf.append(LOWSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();
@@ -718,15 +713,10 @@ public class Format
 	{
 		StringBuffer buf = new StringBuffer();
 		int len = ALLSTRING.length();
-		
-		Random r = new Random();
-
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
 		{
-			int pos = r.nextInt(len);
-			//int pos = (int) (Math.random() * len);
-
+			int pos = (int) (Math.random() * len);
 			buf.append(ALLSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();
@@ -1128,20 +1118,6 @@ public class Format
 		return code;
 
 	}
-	
-//	public static void main(String[] args) 
-//	{
-//		Random r  = new Random();
-//		
-//		StringBuffer buf = new StringBuffer();
-//		for (int i=0;i<100;i++)
-//		{
-//			buf.append(getRandAllString(10));
-//			buf.append("\n");
-//		}
-//		System.out.println(buf.toString());
-//	}
-	
 	/*
 	 * public static void main(String[] args) { long a =
 	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
