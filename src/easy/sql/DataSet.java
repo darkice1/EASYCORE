@@ -510,7 +510,6 @@ public class DataSet implements Serializable
 	{		
 		return toCsvString(fields,"\t");
 	}
-	
 
 	/**
 	 * 返回csv格式
@@ -548,5 +547,47 @@ public class DataSet implements Serializable
 		buf = null;
 		f = null;
 		return sql;
+	}
+	
+	/**
+	 * 
+	 * @param srclist 源数据
+	 * @param list join数据
+	 * @param srckeys 源关联key, 分割
+	 * @param keys 源关联key, 分割
+	 * @param 向srclist增加字段, 分割
+	 */
+	public static void join(List<Row> srclist,List<Row> list,String srckeys,String keys,String addfields)
+	{
+		String[] sks = srckeys.split(",");
+		String[] ks = keys.split(",");
+		String[] fs = addfields.split(",");
+
+		boolean isok;
+		for (Row sr : srclist)
+		{
+			for (Row r : list)
+			{
+				isok = true;
+
+				for (int i=0,len=sks.length; i<len; i++)
+				{
+					if (sr.getString(sks[i]).equals(r.getString(ks[i])) == false)
+					{
+						isok = false;
+						break;
+					}
+				}
+				
+				if (isok)
+				{
+					for (String f : fs)
+					{
+						sr.putString(f, r.getString(f));
+					}
+					break;
+				}
+			}
+		}
 	}
 }
