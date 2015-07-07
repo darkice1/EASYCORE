@@ -44,7 +44,7 @@ public class Col implements Comparable<Col>,Serializable
 		{
 			return Float.compare(Float.parseFloat(value), Float.parseFloat(c.value));
 		}
-		else if (type == Types.DECIMAL)
+		else if (type == Types.DECIMAL || type == Types.DOUBLE)
 		{
 			return Double.compare(Double.parseDouble(value), Double.parseDouble(c.value));
 		}
