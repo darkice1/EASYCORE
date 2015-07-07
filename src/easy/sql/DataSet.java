@@ -355,12 +355,13 @@ public class DataSet implements Serializable
 		while(flag)
 		{
 			flag = false;
-			for(int j=1;j<rowList.size();j++)
+			for(int j=1,len=rowList.size();j<len;j++)
 			{
-				if(fieldTypes[0].toLowerCase().equals("int") || fieldTypes[0].toLowerCase().equals("integer"))
+				if(fieldTypes[0].toLowerCase().equals("int") || fieldTypes[0].toLowerCase().equals("long"))
 				{
-					if(rowList.get(j-1).getInt(currField) == (rowList.get(j).getInt(currField))) continue;
-					if((rowList.get(j-1).getInt(currField) < (rowList.get(j).getInt(currField))) == isDESC[0])
+					if(rowList.get(j-1).getLong(currField).longValue() == rowList.get(j).getLong(currField).longValue())
+						continue;
+					if((rowList.get(j-1).getLong(currField).longValue() < rowList.get(j).getLong(currField).longValue()) == isDESC[0])
 					{
 						Collections.swap(rowList,j-1,j);
 						flag = true;
@@ -368,8 +369,9 @@ public class DataSet implements Serializable
 				}
 				else if(fieldTypes[0].toLowerCase().equals("float") || fieldTypes[0].toLowerCase().equals("double"))
 				{
-					if(rowList.get(j-1).getDouble(currField) == (rowList.get(j).getDouble(currField))) continue;
-					if((rowList.get(j-1).getDouble(currField) < (rowList.get(j).getDouble(currField))) == isDESC[0])
+					if(rowList.get(j-1).getDouble(currField).doubleValue() == rowList.get(j).getDouble(currField).doubleValue()) 
+						continue;
+					if((rowList.get(j-1).getDouble(currField).doubleValue() < rowList.get(j).getDouble(currField).doubleValue()) == isDESC[0])
 					{
 						Collections.swap(rowList,j-1,j);
 						flag = true;
@@ -377,7 +379,8 @@ public class DataSet implements Serializable
 				}
 				else
 				{
-					if(rowList.get(j-1).getString(currField).compareTo(rowList.get(j).getString(currField)) == 0) continue;
+					if(rowList.get(j-1).getString(currField).compareTo(rowList.get(j).getString(currField)) == 0) 
+						continue;
 					if((rowList.get(j-1).getString(currField).compareTo(rowList.get(j).getString(currField))<0) == isDESC[0])
 					{
 						Collections.swap(rowList,j-1,j);
@@ -387,7 +390,7 @@ public class DataSet implements Serializable
 			}
 		}
 		//////
-		for(int i=1;i<fieldnames.length;i++)
+		for(int i=1,len=fieldnames.length;i<len;i++)
 		{
 			preField = fieldnames[i-1];
 			currField = fieldnames[i];
@@ -395,14 +398,14 @@ public class DataSet implements Serializable
 			while(flag)
 			{
 				flag = false;
-				for(int j=1;j<rowList.size();j++)
+				for(int j=1,jlen=rowList.size();j<jlen;j++)
 				{
 					if(rowList.get(j-1).getString(preField).equals(rowList.get(j).getString(preField)))
 					{
-						if(fieldTypes[i].toLowerCase().equals("int") || fieldTypes[i].toLowerCase().equals("integer"))
+						if(fieldTypes[i].toLowerCase().equals("int") || fieldTypes[i].toLowerCase().equals("long"))
 						{
-							if(rowList.get(j-1).getInt(currField) == (rowList.get(j).getInt(currField))) continue;
-							if((rowList.get(j-1).getInt(currField) < (rowList.get(j).getInt(currField))) == isDESC[i])
+							if(rowList.get(j-1).getLong(currField).longValue() == rowList.get(j).getLong(currField).longValue()) continue;
+							if((rowList.get(j-1).getLong(currField).longValue() < rowList.get(j).getLong(currField).longValue()) == isDESC[i])
 							{
 								Collections.swap(rowList,j-1,j);
 								flag = true;
@@ -410,8 +413,8 @@ public class DataSet implements Serializable
 						}
 						else if(fieldTypes[i].toLowerCase().equals("float") || fieldTypes[i].toLowerCase().equals("double"))
 						{
-							if(rowList.get(j-1).getDouble(currField) == (rowList.get(j).getDouble(currField))) continue;
-							if((rowList.get(j-1).getDouble(currField) < (rowList.get(j).getDouble(currField))) == isDESC[i])
+							if(rowList.get(j-1).getDouble(currField).doubleValue() == (rowList.get(j).getDouble(currField)).doubleValue()) continue;
+							if((rowList.get(j-1).getDouble(currField).doubleValue() < (rowList.get(j).getDouble(currField)).doubleValue()) == isDESC[i])
 							{
 								Collections.swap(rowList,j-1,j);
 								flag = true;
@@ -436,7 +439,7 @@ public class DataSet implements Serializable
 
 	public void reverse(String fieldname)
 	{
-		setSortFiled(fieldname);
+		sort(fieldname);
 		Collections.reverse(rowList);
 	}
 
@@ -618,28 +621,41 @@ public class DataSet implements Serializable
 		}
 	}
 	
-//	public static void main(String[] args)
-//	{
-//		List<Row>  srclist = new ArrayList<Row>();
-//		List<Row>  list = new ArrayList<Row>();
-//
-//		for (int i=0;i<=10;i++)
-//		{
-//			Row sr = new Row();
-//			Row r = new Row();
-//			
-//			sr.putString("a", ""+i);
-//			r.putString("b", ""+i);
-//			r.putString("c", "ccc"+i);
-//
-//			srclist.add(sr);
-//			list.add(r);
-//		}
-//		
-//		//System.out.println(srclist);
-//		//System.out.println(list);
-//
-//		join(srclist,list,"a","b");
-//		System.out.println(srclist);
-//	}
+	public static void main(String[] args)
+	{
+		DataSet ds = new DataSet();
+		List<Row>  srclist = ds.getRowList();
+		List<Row>  list = new ArrayList<Row>();
+
+		for (int i=0;i<=10;i++)
+		{
+			Row sr = new Row();
+			Row r = new Row();
+			
+			sr.putDouble("a", Math.random());
+			r.putString("b", ""+i);
+			r.putString("c", "ccc"+i);
+
+			srclist.add(sr);
+			list.add(r);
+		}
+		
+		//System.out.println(srclist);
+		//System.out.println(list);
+
+		//join(srclist,list,"a","b");
+		String []fieldnames = {"a"};
+		String []fieldTypes = {"double"};
+		Boolean []isDESC = {false};
+		ds.sort(fieldnames, fieldTypes, isDESC);
+
+		Boolean []isDESC2 = {true};
+		System.out.println(ds.getRowList());
+
+		ds.sort(fieldnames, fieldTypes, isDESC2);
+
+		//ds.reverse("a");
+		//ds.sort("a");
+		System.out.println(ds.getRowList());
+	}
 }
