@@ -452,6 +452,54 @@ public class Format
 
 		return buf.toString();
 	}
+	
+	public static List<Field> getAllField(String classname,boolean getsuper) throws ClassNotFoundException
+	{
+		List<Field> list = new ArrayList<Field>();
+		
+		Class<?> c = Class.forName(classname);
+		if (getsuper)
+		{
+			String supername = c.getSuperclass().getName();
+			//System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
+
+			if (supername != null && "java.lang.Object".equals(supername)==false)
+			{
+				list.addAll(getAllField(supername,true));
+			}
+		}
+
+		//System.out.println("#########"+c.getName());
+		Field[] fs = c.getDeclaredFields();
+		for (Field f : fs)
+		{
+			//System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
+			f.toString();
+			if (f.getGenericType().getTypeName().indexOf("java.lang.Class.") < 0)
+			{
+				list.add(f);
+			}
+		}
+		
+		return list;
+	}
+	
+	public static void main(String[] args) throws ClassNotFoundException
+	{
+		Class<?> c = Class.forName("java.lang.String");
+		//System.out.println(c.getName());
+		Field[] fs = c.getDeclaredFields();
+		for (Field f : fs)
+		{
+			System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
+			System.out.println(f);
+		}	
+	}
+	
+	public static String beanToString(Object o)
+	{
+		return beanToString(o,false);
+	}
 
 	/**
 	 * 取得对象所有变量打印
@@ -459,50 +507,59 @@ public class Format
 	 * @param o
 	 * @return
 	 */
-	public static String beanToString(Object o)
+	public static String beanToString(Object o,boolean getsuper)
 	{
 		StringBuffer buf = new StringBuffer();
-		Field[] fields = o.getClass().getDeclaredFields();
-
-		for (Field f : fields)
+		//Field[] fields = o.getClass().getDeclaredFields();
+		try
 		{
-			boolean accessFlag = f.isAccessible();
-			f.setAccessible(true);
-			try
+			List<Field> fields = getAllField(o.getClass().getName(),getsuper);
+			
+			for (Field f : fields)
 			{
-				Object po  = f.get(o);
-				//System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
-				if (po!=null && po.getClass().isArray())
+				boolean accessFlag = f.isAccessible();
+				f.setAccessible(true);
+				try
 				{
-					buf.append(f.getName());
-					buf.append(":[");
-					int len=Array.getLength(po);
-					for (int i=0;i<len;i++)
+					Object po  = f.get(o);
+					//System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
+					if (po!=null && po.getClass().isArray())
 					{
-						buf.append(Array.get(po, i));
-						buf.append(",");
+						buf.append(f.getName());
+						buf.append(":[");
+						int len=Array.getLength(po);
+						for (int i=0;i<len;i++)
+						{
+							buf.append(Array.get(po, i));
+							buf.append(",");
+						}
+						if (len >0)
+						{
+							buf.setLength(buf.length()-1);
+						}
+						buf.append("]\n");
 					}
-					if (len >0)
+					else
 					{
-						buf.setLength(buf.length()-1);
+						buf.append(String.format("%s:[%s]\n", f.getName(), po));
 					}
-					buf.append("]\n");
 				}
-				else
+				catch (IllegalArgumentException e)
 				{
-					buf.append(String.format("%s:[%s]\n", f.getName(), po));
+					//e.printStackTrace();
 				}
+				catch (IllegalAccessException e)
+				{
+					e.printStackTrace();
+				}
+				f.setAccessible(accessFlag);
 			}
-			catch (IllegalArgumentException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
-			f.setAccessible(accessFlag);
 		}
+		catch (ClassNotFoundException e1)
+		{
+			Log.OutException(e1);
+		}
+		//System.out.println(toListString(fields));
 
 		return buf.toString();
 	}
