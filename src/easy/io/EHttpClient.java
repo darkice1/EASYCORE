@@ -50,6 +50,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 
 import easy.model.WebAgent;
+import easy.util.Format;
 import easy.util.Log;
 
 /**
@@ -66,6 +67,7 @@ public class EHttpClient
 	private String agent = WebAgent.getRandAgent();
 	private RequestConfig requestconfig;
 	private PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+	private String baseAuthorization = null;
 
 	// private HttpClient client = HttpsClient.getInstance();
 
@@ -90,6 +92,18 @@ public class EHttpClient
 			client = httpbuilder.build();
 
 			proxy = null;
+		}
+	}
+	
+	public void setBaseAuthorization(String name,String passwd)
+	{
+		try
+		{
+			baseAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", "dsp_wisemedia","wisemedia2015").getBytes()));
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
 		}
 	}
 
@@ -270,6 +284,39 @@ public class EHttpClient
 	{
 		return client;
 	}
+	
+	private HashMap<String,String> procHead(HashMap<String,String> header)
+	{
+		if (header == null)
+		{
+			header = new HashMap<String,String>();
+			header.put("User-Agent", agent);
+		}
+		
+		String tagent = header.get("User-Agent");
+		if (tagent == null)
+		{
+			header.put("User-Agent", agent);
+		}
+		else
+		{
+			agent = tagent;
+		}
+		String auth = header.get("Authorization");
+		if (auth == null)
+		{
+			if (baseAuthorization != null)
+			{
+				header.put("Authorization", baseAuthorization);
+			}
+		}
+		else
+		{
+			baseAuthorization = auth;
+		}
+		
+		return header;
+	}
 
 	public HashMap<String, String> post(final String url,
 					final HashMap<String, String> requst)
@@ -306,7 +353,7 @@ public class EHttpClient
 
 	public HashMap<String, String> post(final String url,
 					final HashMap<String, String> request,
-					final HashMap<String, String> header,
+					HashMap<String, String> header,
 					final HashMap<String, String> files,
 					final String localpath, String postchartset)
 					throws ClientProtocolException, IOException
@@ -315,29 +362,12 @@ public class EHttpClient
 		HttpPost post = new HttpPost(url);
 		post.setConfig(requestconfig);
 
-		if (header != null)
+		header = procHead(header);
+		Iterator<Entry<String, String>> headfields = header.entrySet().iterator();
+		while (headfields.hasNext())
 		{
-			String tagent = header.get("User-Agent");
-			if (tagent == null)
-			{
-				post.setHeader("User-Agent", agent);
-			}
-			else
-			{
-				agent = tagent;
-			}
-
-			Iterator<Entry<String, String>> paramsfields = header.entrySet()
-							.iterator();
-			while (paramsfields.hasNext())
-			{
-				Entry<String, String> e = paramsfields.next();
-				post.setHeader(e.getKey(), e.getValue());
-			}
-		}
-		else
-		{
-			post.setHeader("User-Agent", agent);
+			Entry<String, String> e = headfields.next();
+			post.setHeader(e.getKey(), e.getValue());
 		}
 
 		HttpResponse response;
@@ -494,42 +524,26 @@ public class EHttpClient
 		return get(url, head, null);
 	}
 
-	public String get(final String url, final HashMap<String, String> head,
+	public String get(final String url, HashMap<String, String> head,
 					final String chartset) throws IOException
 	{
 		return getPro(url, head, chartset).get("html");
 	}
 
 	public HashMap<String, String> getPro(final String url,
-					final HashMap<String, String> head, final String chartset)
+					HashMap<String, String> head, final String chartset)
 					throws IOException
 	{
 		HashMap<String, String> result = new HashMap<String, String>();
 		HttpGet get = new HttpGet(url);
 		get.setConfig(requestconfig);
 
-		if (head != null)
+		head = procHead(head);
+		Iterator<Entry<String, String>> headfields = head.entrySet().iterator();
+		while (headfields.hasNext())
 		{
-			String tagent = head.get("User-Agent");
-			if (tagent == null)
-			{
-				get.setHeader("User-Agent", agent);
-			}
-			else
-			{
-				agent = tagent;
-			}
-
-			Iterator<Entry<String, String>> paramsfields = head.entrySet().iterator();
-			while (paramsfields.hasNext())
-			{
-				Entry<String, String> e = paramsfields.next();
-				get.setHeader(e.getKey(), e.getValue());
-			}
-		}
-		else
-		{
-			get.setHeader("User-Agent", agent);
+			Entry<String, String> e = headfields.next();
+			get.setHeader(e.getKey(), e.getValue());
 		}
 		// get.setHeader("Cookie", getCookieString());
 
@@ -615,8 +629,9 @@ public class EHttpClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		EHttpClient c = new EHttpClient();
-		System.out.println(c.get("http://login.sina.com.cn/member/testify/testify.php?entry=account"));
+		//EHttpClient c = new EHttpClient();
+		//System.out.println(c.get("http://login.sina.com.cn/member/testify/testify.php?entry=account"));
+		
 		//System.out.println(c.get("http://woso100.com"));
 		// EHttpClient c = new EHttpClient();
 		// c.setProxy("127.0.0.1", 8087);
