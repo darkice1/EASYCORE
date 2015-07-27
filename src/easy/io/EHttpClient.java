@@ -38,6 +38,7 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -414,22 +415,32 @@ public class EHttpClient
 		else
 		{
 			// 非文件上传
-			List<NameValuePair> plist = new ArrayList<NameValuePair>();
-			if (request != null)
+			String estr = request.get("");
+			
+			if (estr == null)
 			{
-				Iterator<Entry<String, String>> paramsfields = request
-								.entrySet().iterator();
-				while (paramsfields.hasNext())
+				List<NameValuePair> plist = new ArrayList<NameValuePair>();
+				if (request != null)
 				{
-					Entry<String, String> e = paramsfields.next();
-					plist.add(new BasicNameValuePair(e.getKey(), e.getValue()));
+					Iterator<Entry<String, String>> paramsfields = request.entrySet().iterator();
+					while (paramsfields.hasNext())
+					{
+						Entry<String, String> e = paramsfields.next();
+						plist.add(new BasicNameValuePair(e.getKey(), e.getValue()));
+					}
+					if (postchartset == null)
+					{
+						postchartset = "utf-8";
+					}
+					post.setEntity(new UrlEncodedFormEntity(plist, postchartset));
 				}
-				if (postchartset == null)
-				{
-					postchartset = "utf-8";
-				}
-				post.setEntity(new UrlEncodedFormEntity(plist, postchartset));
 			}
+			else
+			{
+				post.setEntity(new StringEntity(estr,postchartset));
+			}
+			
+
 		}
 
 		HashMap<String, String> info = new HashMap<String, String>();
