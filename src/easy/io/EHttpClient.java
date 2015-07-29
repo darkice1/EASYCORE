@@ -415,7 +415,12 @@ public class EHttpClient
 		else
 		{
 			// 非文件上传
-			String estr = request.get("");
+			String estr = null;
+			
+			if (request != null)
+			{
+				request.get("");
+			}
 			
 			if (estr == null)
 			{
