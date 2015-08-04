@@ -419,7 +419,7 @@ public class EHttpClient
 			
 			if (request != null)
 			{
-				request.get("");
+				estr = request.get("");
 			}
 			
 			if (estr == null)
@@ -444,8 +444,6 @@ public class EHttpClient
 			{
 				post.setEntity(new StringEntity(estr,postchartset));
 			}
-			
-
 		}
 
 		HashMap<String, String> info = new HashMap<String, String>();
