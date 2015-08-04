@@ -70,7 +70,7 @@ public class Row implements Comparable<Row>,Serializable
 		}
 		catch (NumberFormatException ex)
 		{
-			//Log.OutException(ex,String.format("%s field value %s can't cover number.",key,value));
+			Log.OutException(ex,String.format("%s field value %s can't cover number.",key,value));
 			return null;
 		}
 		catch (Exception ex)
