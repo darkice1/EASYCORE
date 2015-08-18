@@ -132,7 +132,14 @@ public class Request
 		}
 		else
 		{
-			int limited_size = Integer.parseInt(Config.getProperty("UPLOAD_FILE_MAX_SIZE"))*1024*1024;
+			long limited_size = 1*1024*1024;
+			try
+			{
+				limited_size = Integer.parseInt(Config.getProperty("UPLOAD_FILE_MAX_SIZE"))*1024*1024;
+			}
+			catch (NumberFormatException e)
+			{
+			}
 			
 			if (t.isFormField())
 			{
