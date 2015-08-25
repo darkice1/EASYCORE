@@ -69,6 +69,8 @@ public class EHttpClient
 	private RequestConfig requestconfig;
 	private PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 	private String baseAuthorization = null;
+	
+	public final static String POSTSPLIT = new String(new char[]{0,9});
 
 	// private HttpClient client = HttpsClient.getInstance();
 
@@ -394,12 +396,10 @@ public class EHttpClient
 
 			if (request != null)
 			{
-				Iterator<Entry<String, String>> paramsfields = request
-								.entrySet().iterator();
+				Iterator<Entry<String, String>> paramsfields = request.entrySet().iterator();
 				while (paramsfields.hasNext())
 				{
 					Entry<String, String> e = paramsfields.next();
-
 					builder.addTextBody(e.getKey(), e.getValue());
 					// StringBody par = new StringBody(e.getValue());
 					// builder.addPart(e.getKey(),par);
@@ -431,7 +431,15 @@ public class EHttpClient
 					while (paramsfields.hasNext())
 					{
 						Entry<String, String> e = paramsfields.next();
-						plist.add(new BasicNameValuePair(e.getKey(), e.getValue()));
+						String v =  e.getValue();
+						String[] vs = v.split(POSTSPLIT);
+						for (String nv : vs)
+						{
+							if ("".equals(nv)==false)
+							{
+								plist.add(new BasicNameValuePair(e.getKey(), nv));
+							}
+						}
 					}
 					if (postchartset == null)
 					{
