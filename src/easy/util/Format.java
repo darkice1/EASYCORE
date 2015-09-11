@@ -26,10 +26,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -61,6 +63,7 @@ public class Format
 	private final static String LOWSTRING = "abcdefghijklmnopqrstuvwxyz";
 	private final static String NUMLOWSTRING = "abcdefghijklmnopqrstuvwxyz1234567890";
 	private final static String ALLSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+	private static final String HMAC_SHA1 = "HmacSHA1";
 
 	// private final static Pattern URLPAT
 	// =Pattern.compile("(http://|https://)[^\\s]*");
@@ -289,29 +292,28 @@ public class Format
 		return buf.toString();
 	}
 
-
-	public static <E>String toListString(E[] array)
+	public static <E> String toListString(E[] array)
 	{
-		return toListString(array,",");
+		return toListString(array, ",");
 	}
-	
-	public static <E>String toListString(E[] array, String splitstr)
+
+	public static <E> String toListString(E[] array, String splitstr)
 	{
 		StringBuffer buf = new StringBuffer();
 		for (E e : array)
-		{        
+		{
 			buf.append(e);
 			buf.append(splitstr);
-        }
+		}
 		int len = buf.length();
 		if (len > 0)
 		{
-			buf.setLength(len-splitstr.length());
+			buf.setLength(len - splitstr.length());
 		}
 
 		return buf.toString();
 	}
-	
+
 	/**
 	 * 返回list输出字符串，使用,分割
 	 * 
@@ -452,53 +454,43 @@ public class Format
 
 		return buf.toString();
 	}
-	
-	public static List<Field> getAllField(String classname,boolean getsuper) throws ClassNotFoundException
+
+	public static List<Field> getAllField(String classname, boolean getsuper)
+					throws ClassNotFoundException
 	{
 		List<Field> list = new ArrayList<Field>();
-		
+
 		Class<?> c = Class.forName(classname);
 		if (getsuper)
 		{
 			String supername = c.getSuperclass().getName();
-			//System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
+			// System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
 
-			if (supername != null && "java.lang.Object".equals(supername)==false)
+			if (supername != null
+							&& "java.lang.Object".equals(supername) == false)
 			{
-				list.addAll(getAllField(supername,true));
+				list.addAll(getAllField(supername, true));
 			}
 		}
 
-		//System.out.println("#########"+c.getName());
+		// System.out.println("#########"+c.getName());
 		Field[] fs = c.getDeclaredFields();
 		for (Field f : fs)
 		{
-			//System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
+			// System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
 			f.toString();
 			if (f.getGenericType().getTypeName().indexOf("java.lang.Class.") < 0)
 			{
 				list.add(f);
 			}
 		}
-		
+
 		return list;
 	}
-	
-	public static void main(String[] args) throws ClassNotFoundException
-	{
-		Class<?> c = Class.forName("java.lang.String");
-		//System.out.println(c.getName());
-		Field[] fs = c.getDeclaredFields();
-		for (Field f : fs)
-		{
-			System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
-			System.out.println(f);
-		}	
-	}
-	
+
 	public static String beanToString(Object o)
 	{
-		return beanToString(o,false);
+		return beanToString(o, false);
 	}
 
 	/**
@@ -507,35 +499,35 @@ public class Format
 	 * @param o
 	 * @return
 	 */
-	public static String beanToString(Object o,boolean getsuper)
+	public static String beanToString(Object o, boolean getsuper)
 	{
 		StringBuffer buf = new StringBuffer();
-		//Field[] fields = o.getClass().getDeclaredFields();
+		// Field[] fields = o.getClass().getDeclaredFields();
 		try
 		{
-			List<Field> fields = getAllField(o.getClass().getName(),getsuper);
-			
+			List<Field> fields = getAllField(o.getClass().getName(), getsuper);
+
 			for (Field f : fields)
 			{
 				boolean accessFlag = f.isAccessible();
 				f.setAccessible(true);
 				try
 				{
-					Object po  = f.get(o);
-					//System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
-					if (po!=null && po.getClass().isArray())
+					Object po = f.get(o);
+					// System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
+					if (po != null && po.getClass().isArray())
 					{
 						buf.append(f.getName());
 						buf.append(":[");
-						int len=Array.getLength(po);
-						for (int i=0;i<len;i++)
+						int len = Array.getLength(po);
+						for (int i = 0; i < len; i++)
 						{
 							buf.append(Array.get(po, i));
 							buf.append(",");
 						}
-						if (len >0)
+						if (len > 0)
 						{
-							buf.setLength(buf.length()-1);
+							buf.setLength(buf.length() - 1);
 						}
 						buf.append("]\n");
 					}
@@ -546,7 +538,7 @@ public class Format
 				}
 				catch (IllegalArgumentException e)
 				{
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 				catch (IllegalAccessException e)
 				{
@@ -559,7 +551,7 @@ public class Format
 		{
 			Log.OutException(e1);
 		}
-		//System.out.println(toListString(fields));
+		// System.out.println(toListString(fields));
 
 		return buf.toString();
 	}
@@ -833,6 +825,16 @@ public class Format
 	public static String Md2(String str)
 	{
 		return MessageDigest("md2", str);
+	}
+
+	public static byte[] HMACSha1(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1);
+		Mac mac = Mac.getInstance(HMAC_SHA1);
+		mac.init(signingKey);
+		byte[] rawHmac = mac.doFinal(data.getBytes());
+
+		return rawHmac;
 	}
 
 	public static String fileMd5(final String inputFile) throws IOException
@@ -1140,38 +1142,24 @@ public class Format
 	public static String getChartset(byte[] bytes)
 	{
 		String code = null;
-		
-		UniversalDetector detector =  new UniversalDetector(null);
-	    detector.handleData(bytes, 0, bytes.length);  
-	    detector.dataEnd();  
-	    code = detector.getDetectedCharset();  
-	    detector.reset();  
-	    if (code == null) 
-	    {  
-	    	code = "utf-8";  
-	    }  
-		/*
-		if (bytes == null || bytes.length < 2)
-		{
-			return code;
-		}
 
-		int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
-		switch (p)
+		UniversalDetector detector = new UniversalDetector(null);
+		detector.handleData(bytes, 0, bytes.length);
+		detector.dataEnd();
+		code = detector.getDetectedCharset();
+		detector.reset();
+		if (code == null)
 		{
-			case 0xefbb:
-				code = "UTF-8";
-				break;
-			case 0xfffe:
-				code = "Unicode";
-				break;
-			case 0xfeff:
-				code = "UTF-16BE";
-				break;
-			default:
-				code = "GBK";
+			code = "utf-8";
 		}
-		*/
+		/*
+		 * if (bytes == null || bytes.length < 2) { return code; }
+		 * 
+		 * int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
+		 * switch (p) { case 0xefbb: code = "UTF-8"; break; case 0xfffe: code =
+		 * "Unicode"; break; case 0xfeff: code = "UTF-16BE"; break; default:
+		 * code = "GBK"; }
+		 */
 		return code;
 
 	}
@@ -1198,4 +1186,20 @@ public class Format
 	 * (NoSuchPaddingException e) { Log.OutException(e); } catch
 	 * (InvalidKeySpecException e) { Log.OutException(e); } }
 	 */
+
+	public static void main(String[] args) throws ClassNotFoundException, IOException
+	{
+		try
+		{
+			System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
+		}
+		catch (InvalidKeyException e)
+		{
+			Log.OutException(e);
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			Log.OutException(e);
+		}
+	}
 }
