@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.net.ssl.SSLContext;
@@ -288,7 +289,7 @@ public class EHttpClient
 		return client;
 	}
 	
-	private HashMap<String,String> procHead(HashMap<String,String> header)
+	private Map<String,String> procHead(Map<String,String> header)
 	{
 		if (header == null)
 		{
@@ -355,9 +356,9 @@ public class EHttpClient
 	}
 
 	public HashMap<String, String> post(final String url,
-					final HashMap<String, String> request,
-					HashMap<String, String> header,
-					final HashMap<String, String> files,
+					final Map<String, String> request,
+					Map<String, String> header,
+					final Map<String, String> files,
 					final String localpath, String postchartset)
 					throws ClientProtocolException, IOException
 	{
@@ -493,24 +494,24 @@ public class EHttpClient
 	}
 
 	public String postToString(final String url,
-					final HashMap<String, String> request)
+					final Map<String, String> request)
 					throws ClientProtocolException, IOException
 	{
 		return postToString(url, request, null, null);
 	}
 
 	public String postToString(final String url,
-					final HashMap<String, String> request,
-					final HashMap<String, String> header)
+					final Map<String, String> request,
+					final Map<String, String> header)
 					throws ClientProtocolException, IOException
 	{
 		return postToString(url, request, header, null);
 	}
 
 	public String postToString(final String url,
-					final HashMap<String, String> request,
-					final HashMap<String, String> header,
-					final HashMap<String, String> files, String postcharset)
+					final Map<String, String> request,
+					final Map<String, String> header,
+					final Map<String, String> files, String postcharset)
 					throws ClientProtocolException, IOException
 	{
 		HashMap<String, String> info = post(url, request, header, files, null,
@@ -519,9 +520,9 @@ public class EHttpClient
 	}
 
 	public String postToString(final String url,
-					final HashMap<String, String> request,
-					final HashMap<String, String> header,
-					final HashMap<String, String> files)
+					final Map<String, String> request,
+					final Map<String, String> header,
+					final Map<String, String> files)
 					throws ClientProtocolException, IOException
 	{
 		return postToString(url, request, header, files, null);
@@ -553,7 +554,7 @@ public class EHttpClient
 	}
 
 	public HashMap<String, String> getPro(final String url,
-					HashMap<String, String> head, final String chartset)
+					Map<String, String> head, final String chartset)
 					throws IOException
 	{
 		HashMap<String, String> result = new HashMap<String, String>();
