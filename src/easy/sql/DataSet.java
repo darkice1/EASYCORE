@@ -352,12 +352,17 @@ public class DataSet implements Serializable
 		String preField="",currField="";
 		currField = fieldnames[0];
 		boolean flag = true;
+		String fieldType = fieldTypes[0];
+		if (fieldType != null)
+		{
+			fieldType = fieldType.toLowerCase();
+		}
 		while(flag)
 		{
 			flag = false;
 			for(int j=1,len=rowList.size();j<len;j++)
 			{
-				if(fieldTypes[0].toLowerCase().equals("int") || fieldTypes[0].toLowerCase().equals("long"))
+				if("int".equals(fieldType)|| "long".equals(fieldType))
 				{
 					if(rowList.get(j-1).getLong(currField).longValue() == rowList.get(j).getLong(currField).longValue())
 						continue;
@@ -367,7 +372,7 @@ public class DataSet implements Serializable
 						flag = true;
 					}
 				}
-				else if(fieldTypes[0].toLowerCase().equals("float") || fieldTypes[0].toLowerCase().equals("double"))
+				else if("float".equals(fieldType) || "double".equals(fieldType))
 				{
 					if(rowList.get(j-1).getDouble(currField).doubleValue() == rowList.get(j).getDouble(currField).doubleValue()) 
 						continue;
@@ -392,6 +397,12 @@ public class DataSet implements Serializable
 		//////
 		for(int i=1,len=fieldnames.length;i<len;i++)
 		{
+			fieldType = fieldTypes[i];
+			if (fieldType != null)
+			{
+				fieldType = fieldType.toLowerCase();
+			}
+			
 			preField = fieldnames[i-1];
 			currField = fieldnames[i];
 			flag = true;
@@ -402,7 +413,7 @@ public class DataSet implements Serializable
 				{
 					if(rowList.get(j-1).getString(preField).equals(rowList.get(j).getString(preField)))
 					{
-						if(fieldTypes[i].toLowerCase().equals("int") || fieldTypes[i].toLowerCase().equals("long"))
+						if("int".equals(fieldType)|| "long".equals(fieldType))
 						{
 							if(rowList.get(j-1).getLong(currField).longValue() == rowList.get(j).getLong(currField).longValue()) continue;
 							if((rowList.get(j-1).getLong(currField).longValue() < rowList.get(j).getLong(currField).longValue()) == isDESC[i])
@@ -411,7 +422,7 @@ public class DataSet implements Serializable
 								flag = true;
 							}
 						}
-						else if(fieldTypes[i].toLowerCase().equals("float") || fieldTypes[i].toLowerCase().equals("double"))
+						else if("float".equals(fieldType) || "double".equals(fieldType))
 						{
 							if(rowList.get(j-1).getDouble(currField).doubleValue() == (rowList.get(j).getDouble(currField)).doubleValue()) continue;
 							if((rowList.get(j-1).getDouble(currField).doubleValue() < (rowList.get(j).getDouble(currField)).doubleValue()) == isDESC[i])
