@@ -423,6 +423,11 @@ public class EHttpClient
 				estr = request.get("");
 			}
 			
+			if (postchartset == null)
+			{
+				postchartset = "utf-8";
+			}
+			
 			if (estr == null)
 			{
 				List<NameValuePair> plist = new ArrayList<NameValuePair>();
@@ -442,10 +447,7 @@ public class EHttpClient
 							}
 						}
 					}
-					if (postchartset == null)
-					{
-						postchartset = "utf-8";
-					}
+
 					post.setEntity(new UrlEncodedFormEntity(plist, postchartset));
 				}
 			}
