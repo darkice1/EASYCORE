@@ -614,10 +614,17 @@ public class JFile
 	{
 		return loadHttpFilePost(url, head, chartset, timeout, post, true);
 	}
+	
+	public static HashMap<String, String> loadHttpFilePost(String url,
+					HashMap<String, String> head, String chartset, int timeout,
+					byte[] post, boolean followredirects) throws ConnectException, IOException
+	{
+		return loadHttpFilePost(url,head,chartset,timeout,post,followredirects,true);
+	}
 
 	public static HashMap<String, String> loadHttpFilePost(String url,
 					HashMap<String, String> head, String chartset, int timeout,
-					byte[] post, boolean followredirects)
+					byte[] post, boolean followredirects,boolean useproxy)
 					throws ConnectException, IOException
 	{
 		if (head == null)
@@ -625,7 +632,10 @@ public class JFile
 			head = new HashMap<String, String>();
 		}
 		HashMap<String, String> all = new HashMap<String, String>();
-		Proxy.initCfgProxy();
+		if (useproxy)
+		{
+			Proxy.initCfgProxy();
+		}
 		String httpstr = null;
 		try
 		{
@@ -677,7 +687,10 @@ public class JFile
 			if ((code == 302 || code == 301) && followredirects)
 			{
 				url = uc.getHeaderField("Location");
-				Proxy.closeProxy();
+				if (useproxy)
+				{
+					Proxy.closeProxy();	
+				}
 				return loadHttpFilePost(url, head, chartset, timeout, post,
 								followredirects);
 			}
@@ -710,7 +723,10 @@ public class JFile
 			}
 			catch (SocketException e)
 			{
-				Proxy.closeProxy();
+				if (useproxy)
+				{
+					Proxy.closeProxy();
+				}
 				throw e;
 			}
 
@@ -744,7 +760,10 @@ public class JFile
 
 			all.put("html", httpstr);
 
-			Proxy.closeProxy();
+			if (useproxy)
+			{
+				Proxy.closeProxy();
+			}
 			return all;
 		}
 		catch (IOException e)
