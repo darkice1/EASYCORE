@@ -12,6 +12,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -174,6 +178,62 @@ public class EHttpClient
 	public BasicCookieStore getCookieStore()
 	{
 		return cookieStore;
+	}
+	
+	public static BasicCookieStore jsonToBasicCookieStore(JSONObject json)
+	{
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		
+		JSONArray arr = json.getJSONArray("cookies");
+		for (int i=0,len=arr.size();i<len;i++)
+		{
+			JSONObject cj = arr.getJSONObject(i);
+
+			BasicClientCookie pc = new BasicClientCookie(cj.getString("name"), cj.getString("value"));
+			pc.setDomain(cj.getString("domain"));
+			pc.setPath(cj.getString("path"));
+			pc.setComment(cj.getString("comment"));
+			
+			Date d = null;
+			JSONObject dj = cj.getJSONObject("expiryDate");
+			if (dj != null && dj.isEmpty() == false)
+			{
+				d = new Date();
+				d.setTime(dj.getLong("time"));
+			}
+			
+			pc.setExpiryDate(d);
+			pc.setSecure(cj.getBoolean("secure"));
+			pc.setVersion(cj.getInt("version"));
+//			c.setComment(comment);
+			cookieStore.addCookie(pc);
+		}
+		
+		return cookieStore;
+	}
+	
+	public JSONObject getCookieStoreJson()
+	{
+		return JSONObject.fromObject(cookieStore);
+	}
+	
+	public void setCookieStore(String jsonstr)
+	{
+		setCookieStore(jsonToBasicCookieStore(JSONObject.fromObject(jsonstr)));
+	}
+	
+	public void setCookieStore(JSONObject json)
+	{
+		setCookieStore(jsonToBasicCookieStore(json));
+	}
+	
+	public void setCookieStore(BasicCookieStore cookieStore)
+	{
+		List<Cookie> clist = cookieStore.getCookies();
+		for (Cookie cc : clist)
+		{
+			this.cookieStore.addCookie(cc);
+		}
 	}
 
 	public void addCookie(final String cookie, final String domain)
@@ -654,7 +714,29 @@ public class EHttpClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		//EHttpClient c = new EHttpClient();
+		EHttpClient c = new EHttpClient();
+		JFile f = new JFile("/Users/Neo/Desktop/cookie.txt");
+		String s = f.readAllText();
+		f.close();
+		
+		JSONObject j = JSONObject.fromObject(s);
+//		System.out.println(j);
+//		System.out.println(jsonToBasicCookieStore(j));
+
+		
+//		Object o = JSONObject.toBean(j, BasicCookieStore.class);
+//		BasicCookieStore bc = (BasicCookieStore) o;
+//		System.out.println(bc);
+		c.get("http://www.baidu.com");
+		BasicCookieStore bc = c.getCookieStore();
+		//JSONObject j = JSONObject.fromObject(bc);
+		
+		System.out.println(bc);
+		c.setCookieStore(jsonToBasicCookieStore(j));
+		System.out.println(c.getCookieStore());
+//		System.out.println(jsonToBasicCookieStore(j));
+
+//		System.out.println(j);
 		//System.out.println(c.get("http://login.sina.com.cn/member/testify/testify.php?entry=account"));
 		
 		//System.out.println(c.get("http://woso100.com"));
