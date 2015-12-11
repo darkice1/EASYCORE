@@ -8,6 +8,7 @@ import it.sauronsoftware.junique.JUnique;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -229,10 +230,21 @@ public class SqlExeCache implements Runnable,FileFilter
 			
 			String path =filelist.poll();
 			JFile f = new JFile(path);
-			String sqlstr = f.readAllText();
+			String sqlstr = null;
+			try
+			{
+				sqlstr = f.readAllText();
+			}
+			catch (IOException e)
+			{
+				Log.OutException(e);
+			}
 			f.close();
 			
-			sql.executeUpdate(sqlstr);
+			if (sqlstr!= null)
+			{
+				sql.executeUpdate(sqlstr);
+			}
 			
 			JFile.delete(path);
 		}

@@ -161,12 +161,12 @@ public class JFile
 		}
 	}
 
-	public String readAllText()
+	public String readAllText() throws IOException
 	{
 		return readAllText(null);
 	}
 
-	public byte[] readAllBytes()
+	public byte[] readAllBytes() throws IOException
 	{
 		byte[] content = null;
 		try
@@ -199,16 +199,11 @@ public class JFile
 			Log.OutException(ex);
 			return null;
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			return null;
-		}
 		
 		return content;
 	}
 
-	public String readAllText(String chartset)
+	public String readAllText(String chartset) throws IOException
 	{
 		String con = null;
 
