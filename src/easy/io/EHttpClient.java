@@ -107,7 +107,7 @@ public class EHttpClient
 	{
 		try
 		{
-			baseAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", "dsp_wisemedia","wisemedia2015").getBytes()));
+			baseAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", name,passwd).getBytes()));
 		}
 		catch (IOException e)
 		{
