@@ -101,6 +101,11 @@ public class EDate
 	{
 		return calendar.get (Calendar.DATE);
 	}
+	
+	public int getWeekOfYear()
+	{
+		return calendar.get (Calendar.WEEK_OF_YEAR);
+	}
 
 	public void setDay(int day)
 	{
