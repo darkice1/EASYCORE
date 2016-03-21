@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/ezmorph-1.0.3.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/org.apache.httpcomponents.httpclient_4.3.3.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/juniversalchardet-1.0.3.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
