@@ -142,6 +142,71 @@ public class BaseTable
 			return -1;
 		}
 	}
+	
+	public String getReplaceString()
+	{
+		Iterator<Entry<String, String>> paramsfields = params.entrySet().iterator();
+		Iterator<Entry<String, String>> profields = proparams.entrySet().iterator();
+
+		
+		StringBuffer sqlbuf;
+		
+		sqlbuf = new StringBuffer("REPLACE INTO ");
+
+		sqlbuf.append(tablename);
+
+		StringBuffer fieldbuf = new StringBuffer("(");
+		StringBuffer valuebuf = new StringBuffer("(");
+
+		// 一般属性
+		while (paramsfields.hasNext())
+		{
+			Entry<String,String> entry =  paramsfields.next();
+
+			String field = entry.getKey(); 
+
+			fieldbuf.append(field);
+			fieldbuf.append(',');
+
+			valuebuf.append(doValue(params.get(field)));
+			valuebuf.append(',');
+			
+			field = null;
+			entry = null;
+		}
+		// 存储过程等
+		while (profields.hasNext())
+		{
+			Entry<String,String> entry =  profields.next();
+			String field = entry.getKey(); 
+
+			fieldbuf.append(field);
+			fieldbuf.append(',');
+
+			valuebuf.append(proparams.get(field));
+			valuebuf.append(',');
+			
+			field = null;
+			entry = null;
+		}
+		fieldbuf.setCharAt(fieldbuf.length() - 1, ')');
+		valuebuf.setCharAt(valuebuf.length() - 1, ')');
+
+		sqlbuf.append(fieldbuf);
+		sqlbuf.append(" VALUES ");
+		sqlbuf.append(valuebuf);
+		
+		paramsfields = null;
+		profields = null;
+		
+		//String sql = sqlbuf.toString();
+		
+		//sqlbuf = null;
+		fieldbuf = null;
+		valuebuf = null;
+
+		return sqlbuf.toString();
+	}
 
 	/**
 	 * 
