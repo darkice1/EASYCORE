@@ -2,6 +2,7 @@ package easy.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -40,6 +41,27 @@ public class Config
 		}
 		return CFG;
 	}
+	
+	public static void load(String filepath) throws FileNotFoundException
+	{
+		CFG = Config.getInstance();
+		
+		InputStream is = null;
+		is = new FileInputStream(new File(filepath));
+
+		try
+		{
+			if (is != null)
+			{
+				CFG.PPS.load(is);
+				is.close();
+			}
+		}
+		catch (IOException ex)
+		{
+			Log.OutException(ex);
+		}
+	}
 
 	/**
 	 * ��ȡconfig�ļ�
@@ -66,33 +88,19 @@ public class Config
 		path1 = new String(String.format("%s/config.txt", path1));
 
 
-		CFG = Config.getInstance();
-		InputStream is = null;
 		try
 		{
-			is = new FileInputStream(path);
+			load(path);
 		}
 		catch (Exception ex)
 		{
 			try
 			{
-				is = new FileInputStream(path1);
+				load(path1);
 			}
 			catch (Exception e)
 			{
 			}
-		}
-		try
-		{
-			if (is != null)
-			{
-				CFG.PPS.load(is);
-				is.close();
-			}
-		}
-		catch (IOException ex)
-		{
-			Log.OutException(ex);
 		}
 	}
 
