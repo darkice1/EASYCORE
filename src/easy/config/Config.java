@@ -109,7 +109,7 @@ public class Config
 			String tmp = Config.getInstance().PPS.getProperty(key);
 			if (tmp != null)
 			{
-				return new String(Config.getInstance().PPS.getProperty(key).getBytes("latin1"),"utf-8");
+				return new String(tmp.getBytes("latin1"),"utf-8");
 			}
 			else
 			{
@@ -137,7 +137,7 @@ public class Config
 			String tmp = Config.getInstance().PPS.getProperty(key,defvalue);
 			if (tmp != null)
 			{
-				return new String(Config.getInstance().PPS.getProperty(key).getBytes("latin1"),"utf-8");
+				return new String(tmp.getBytes("latin1"),"utf-8");
 			}
 			else
 			{
