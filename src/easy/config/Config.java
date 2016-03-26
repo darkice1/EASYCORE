@@ -131,8 +131,24 @@ public class Config
 	 * @return value
 	 */
 	public static String getProperty(String key,String defvalue)
-	{
-		return Config.getInstance().PPS.getProperty(key,defvalue);
+	{		
+		try
+		{
+			String tmp = Config.getInstance().PPS.getProperty(key,defvalue);
+			if (tmp != null)
+			{
+				return new String(Config.getInstance().PPS.getProperty(key).getBytes("latin1"),"utf-8");
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			Log.OutException(e);
+			return "";
+		}
 	}
 	
 	/**
