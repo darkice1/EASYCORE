@@ -29,8 +29,6 @@ public class CPSql extends Sql
 	protected String dbclass;
 	
 	protected boolean usepool = true;
-	
-	protected static boolean POOLINIT = false;
 
 	/**
 	 * @see easy.sql.Sql#init()
@@ -58,14 +56,6 @@ public class CPSql extends Sql
 	 */
 	protected void initdb()
 	{
-		if (POOLINIT == false)
-		{
-			CPSql sql = new CPSql();
-			sql.getStatement();
-			sql.close();
-			POOLINIT = true;
-		}
-		
 		alias = Config.getProperty("PROJECT")+Format.Md5(String.format("%s-%s-%s-%s", user,password,dbclass,jdbcurl));
 		poolurl = "proxool." +alias+":";
 
