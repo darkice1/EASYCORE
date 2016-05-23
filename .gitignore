@@ -1,2 +1,1 @@
-web/WEB-INF/classes
-web/WEB-INF/config.txt
+web/WEB-INF/classes/*
