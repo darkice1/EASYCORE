@@ -122,8 +122,8 @@ public class EHttpClient
 		try
 		{
 			cm.setMaxTotal(1000);  
-			cm.setDefaultMaxPerRoute(20);  
-			//httpbuilder.setConnectionManager(cm);
+			cm.setDefaultMaxPerRoute(200);  
+			httpbuilder.setConnectionManager(cm);
 
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
 							null, new TrustStrategy()
@@ -714,12 +714,6 @@ public class EHttpClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		EHttpClient c = new EHttpClient();
-		JFile f = new JFile("/Users/Neo/Desktop/cookie.txt");
-		String s = f.readAllText();
-		f.close();
-		
-		JSONObject j = JSONObject.fromObject(s);
 //		System.out.println(j);
 //		System.out.println(jsonToBasicCookieStore(j));
 
@@ -727,13 +721,15 @@ public class EHttpClient
 //		Object o = JSONObject.toBean(j, BasicCookieStore.class);
 //		BasicCookieStore bc = (BasicCookieStore) o;
 //		System.out.println(bc);
-		c.get("http://www.baidu.com");
-		BasicCookieStore bc = c.getCookieStore();
-		//JSONObject j = JSONObject.fromObject(bc);
+		long st = System.currentTimeMillis();
 		
-		System.out.println(bc);
-		c.setCookieStore(jsonToBasicCookieStore(j));
-		System.out.println(c.getCookieStore());
+		for (int i =0; i<100; i++)
+		{
+			EHttpClient c = new EHttpClient();
+			c.get("http://x.fastapi.net/s2s?v=1&si=1012377&mimes=jpeg%2Cjpg%2Cgif%2Cswf%2Cpng%2Cc%2C&ip=183.246.7.164&ua=Mozilla%2F5.0+%28Windows+NT+5.1%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Maxthon%2F4.4.8.1000+Chrome%2F30.0.1599.101+Safari%2F537.36&rr=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&url=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&reqid=PmyNs1FbwL&bf=387&uid=100017:wfIslKMd");
+			//JFile.loadHttpFile("http://x.fastapi.net/s2s?v=1&si=1012377&mimes=jpeg%2Cjpg%2Cgif%2Cswf%2Cpng%2Cc%2C&ip=183.246.7.164&ua=Mozilla%2F5.0+%28Windows+NT+5.1%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Maxthon%2F4.4.8.1000+Chrome%2F30.0.1599.101+Safari%2F537.36&rr=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&url=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&reqid=PmyNs1FbwL&bf=387&uid=100017:wfIslKMd");
+		}
+		System.out.println(System.currentTimeMillis()-st);
 //		System.out.println(jsonToBasicCookieStore(j));
 
 //		System.out.println(j);
