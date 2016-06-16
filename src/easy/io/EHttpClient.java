@@ -665,6 +665,7 @@ public class EHttpClient
 		try
 		{
 			client.close();
+			connectionManager.close();
 		}
 		catch (IOException e)
 		{
