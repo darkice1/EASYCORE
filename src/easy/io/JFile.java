@@ -675,6 +675,7 @@ public class JFile
 				OutputStream out = uc.getOutputStream();
 				out.write(post);
 				out.flush();
+				out.close();
 			}
 
 			int code = uc.getResponseCode();
@@ -763,7 +764,7 @@ public class JFile
 		}
 		catch (IOException e)
 		{
-			Log.OutException(e, String.format("url[%s]", url));
+			//Log.OutException(e, String.format("url[%s]", url));
 			Proxy.closeProxy();
 			throw e;
 		}

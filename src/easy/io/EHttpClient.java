@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -72,7 +73,7 @@ public class EHttpClient
 	// private CloseableHttpClient client = HttpClients.custom().build();
 	private String agent = WebAgent.getRandAgent();
 	private RequestConfig requestconfig;
-	private PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+	private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 	private String baseAuthorization = null;
 	
 	public final static String POSTSPLIT = new String(new char[]{0,9});
@@ -114,17 +115,27 @@ public class EHttpClient
 			Log.OutException(e);
 		}
 	}
-
+	
+	public void closeExpiredConnections()
+	{
+		connectionManager.closeExpiredConnections();
+	}
+	
+	public void closeIdleConnections(long idleTimeout,TimeUnit tunit)
+	{
+		connectionManager.closeIdleConnections(idleTimeout, tunit);
+	}
+	
 	private void init(final String host, final Integer port)
 	{
 		setProxy(host, port);
 
 		try
 		{
-			cm.setMaxTotal(1000);  
-			cm.setDefaultMaxPerRoute(200);  
-			httpbuilder.setConnectionManager(cm);
-
+			connectionManager.setMaxTotal(1000);  
+			connectionManager.setDefaultMaxPerRoute(200);  
+			httpbuilder.setConnectionManager(connectionManager);
+			
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
 							null, new TrustStrategy()
 							{
@@ -723,10 +734,11 @@ public class EHttpClient
 //		System.out.println(bc);
 		long st = System.currentTimeMillis();
 		
+		EHttpClient c = new EHttpClient();
 		for (int i =0; i<100; i++)
 		{
-			EHttpClient c = new EHttpClient();
 			c.get("http://x.fastapi.net/s2s?v=1&si=1012377&mimes=jpeg%2Cjpg%2Cgif%2Cswf%2Cpng%2Cc%2C&ip=183.246.7.164&ua=Mozilla%2F5.0+%28Windows+NT+5.1%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Maxthon%2F4.4.8.1000+Chrome%2F30.0.1599.101+Safari%2F537.36&rr=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&url=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&reqid=PmyNs1FbwL&bf=387&uid=100017:wfIslKMd");
+			//c.close();
 			//JFile.loadHttpFile("http://x.fastapi.net/s2s?v=1&si=1012377&mimes=jpeg%2Cjpg%2Cgif%2Cswf%2Cpng%2Cc%2C&ip=183.246.7.164&ua=Mozilla%2F5.0+%28Windows+NT+5.1%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Maxthon%2F4.4.8.1000+Chrome%2F30.0.1599.101+Safari%2F537.36&rr=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&url=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&reqid=PmyNs1FbwL&bf=387&uid=100017:wfIslKMd");
 		}
 		System.out.println(System.currentTimeMillis()-st);
