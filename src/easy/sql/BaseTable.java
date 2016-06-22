@@ -86,6 +86,14 @@ public class BaseTable
 	{
 		proparams.put(field, value);
 	}
+	
+	public void AddRow(Row r)
+	{
+		for (String k : r.getColsNameList())
+		{
+			params.put(k, r.getString(k));
+		}
+	}
 
 	public void clear()
 	{
@@ -401,6 +409,53 @@ public class BaseTable
 
 		return sqlbuf.toString();
 	}
+
+	/**
+	 * 更新字段按逗号分割
+	 * @param fields
+	 * @return
+	 */
+	public String getInsertUpdateOnDuplFields(String fields)
+	{
+		String[] fs = fields.split(",");
+		return getInsertUpdateOnDuplFields(fs);
+	}
+	
+	/**
+	 * 需要更新字段
+	 * @param fields
+	 * @return
+	 */
+	public String getInsertUpdateOnDuplFields(String[] fields)
+	{
+		StringBuffer sqlbuf = new StringBuffer();
+		for (String f : fields)
+		{
+			String v = params.get(f);
+			if (v != null)
+			{
+				sqlbuf.append(f);
+				sqlbuf.append('=');
+				sqlbuf.append(doValue(params.get(f)));
+				sqlbuf.append(',');
+			}
+			else
+			{
+				v = proparams.get(f);
+				if (v != null)
+				{
+					sqlbuf.append(f);
+					sqlbuf.append('=');
+					sqlbuf.append(proparams.get(f));
+					sqlbuf.append(',');
+				}
+			}
+		}
+		
+		sqlbuf.setCharAt(sqlbuf.length() - 1, ' ');
+
+		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(),sqlbuf.toString());
+	}
 	
 	/**
 	 * 插入/更新所有字段
@@ -490,11 +545,10 @@ public class BaseTable
 			}
 		}
 		
-		buf.setLength(buf.length()-1);
-		
+		buf.setLength(buf.length()-1);		
 		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(),buf.toString());
 	}
-	
+
 	public String getInsertUpdateOnDupl(String updateString)
 	{
 		//sql.executeUpdate(String.format("%s ON DUPLICATE KEY UPDATE %s", r.toString(),updateString));	
