@@ -56,7 +56,7 @@ import easy.sql.Row;
 
 public class Format
 {
-	private final static Map<String, String> cmap = new HashMap<String, String>();
+	private static Map<String, String> PINYINMAP = new HashMap<String, String>();
 
 	private final static Format FORMAT = new Format();
 
@@ -97,22 +97,6 @@ public class Format
 		// GURLLIST.add("http://wosoproxy1.appspot.com/c?action=GetUrl&z=%s&u=%s");
 		// GURLLIST.add("http://wosoproxy2.appspot.com/c?action=GetUrl&z=%s&u=%s");
 		// GURLLIST.add("http://wosoproxy3.appspot.com/c?action=GetUrl&z=%s&u=%s");
-
-		JFile file = new JFile(FORMAT.getClass().getResourceAsStream(
-						"pinyin.txt"));
-		List<String> list = file.getLineList();
-		for (String t : list)
-		{
-			String[] s = t.split(" ", 2);
-			if (s.length >= 2)
-			{
-				cmap.put(new String(s[0]), new String(s[1]));
-			}
-			s = null;
-			t = null;
-		}
-		list = null;
-		file = null;
 	}
 
 	public static String getGaeURL(String u)
@@ -402,6 +386,32 @@ public class Format
 			return null;
 		}
 	}
+	
+	private static Map<String,String> getPinYinMap()
+	{
+		
+		if (PINYINMAP == null)
+		{
+			PINYINMAP = new HashMap<String,String>();
+			JFile file = new JFile(FORMAT.getClass().getResourceAsStream(
+							"pinyin.txt"));
+			List<String> list = file.getLineList();
+			for (String t : list)
+			{
+				String[] s = t.split(" ", 2);
+				if (s.length >= 2)
+				{
+					PINYINMAP.put(new String(s[0]), new String(s[1]));
+				}
+				s = null;
+				t = null;
+			}
+			list = null;
+			file = null;
+		}
+		
+		return PINYINMAP;
+	}
 
 	/**
 	 * 汉字转拼音
@@ -415,7 +425,7 @@ public class Format
 		for (int i = 0; i < str.length(); i++)
 		{
 			String k = str.substring(i, i + 1);
-			String t = cmap.get(k);
+			String t = getPinYinMap().get(k);
 			if (t == null)
 			{
 				buf.append(k);
@@ -441,7 +451,7 @@ public class Format
 		for (int i = 0; i < str.length(); i++)
 		{
 			String k = str.substring(i, i + 1);
-			String t = cmap.get(k);
+			String t = getPinYinMap().get(k);
 			if (t == null)
 			{
 				buf.append(k);

@@ -40,10 +40,12 @@ public class Log
 	protected final static boolean WRITELOG = Config.getProperty("WRITELOG","false").equals("true")?true:false;
 	protected final static boolean WRITEERROR = Config.getProperty("WRITEERROR","false").equals("true")?true:false;
 	protected final static boolean WRITESQL = Config.getProperty("WRITESQL","false").equals("true")?true:false;
-
-	protected final static boolean OUTLOG = Config.getProperty("OUTLOG","true").equals("true")?true:false;
-	protected final static boolean OUTERROR = Config.getProperty("OUTERROR","true").equals("true")?true:false;
-	protected final static boolean OUTSQL = Config.getProperty("OUTSQL","false").equals("true")?true:false;
+	
+	private static boolean isTrue(String key)
+	{
+		return Config.getProperty(key,"false").equals("true")?true:false;
+	}
+	
 	static 
 	{
 		if (WRITELOG)
@@ -121,7 +123,7 @@ public class Log
 			sendmail.send ();		
 		}
 		
-		if (OUTERROR)
+		if (isTrue("OUTERROR"))
 		{
 			return OutLog(strbuf.toString());
 		}
@@ -143,12 +145,12 @@ public class Log
 		
 		String out = new String(String.format("%s%s%s", datestr,str,SEP));
 		
-		if (WRITELOG)
+		if (isTrue("WRITELOG"))
 		{
 			LOGFILE.WriteText(out);		
 		}
 		
-		if (OUTLOG)
+		if (isTrue("OUTLOG"))
 		{
 			System.out.print(out);
 		}
@@ -159,12 +161,12 @@ public class Log
 	public static String OutSql (String str)
 	{
 		String datestr = normalformat.format (new Date());
-		if (WRITESQL)
+		if (isTrue("WRITESQL"))
 		{
 			SQLFILE.WriteText(String.format("%s%s%s", datestr,str,SEP));
 		}
 		
-		if (OUTSQL)
+		if (isTrue("OUTSQL"))
 		{
 			return OutLog(str);
 		}

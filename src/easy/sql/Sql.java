@@ -33,7 +33,7 @@ import easy.util.Log;
 public abstract class Sql
 {
 	//System.getProperty("java.io.tmpdir"))
-	protected final String CACHEPATH = Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));
+	//protected final String CACHEPATH = Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));
 	protected final long CACHEKEEPTIME = Long.parseLong(Config.getProperty("CACHEKEEPTIME","600000"));
 
 	protected Connection conn;
@@ -103,6 +103,11 @@ public abstract class Sql
 		sql = null;
 		return ds;
 	}
+	
+	public static String getDBCachePath()
+	{
+		return Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));
+	}
 
 	/**
 	 * 数据库查询
@@ -158,7 +163,7 @@ public abstract class Sql
 		}
 		else
 		{
-			File file = new File(CACHEPATH);
+			File file = new File(getDBCachePath());
 			boolean pathok =false;
 			if (file.exists() == false)
 			{
@@ -179,7 +184,7 @@ public abstract class Sql
 			
 			if (pathok==false)
 			{
-				throw new IOException(String.format("%s not find.", CACHEPATH));
+				throw new IOException(String.format("%s not find.", getDBCachePath()));
 			}
 			
 			sql = sql.trim();
@@ -191,7 +196,7 @@ public abstract class Sql
 			*/		
 
 			String md5 = Format.Md5(String.format("%s %s %s %s %s",user,password,jdbcurl,jdbcurl, sql));
-			String path = String.format("%s/%s.db", CACHEPATH,md5);
+			String path = String.format("%s/%s.db", getDBCachePath(),md5);
 			//System.out.println(path);
 
 			boolean neednew = false;
@@ -217,6 +222,7 @@ public abstract class Sql
 							ds.AddRow(r);
 							r = null;
 						}
+//						ds.setRowList(cds.getDataSet().getRowList());
 						EDate d = new EDate();
 						d.setTime(end);
 						Log.OutSql(String.format("[CACHE/%s]%s",d,sql));
