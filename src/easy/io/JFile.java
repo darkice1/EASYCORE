@@ -801,16 +801,26 @@ public class JFile
 		return loadHttpFilePost(url, cookie, useragent, chartset, ref, 30000,
 						null);
 	}
+	
+	public static void saveHttpFile(final String url, final String localpath,final String ref) throws IOException
+	{
+		saveHttpFile(url,localpath,ref,5000);
+	}
 
-	public static void saveHttpFile(final String url, final String localpath,
-					final String ref) throws IOException
+	public static void saveHttpFile(final String url, final String localpath,final String ref,final int timeout) throws IOException
 	{
 		Proxy.initCfgProxy();
 		URL u = new URL(url);
 
 		HttpURLConnection uc = (HttpURLConnection) u.openConnection();
 		uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
-		uc.setRequestProperty(REFERER, ref);
+		if (ref!= null && "".equals(ref) == false)
+		{
+			uc.setRequestProperty(REFERER, ref);
+		}
+		
+		uc.setConnectTimeout(timeout);
+		uc.setReadTimeout(timeout);
 
 		File newFile = new File(localpath);
 		if (!newFile.exists())
