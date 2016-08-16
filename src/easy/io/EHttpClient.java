@@ -75,6 +75,7 @@ public class EHttpClient
 	private RequestConfig requestconfig;
 	private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 	private String baseAuthorization = null;
+	private String proxyAuthorization = null;
 	
 	public final static String POSTSPLIT = new String(new char[]{0,9});
 
@@ -109,6 +110,18 @@ public class EHttpClient
 		try
 		{
 			baseAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", name,passwd).getBytes()));
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
+	}
+
+	public void setProxyAuthorization(String name,String passwd)
+	{
+		try
+		{
+			proxyAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", name,passwd).getBytes()));
 		}
 		catch (IOException e)
 		{
@@ -383,6 +396,10 @@ public class EHttpClient
 			if (baseAuthorization != null)
 			{
 				header.put("Authorization", baseAuthorization);
+			}
+			if (proxyAuthorization != null)
+			{
+				header.put("Proxy-Authorization", proxyAuthorization);
 			}
 		}
 		else
@@ -726,59 +743,18 @@ public class EHttpClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
-//		System.out.println(j);
-//		System.out.println(jsonToBasicCookieStore(j));
-
+		EHttpClient client = new EHttpClient();
+		client.setProxy("proxy.abuyun.com", 9010);
+		client.setProxyAuthorization("H8IV873H2F21Y36P", "7D78F38B160720AC");
 		
-//		Object o = JSONObject.toBean(j, BasicCookieStore.class);
-//		BasicCookieStore bc = (BasicCookieStore) o;
-//		System.out.println(bc);
-		long st = System.currentTimeMillis();
-		
-		EHttpClient c = new EHttpClient();
-		for (int i =0; i<100; i++)
+		try
 		{
-			c.get("http://x.fastapi.net/s2s?v=1&si=1012377&mimes=jpeg%2Cjpg%2Cgif%2Cswf%2Cpng%2Cc%2C&ip=183.246.7.164&ua=Mozilla%2F5.0+%28Windows+NT+5.1%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Maxthon%2F4.4.8.1000+Chrome%2F30.0.1599.101+Safari%2F537.36&rr=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&url=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&reqid=PmyNs1FbwL&bf=387&uid=100017:wfIslKMd");
-			//c.close();
-			//JFile.loadHttpFile("http://x.fastapi.net/s2s?v=1&si=1012377&mimes=jpeg%2Cjpg%2Cgif%2Cswf%2Cpng%2Cc%2C&ip=183.246.7.164&ua=Mozilla%2F5.0+%28Windows+NT+5.1%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Maxthon%2F4.4.8.1000+Chrome%2F30.0.1599.101+Safari%2F537.36&rr=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&url=http%3A%2F%2Fwww.haha.mx%2Fgood%2Fday%2F34&reqid=PmyNs1FbwL&bf=387&uid=100017:wfIslKMd");
+			System.out.println(client.get("http://woso100.com/ip.jsp"));
 		}
-		System.out.println(System.currentTimeMillis()-st);
-//		System.out.println(jsonToBasicCookieStore(j));
-
-//		System.out.println(j);
-		//System.out.println(c.get("http://login.sina.com.cn/member/testify/testify.php?entry=account"));
-		
-		//System.out.println(c.get("http://woso100.com"));
-		// EHttpClient c = new EHttpClient();
-		// c.setProxy("127.0.0.1", 8087);
-		// c.setProxy("121.196.129.91", 30002);
-		// c.setProxy("101.66.251.53", 8087);
-		// c.setProxy("106.185.26.64", 8798);
-
-		// String url = "http://woso100.com/ip.jsp";
-		// System.out.println(c.get(url));
-		// JFile f = new JFile("/Users/Neo/Desktop/aaa.csv");
-		// System.out.println(f.readAllText("utf-16le"));
-
-		/*
-		 * c.setProxy(null, 8087); System.out.println(c.get(url));
-		 * 
-		 * c.setProxy("127.0.0.1", 8087); System.out.println(c.get(url));
-		 */
-
-		// c.postToString(url, null);
-
-		// System.out.println(c.get("http://woso100.com/t.php"));
-		// System.out.println("-----------------");
-		//
-		// HashMap<String,String> head = new HashMap<String,String>();
-		// head.put("User-Agent", WebAgent.getRandAgent());
-		// System.out.println(c.postToString("http://woso100.com/t.php",
-		// null,head));
-		// System.out.println("-----------------");
-		//
-		//
-		// System.out.println(c.get("http://woso100.com/t.php"));
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
 	}
 
 }
