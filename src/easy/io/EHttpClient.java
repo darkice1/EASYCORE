@@ -34,7 +34,10 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -48,6 +51,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -75,7 +79,6 @@ public class EHttpClient
 	private RequestConfig requestconfig;
 	private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 	private String baseAuthorization = null;
-	private String proxyAuthorization = null;
 	
 	public final static String POSTSPLIT = new String(new char[]{0,9});
 
@@ -119,14 +122,10 @@ public class EHttpClient
 
 	public void setProxyAuthorization(String name,String passwd)
 	{
-		try
-		{
-			proxyAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", name,passwd).getBytes()));
-		}
-		catch (IOException e)
-		{
-			Log.OutException(e);
-		}
+		CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(name, passwd));
+		
+		client = httpbuilder.setDefaultCredentialsProvider(credentialsProvider).build();
 	}
 	
 	public void closeExpiredConnections()
@@ -397,10 +396,10 @@ public class EHttpClient
 			{
 				header.put("Authorization", baseAuthorization);
 			}
-			if (proxyAuthorization != null)
-			{
-				header.put("Proxy-Authorization", proxyAuthorization);
-			}
+//			if (proxyAuthorization != null)
+//			{
+//				header.put("Proxy-Authorization", proxyAuthorization);
+//			}
 		}
 		else
 		{
@@ -749,7 +748,10 @@ public class EHttpClient
 		
 		try
 		{
-			System.out.println(client.get("http://woso100.com/ip.jsp"));
+			//System.out.println(client.get("http://woso100.com/ip.jsp"));
+			//https://anyang.1688.com/page/custom1470278633375.shtml
+			System.out.println(client.get("https://anyang.1688.com/page/custom1470278633375.shtml"));
+
 		}
 		catch (IOException e)
 		{
