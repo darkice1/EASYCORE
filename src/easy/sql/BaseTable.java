@@ -463,6 +463,11 @@ public class BaseTable
 	 */
 	public String getInsertUpdateOnDuplAll()
 	{
+		return getInsertUpdateOnDuplAll(false);
+	}
+	
+	public String getInsertUpdateOnDuplAll(boolean isdelayed)
+	{
 		Iterator<Entry<String, String>> paramsfields = params.entrySet().iterator();
 		Iterator<Entry<String, String>> profields = proparams.entrySet().iterator();
 
@@ -499,7 +504,7 @@ public class BaseTable
 
 		sqlbuf.setCharAt(sqlbuf.length() - 1, ' ');
 
-		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(),sqlbuf.toString());
+		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(isdelayed,false),sqlbuf.toString());
 	}
 	
 	/**
