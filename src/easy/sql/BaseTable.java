@@ -510,6 +510,11 @@ public class BaseTable
 	 */
 	public String getInsertUpdateOnDuplPro(String fields,String ops)
 	{
+		return getInsertUpdateOnDuplPro(fields,ops,false);
+	}
+	
+	public String getInsertUpdateOnDuplPro(String fields,String ops,boolean isdelayed)
+	{
 		String[] fs = fields.split(",");
 		String[] os = ops.split(",");
 		StringBuffer buf = new StringBuffer();
@@ -546,7 +551,7 @@ public class BaseTable
 		}
 		
 		buf.setLength(buf.length()-1);		
-		return String.format("%s ON DUPLICATE KEY UPDATE %s", getInsertString(),buf.toString());
+		return String.format("%s ON DUPLICATE KEY UPDATE %s",getInsertString(isdelayed, false),buf.toString());
 	}
 
 	public String getInsertUpdateOnDupl(String updateString)
