@@ -67,6 +67,7 @@ import easy.util.Log;
 /**
  * @author Neo(starneo@gmail.com)2013-11-12
  */
+@SuppressWarnings("deprecation")
 public class EHttpClient
 {
 	private BasicCookieStore cookieStore = new BasicCookieStore();
@@ -265,7 +266,7 @@ public class EHttpClient
 		for (String c : t)
 		{
 			c = c.trim();
-			String ts[] = c.split("=");
+			String ts[] = c.split("=",2);
 			if (ts.length >= 2)
 			{
 				BasicClientCookie pc = new BasicClientCookie(ts[0], ts[1]);
@@ -736,27 +737,28 @@ public class EHttpClient
 		return buf.toString();
 	}
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException
-	{
-		EHttpClient client = new EHttpClient();
-		client.setProxy("proxy.abuyun.com", 9010);
-		client.setProxyAuthorization("H8IV873H2F21Y36P", "7D78F38B160720AC");
-		
-		try
-		{
-			//System.out.println(client.get("http://woso100.com/ip.jsp"));
-			//https://anyang.1688.com/page/custom1470278633375.shtml
-			System.out.println(client.get("https://anyang.1688.com/page/custom1470278633375.shtml"));
-
-		}
-		catch (IOException e)
-		{
-			Log.OutException(e);
-		}
-	}
+//	/**
+//	 * @param args
+//	 * @throws IOException
+//	 */
+//	public static void main(String[] args) throws IOException
+//	{
+//		EHttpClient ec = new EHttpClient();
+//		//String html = ec.get("https://oauth.jd.com/oauth/authorize?response_type=code&client_id=73E703FFBB8441580C1768740CF3F1E9&redirect_uri=http://woso100.com");
+//		//ec.addCookie("cn=2; ipLoc-djd=1-2805-2854-0.138160319; ipLocation=%u5317%u4EAC; areaId=1; mt_xid=V2_52007VwMUUFVfWlsXTxlsAW4CElddWQZGHklNXhliUEcCQVAHWRhVHV0AMlcVW15cAggaeRpdBWAfElJBWlNLH0wSXAVsARZiX2hRahtKH1wAYDMSVlw%3D; _jrda=3; 3AB9D23F7A4B3C9B=GMIG25XXVVUKH7SZ335VCMNDRGGYP3BRPIPNGUXBN4OKH5FR5JCEBK2NUSIS42VYY6V3BXMONNGC4DXJQQ3CVU6CSU; TrackID=1KfXup1Gp07HUO6RKTzHJbB1n1lUaEKzBTCe0xwj3F_S_cnDk5ClkxnJgM7UG1db7ctyEwhgg42aIvqtu3aKaGBZP2hGZrj-gqlo7GPO9IbCGCKpyNQtqJSJaidJjebOq; pinId=LjXN_5Na6XW1ffsfn98I-w; pin=darkice1; unick=darkice1; _tp=EuGvUUYZNcbcdhC8j3Z1yg%3D%3D; _pst=darkice1; ssid=\"cqfF2qxcR0u2Ew/Eayn8wQ==\"; unpl=V2_ZjNsbUtTQxd0CBUHcksPUWIKFFwRUBdBdAhEXHIaCAE3BhtcclRCFXIURldnGFwUZgsZXUNcQRNFCHZUeR5cB1czIl1BZ0IldQ5EXHwRXQ1hAyI%3D; mt_subsite=||1111%2C1480554638; __jdv=122270672|item.jd.com|t_13613_|tuiguang|851301bb8cbe4870b6ee013982e5a480|1480554640593; thor=DB7A1DA02FEB3BE8862D2E41F963BBF2882735E40A32BFDE0EAC15EFD4E965292DB318AF01447457222BAFBC7FDFE3A73D8B9ECD77EFA7B86F064E53FA7CB34E8E20BCB373904DA00E77F5FD4C99ECE882D3DA353F7C4ADE41B5BB30CDFAE02779CB550EE78C46FF35ACE72E5A8ACA36A26148AD89494CD019083DEDA77946305DF4E78C8024456428BB526CBD903C48; __jda=108460702.1739690971.1454555254.1480504399.1480554589.312; __jdb=108460702.7.1739690971|312.1480554589; __jdc=108460702; __jdu=1739690971; masterClose=yes", "www.woso100.com");
+//		ec.addCookie("cn=2; ipLoc-djd=1-2805-2854-0.138160319; ipLocation=%u5317%u4EAC; areaId=1; mt_xid=V2_52007VwMUUFVfWlsXTxlsAW4CElddWQZGHklNXhliUEcCQVAHWRhVHV0AMlcVW15cAggaeRpdBWAfElJBWlNLH0wSXAVsARZiX2hRahtKH1wAYDMSVlw%3D; _jrda=3; 3AB9D23F7A4B3C9B=GMIG25XXVVUKH7SZ335VCMNDRGGYP3BRPIPNGUXBN4OKH5FR5JCEBK2NUSIS42VYY6V3BXMONNGC4DXJQQ3CVU6CSU; TrackID=1KfXup1Gp07HUO6RKTzHJbB1n1lUaEKzBTCe0xwj3F_S_cnDk5ClkxnJgM7UG1db7ctyEwhgg42aIvqtu3aKaGBZP2hGZrj-gqlo7GPO9IbCGCKpyNQtqJSJaidJjebOq; pinId=LjXN_5Na6XW1ffsfn98I-w; pin=darkice1; unick=darkice1; _tp=EuGvUUYZNcbcdhC8j3Z1yg%3D%3D; _pst=darkice1; ssid=\"cqfF2qxcR0u2Ew/Eayn8wQ==\"; unpl=V2_ZjNsbUtTQxd0CBUHcksPUWIKFFwRUBdBdAhEXHIaCAE3BhtcclRCFXIURldnGFwUZgsZXUNcQRNFCHZUeR5cB1czIl1BZ0IldQ5EXHwRXQ1hAyI%3D; mt_subsite=||1111%2C1480554638; __jdv=122270672|item.jd.com|t_13613_|tuiguang|851301bb8cbe4870b6ee013982e5a480|1480554640593; thor=DB7A1DA02FEB3BE8862D2E41F963BBF2882735E40A32BFDE0EAC15EFD4E965292DB318AF01447457222BAFBC7FDFE3A73D8B9ECD77EFA7B86F064E53FA7CB34E8E20BCB373904DA00E77F5FD4C99ECE882D3DA353F7C4ADE41B5BB30CDFAE02779CB550EE78C46FF35ACE72E5A8ACA36A26148AD89494CD019083DEDA77946305DF4E78C8024456428BB526CBD903C48; __jda=108460702.1739690971.1454555254.1480504399.1480554589.312; __jdb=108460702.7.1739690971|312.1480554589; __jdc=108460702; __jdu=1739690971; masterClose=yes", "media.jd.com");
+//		
+//		HashMap<String,String> post = new HashMap<String,String>();
+//
+//		HashMap<String,String> resp = ec.post("https://media.jd.com/gotoadv/getCustomCode/1", post);
+//		//HashMap<String,String> resp = ec.post("http://www.woso100.com/ip.jsp", post);
+//		
+//		//System.out.println(JFile.loadHttpFile("https://media.jd.com/gotoadv/getCustomCode/1", "cn=2; ipLoc-djd=1-2805-2854-0.138160319; ipLocation=%u5317%u4EAC; areaId=1; mt_xid=V2_52007VwMUUFVfWlsXTxlsAW4CElddWQZGHklNXhliUEcCQVAHWRhVHV0AMlcVW15cAggaeRpdBWAfElJBWlNLH0wSXAVsARZiX2hRahtKH1wAYDMSVlw%3D; _jrda=3; 3AB9D23F7A4B3C9B=GMIG25XXVVUKH7SZ335VCMNDRGGYP3BRPIPNGUXBN4OKH5FR5JCEBK2NUSIS42VYY6V3BXMONNGC4DXJQQ3CVU6CSU; TrackID=1KfXup1Gp07HUO6RKTzHJbB1n1lUaEKzBTCe0xwj3F_S_cnDk5ClkxnJgM7UG1db7ctyEwhgg42aIvqtu3aKaGBZP2hGZrj-gqlo7GPO9IbCGCKpyNQtqJSJaidJjebOq; pinId=LjXN_5Na6XW1ffsfn98I-w; pin=darkice1; unick=darkice1; _tp=EuGvUUYZNcbcdhC8j3Z1yg%3D%3D; _pst=darkice1; ssid=\"cqfF2qxcR0u2Ew/Eayn8wQ==\"; unpl=V2_ZjNsbUtTQxd0CBUHcksPUWIKFFwRUBdBdAhEXHIaCAE3BhtcclRCFXIURldnGFwUZgsZXUNcQRNFCHZUeR5cB1czIl1BZ0IldQ5EXHwRXQ1hAyI%3D; mt_subsite=||1111%2C1480554638; __jdv=122270672|item.jd.com|t_13613_|tuiguang|851301bb8cbe4870b6ee013982e5a480|1480554640593; thor=DB7A1DA02FEB3BE8862D2E41F963BBF2882735E40A32BFDE0EAC15EFD4E965292DB318AF01447457222BAFBC7FDFE3A73D8B9ECD77EFA7B86F064E53FA7CB34E8E20BCB373904DA00E77F5FD4C99ECE882D3DA353F7C4ADE41B5BB30CDFAE02779CB550EE78C46FF35ACE72E5A8ACA36A26148AD89494CD019083DEDA77946305DF4E78C8024456428BB526CBD903C48; __jda=108460702.1739690971.1454555254.1480504399.1480554589.312; __jdb=108460702.7.1739690971|312.1480554589; __jdc=108460702; __jdu=1739690971; masterClose=yes", null, null, null));
+//		
+//		System.out.println(ec.getCookieStoreJson());
+//		System.out.println(ec.getCookieString());
+//		
+//		System.out.println(resp);
+//	}
 
 }

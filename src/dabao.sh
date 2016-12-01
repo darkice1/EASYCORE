@@ -17,4 +17,5 @@ cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JEX/ROOT/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AUTOWEIBO/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/ADTEST/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JYSPARK/libs
+cp easy.jar /Users/Neo/Documents/eclipse\ workspace/RENWOZHE/WebContent/WEB-INF/lib
 mv easy.jar /Users/Neo/Documents/eclipse\ workspace/KejetExChange/lib
