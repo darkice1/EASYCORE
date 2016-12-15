@@ -17,6 +17,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,8 +39,6 @@ import net.sf.json.JSONObject;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 import easy.io.JFile;
 import easy.servlet.PageInfo;
 import easy.sql.CPSql;
@@ -942,16 +941,40 @@ public class Format
 		return hexString.toString();
 	}
 
+	private static Base64.Encoder ENBASE64URL = Base64.getUrlEncoder();
+	private static Base64.Decoder DEBASE64URL = Base64.getUrlDecoder();
+
+	private static Base64.Encoder ENBASE64 = Base64.getEncoder();
+	private static Base64.Decoder DEBASE64 = Base64.getDecoder();
+
+	public static String encodeBase64Url(final byte[] buf) throws IOException
+	{
+        byte[] encoded = ENBASE64URL.encode(buf);
+        
+		//BASE64Encoder en = new sun.misc.BASE64Encoder();
+		return new String(encoded);
+	}
+
+	public static byte[] decodeBase64Url(final String str) throws IOException
+	{
+		//BASE64Decoder decoder = new BASE64Decoder();
+		//return decoder.decodeBuffer(str);
+		return DEBASE64URL.decode(str);
+	}
+	
 	public static String encodeBase64(final byte[] buf) throws IOException
 	{
-		BASE64Encoder en = new sun.misc.BASE64Encoder();
-		return en.encode(buf);
+        byte[] encoded = ENBASE64.encode(buf);
+        
+		//BASE64Encoder en = new sun.misc.BASE64Encoder();
+		return new String(encoded);
 	}
 
 	public static byte[] decodeBase64(final String str) throws IOException
 	{
-		BASE64Decoder decoder = new BASE64Decoder();
-		return decoder.decodeBuffer(str);
+		//BASE64Decoder decoder = new BASE64Decoder();
+		//return decoder.decodeBuffer(str);
+		return DEBASE64.decode(str);
 	}
 
 	public static String encodeDes(String mykey, String encryptedString)
