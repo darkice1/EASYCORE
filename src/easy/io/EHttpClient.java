@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
@@ -507,8 +507,20 @@ public class EHttpClient
 				//FileBody fb = new FileBody(file);
 				//System.out.println(fb.getContentType());
 				//builder.addPart(e.getKey(), fb);
-//				System.out.println(new MimetypesFileTypeMap().getContentType(file.getName()));
-				builder.addBinaryBody(e.getKey(), file, ContentType.create( new MimetypesFileTypeMap().getContentType(file.getName())), file.getName());
+				//System.out.println(URLConnection.getFileNameMap().getContentTypeFor(localpath));
+//				URL u = new URL();
+				String ct =  URLConnection.getFileNameMap().getContentTypeFor(file.getAbsolutePath());
+//				URLConnection uc = u.openConnection();  
+//			    String ct = uc.getContentType();  
+				if (ct == null)
+				{
+					String ext = Format.getFileExtName(file.getName());
+					if ("png".equals(ext))
+					{
+						ct = "image/png";
+					}
+				}
+				builder.addBinaryBody(e.getKey(), file, ContentType.create(ct), file.getName());
 			}
 
 			if (request != null)
