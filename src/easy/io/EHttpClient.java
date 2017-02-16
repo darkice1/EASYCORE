@@ -204,6 +204,11 @@ public class EHttpClient
 		return cookieStore;
 	}
 	
+	public void clearCookie()
+	{
+		cookieStore.clear();
+	}
+	
 	public static BasicCookieStore jsonToBasicCookieStore(JSONObject json)
 	{
 		BasicCookieStore cookieStore = new BasicCookieStore();
@@ -216,7 +221,7 @@ public class EHttpClient
 			BasicClientCookie pc = new BasicClientCookie(cj.getString("name"), cj.getString("value"));
 			pc.setDomain(cj.getString("domain"));
 			pc.setPath(cj.getString("path"));
-			pc.setComment(cj.getString("comment"));
+			//pc.setComment(cj.getString("comment"));
 			
 			Date d = null;
 			JSONObject dj = cj.getJSONObject("expiryDate");
@@ -225,10 +230,21 @@ public class EHttpClient
 				d = new Date();
 				d.setTime(dj.getLong("time"));
 			}
+			else
+			{
+				dj = cj.getJSONObject("expires");
+				if (dj != null && dj.isEmpty() == false)
+				{
+					d = new Date();
+					d.setTime(dj.getLong("time"));
+				}				
+			}
+			
+
 			
 			pc.setExpiryDate(d);
 			pc.setSecure(cj.getBoolean("secure"));
-			pc.setVersion(cj.getInt("version"));
+//			pc.setVersion(cj.getInt("version"));
 //			c.setComment(comment);
 			cookieStore.addCookie(pc);
 		}
@@ -354,6 +370,14 @@ public class EHttpClient
 		String html = file.readAllText(charset);
 
 		return html;
+	}
+
+	/**
+	 * @param agent the agent to set
+	 */
+	public void setAgent(String agent)
+	{
+		this.agent = agent;
 	}
 
 	public String getAgent()
@@ -529,10 +553,11 @@ public class EHttpClient
 						String[] vs = v.split(POSTSPLIT);
 						for (String nv : vs)
 						{
-							if ("".equals(nv)==false)
-							{
-								plist.add(new BasicNameValuePair(e.getKey(), nv));
-							}
+//							if ("".equals(nv)==false)
+//							{
+//								plist.add(new BasicNameValuePair(e.getKey(), nv));
+//							}
+							plist.add(new BasicNameValuePair(e.getKey(), nv));
 						}
 					}
 

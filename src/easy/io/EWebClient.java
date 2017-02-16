@@ -16,6 +16,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -34,21 +35,30 @@ public class EWebClient
 	
 	public EWebClient()
 	{
-		client = new WebClient();
+		client = new WebClient();//BrowserVersion.CHROME
 		
 		client.getOptions().setUseInsecureSSL(true);
 
-		client.getOptions().setCssEnabled(false);
+		client.getOptions().setCssEnabled(true);
 		client.getOptions().setJavaScriptEnabled(true);
 		client.getOptions().setRedirectEnabled(true);
 		client.getOptions().setThrowExceptionOnFailingStatusCode(false); // 防止js语法错误抛出异常
 		client.getCookieManager().setCookiesEnabled(true);
+		client.setAjaxController(new NicelyResynchronizingAjaxController());
 		client.getOptions().setTimeout(5000);
 		client.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
 		
 		client.addRequestHeader("User-Agent", AGENT);
 	}
 	
+	/**
+	 * @return the aGENT
+	 */
+	public String getAGENT()
+	{
+		return AGENT;
+	}
+
 	public void setProxyAuthorization(String name,String passwd)
 	{
 		DefaultCredentialsProvider credentialsProvider = (DefaultCredentialsProvider) client.getCredentialsProvider();
@@ -99,7 +109,12 @@ public class EWebClient
 		
 		
 		CookieManager cm = client.getCookieManager();
-		//Set<Cookie> cs = cm.getCookies();
+//		List<Cookie> list = new ArrayList<Cookie>();
+//		for (Cookie c : cm.getCookies())
+//		{
+//			list.add(c);
+//		}
+//		//Set<Cookie> cs = cm.getCookies();
 		
 		//System.out.println( JSONObject.fromObject(cm));
 		

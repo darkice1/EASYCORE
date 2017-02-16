@@ -804,10 +804,10 @@ public class JFile
 	
 	public static void saveHttpFile(final String url, final String localpath,final String ref) throws IOException
 	{
-		saveHttpFile(url,localpath,ref,5000);
+		saveHttpFile(url,localpath,ref,null,5000);
 	}
 
-	public static void saveHttpFile(final String url, final String localpath,final String ref,final int timeout) throws IOException
+	public static void saveHttpFile(final String url, final String localpath,final String ref,final String cookie,final int timeout) throws IOException
 	{
 		Proxy.initCfgProxy();
 		URL u = new URL(url);
@@ -817,6 +817,11 @@ public class JFile
 		if (ref!= null && "".equals(ref) == false)
 		{
 			uc.setRequestProperty(REFERER, ref);
+		}
+
+		if (cookie!= null && "".equals(cookie) == false)
+		{
+			uc.setRequestProperty(COOKIE, cookie);
 		}
 		
 		uc.setConnectTimeout(timeout);
