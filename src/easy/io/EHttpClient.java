@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
@@ -47,9 +48,9 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -503,8 +504,11 @@ public class EHttpClient
 				post.setHeader(e.getKey(), e.getValue());
 
 				File file = new File(e.getValue());
-				FileBody fb = new FileBody(file);
-				builder.addPart(e.getKey(), fb);
+				//FileBody fb = new FileBody(file);
+				//System.out.println(fb.getContentType());
+				//builder.addPart(e.getKey(), fb);
+//				System.out.println(new MimetypesFileTypeMap().getContentType(file.getName()));
+				builder.addBinaryBody(e.getKey(), file, ContentType.create( new MimetypesFileTypeMap().getContentType(file.getName())), file.getName());
 			}
 
 			if (request != null)
