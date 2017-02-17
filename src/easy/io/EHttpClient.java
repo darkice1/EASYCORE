@@ -311,7 +311,11 @@ public class EHttpClient
 
 	public String dump(HttpEntity entity) throws IOException
 	{
-		return dump(entity, null);
+		if (entity != null)
+		{
+			return dump(entity, null);
+		}
+		return null;
 	}
 
 	/**
@@ -800,6 +804,22 @@ public class EHttpClient
 //		System.out.println(ec.getCookieString());
 //		
 //		System.out.println(resp);
+//	}
+	
+//	public static void main(String[] args) throws IOException
+//	{
+//		String s = "{\"version\":\"1.0\",\"pid\":\"179543\",\"action_type\":1,\"nativead\":{\"required_fields\":[\"4\"],\"title_max_safe_length\":25,\"desc_max_safe_length\":90,\"source_max_safe_length\":10,\"img_width\":1000,\"img_height\":500,\"img_num\":1,\"logo_width\":30,\"logo_height\":30},\"device\":{\"devicetype\":0,\"os\":0,\"imei_md5\":\"F1C7976BC455CB548BFC550EB7687F06\",\"m_ip\":\"14.18.52.69\",\"m_ua\":\"Mozilla/5.0(Linux;Android4.0.4;GT-I9220 Build/IMM76D)\",\"m_ts\":\"1374225975\"},\"app\":{\"m_app\":\"wantu\",\"m_app_pn\":\"com.weitu.wantu\"},\"reqid\":\"179543\"}";
+//
+//
+//		HashMap<String,String> request = new HashMap<String,String>();
+//					request.put("", s);
+//					
+//					HashMap<String,String> header = new HashMap<String,String>();
+//					header.put("Content-Type", "application/json");
+//					
+//					EHttpClient client = new EHttpClient();
+//					//System.out.println(client.post("http://s.x.cn.xtgreat.com/bx?l=179543", request, header));
+//					System.out.println(client.post("http://s.x.cn.xtgreat.com/cx", request, header));
 //	}
 
 }
