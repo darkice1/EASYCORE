@@ -62,6 +62,9 @@ public class Format
 	private final static String LOWSTRING = "abcdefghijklmnopqrstuvwxyz";
 	private final static String NUMLOWSTRING = "abcdefghijklmnopqrstuvwxyz1234567890";
 	private final static String ALLSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+	
+	private final static String HEXSTRING = "01234567890abcdef";
+
 	private static final String HMAC_SHA1 = "HmacSHA1";
 
 	// private final static Pattern URLPAT
@@ -736,6 +739,19 @@ public class Format
 		{
 			int pos = (int) (Math.random() * len);
 			buf.append(NUMLOWSTRING.substring(pos, pos + 1));
+		}
+		return buf.toString();
+	}
+	
+	public static String getRandHex(int num)
+	{
+		StringBuffer buf = new StringBuffer();
+		int len = HEXSTRING.length();
+		// LOWSTRING
+		for (int i = 0; i < num; i++)
+		{
+			int pos = (int) (Math.random() * len);
+			buf.append(HEXSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();
 	}
