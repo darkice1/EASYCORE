@@ -852,14 +852,20 @@ public class Format
 		return MessageDigest("md2", str);
 	}
 
-	public static byte[] HMACSha1(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException
+	public static byte[] HMACSha1(byte[] key, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException
 	{
-		SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1);
+		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 		Mac mac = Mac.getInstance(HMAC_SHA1);
 		mac.init(signingKey);
-		byte[] rawHmac = mac.doFinal(data.getBytes());
+		byte[] rawHmac = mac.doFinal(data);
 
 		return rawHmac;
+	}
+	
+	
+	public static byte[] HMACSha1(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		return HMACSha1(key.getBytes(),data.getBytes());
 	}
 
 	public static String fileMd5(final String inputFile) throws IOException
@@ -889,6 +895,11 @@ public class Format
 
 	}
 
+	public static byte[] Md5(byte[] bytes)
+	{
+		return MessageDigest("md5", bytes);
+	}
+	
 	public static String Md5(String str)
 	{
 		return MessageDigest("md5", str);
@@ -928,19 +939,27 @@ public class Format
 
 		return Long.parseLong(buf.toString());
 	}
-
-	public static String MessageDigest(String m, String str)
+	
+	public static byte[] MessageDigest(String m, byte bytes[])
 	{
-		String mstr = null;
+		byte[] mstr = null;
 		try
 		{
 			MessageDigest md = MessageDigest.getInstance(m);
-			mstr = Format.byte2hex(md.digest(str.getBytes()));
+			mstr = md.digest(bytes);
 		}
 		catch (NoSuchAlgorithmException e)
 		{
 			Log.OutException(e);
 		}
+		return mstr;
+	}
+
+	public static String MessageDigest(String m, String str)
+	{
+		String mstr = null;
+		mstr = Format.byte2hex(MessageDigest(m,str.getBytes()));
+		
 		return mstr;
 	}
 
