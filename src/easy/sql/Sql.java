@@ -30,7 +30,7 @@ import easy.util.Log;
  * @version 1.0 ( <i>2005-7-5 neo </i>)
  */
 
-public abstract class Sql
+public abstract class Sql implements  AutoCloseable
 {
 	//System.getProperty("java.io.tmpdir"))
 	//protected final String CACHEPATH = Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));

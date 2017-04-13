@@ -8,9 +8,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.http.conn.ConnectTimeoutException;
 
 import com.gargoylesoftware.htmlunit.CookieManager;
@@ -23,11 +20,13 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 
 import easy.model.WebAgent;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * @author starneo@gmail.com 2016年8月17日
  */
-public class EWebClient
+public class EWebClient implements  AutoCloseable
 {
 	private WebClient client;
 	private final String AGENT = WebAgent.getRandAgent();
