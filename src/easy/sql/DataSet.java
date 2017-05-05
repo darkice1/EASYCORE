@@ -337,6 +337,23 @@ public class DataSet implements Serializable
 	        cursor = position;
 	    }
 	}
+	
+	public void setFieldType(String field,int type)
+	{
+		for (Row r : rowList)
+		{
+			r.get(field).setType(type);
+		}
+	}
+	
+	public void sort(String fieldname,int type)
+	{
+		setSortFiled(fieldname);
+		
+		setFieldType(fieldname,type);
+		
+		Collections.sort(rowList);
+	}
 
 	public void sort(String fieldname)
 	{

@@ -66,6 +66,13 @@ public class Col implements Comparable<Col>,Serializable
 		return type;
 	}
 
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(int type)
+	{
+		this.type = type;
+	}
 
 	/**
 	 * @return Returns the value.
