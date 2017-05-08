@@ -348,11 +348,8 @@ public class DataSet implements Serializable
 	
 	public void sort(String fieldname,int type)
 	{
-		setSortFiled(fieldname);
-		
 		setFieldType(fieldname,type);
-		
-		Collections.sort(rowList);
+		sort( fieldname);
 	}
 
 	public void sort(String fieldname)
@@ -464,6 +461,13 @@ public class DataSet implements Serializable
 		preField= null;
 		currField=null;
 	}
+	
+	public void reverse(String fieldname,int type)
+	{		
+		setFieldType(fieldname,type);	
+		reverse(fieldname);
+	}
+
 
 	public void reverse(String fieldname)
 	{
