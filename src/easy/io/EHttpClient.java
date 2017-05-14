@@ -26,9 +26,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -47,6 +44,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.cookie.ClientCookie;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -64,6 +62,8 @@ import org.apache.http.message.BasicNameValuePair;
 import easy.model.WebAgent;
 import easy.util.Format;
 import easy.util.Log;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * @author Neo(starneo@gmail.com)2013-11-12
@@ -219,9 +219,21 @@ public class EHttpClient
 		{
 			JSONObject cj = arr.getJSONObject(i);
 
+//			System.out.println(cj.getString("name")+"  "+cj.getString("value"));
 			BasicClientCookie pc = new BasicClientCookie(cj.getString("name"), cj.getString("value"));
+			
+//			String domain = cj.getString("domain");
+			
+//			if (domain.indexOf(".") == 0)
+//			{
+//				domain = domain.substring(1);
+//			}
+			
+			//domain = ".alimama.com";
 			pc.setDomain(cj.getString("domain"));
 			pc.setPath(cj.getString("path"));
+			pc.setAttribute(ClientCookie.DOMAIN_ATTR, "true");
+//			cookie.setAttribute(ClientCookie.DOMAIN_ATTR, "true");
 			//pc.setComment(cj.getString("comment"));
 			
 			Date d = null;
@@ -250,6 +262,7 @@ public class EHttpClient
 			cookieStore.addCookie(pc);
 		}
 		
+//		System.out.println(cookieStore);
 		return cookieStore;
 	}
 	
@@ -781,6 +794,7 @@ public class EHttpClient
 
 		return buf.toString();
 	}
+	
 
 //	/**
 //	 * @param args
