@@ -148,7 +148,7 @@ public abstract class ListXmlAction extends Action
 	 */
 	protected void initSql() throws SQLException
 	{
-		if (dataset == null)
+		if (dataset == null && sql != null)
 		{
 	
 			//初始化sql

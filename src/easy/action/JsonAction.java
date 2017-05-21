@@ -48,7 +48,14 @@ public abstract class JsonAction extends ListXmlAction
 
 		PrintWriter out = response.getWriter();
 		json.put("usetime", System.currentTimeMillis() - starttime);
-		out.print(Format.listToJsonString(dataset.getRowList(),json));
+		if (dataset != null)
+		{
+			out.print(Format.listToJsonString(dataset.getRowList(),json));			
+		}
+		else
+		{
+			out.print(json);			
+		}
 		out.close();
 	}
 //	
