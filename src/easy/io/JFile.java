@@ -21,6 +21,13 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -948,5 +955,67 @@ public class JFile
 			result = false;
 		}
 		return result;
+	}
+	
+	public static void copyDir(String sourcepath, String targetpath) throws IOException
+	{
+		Path source = Paths.get(sourcepath);
+
+		if (Files.isExecutable(source) && Files.isDirectory(source))
+		{
+			Path target = Paths.get(targetpath);
+			
+			try
+			{				
+				Files.deleteIfExists(target);
+			}
+			catch (DirectoryNotEmptyException e)
+			{
+				Files.walkFileTree(target, new SimpleFileVisitor<Path>() {
+	                @Override
+	                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+	                    Files.delete(file);
+	                    return FileVisitResult.CONTINUE;
+	                }
+	                @Override
+	                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+	                    Files.delete(dir);
+	                    return super.postVisitDirectory(dir, exc);
+	                }
+	            });
+			}
+
+			SimpleFileVisitor<Path> finder = new SimpleFileVisitor<Path>()
+			{
+				@Override
+				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
+				{
+					//System.out.println("post visit directory: " + dir);
+					//return preVisitDirectory(dir, attrs);
+					String t = dir.toAbsolutePath().toString().replace(sourcepath, targetpath);
+
+					Path pt = Paths.get(t);
+					if (Files.isExecutable(pt) == false)
+					{
+						Files.createDirectories(pt);
+					}
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFile(Path file,BasicFileAttributes attrs) throws IOException
+				{
+					String t = file.toAbsolutePath().toString().replace(sourcepath, targetpath);
+					// 
+//					System.out.println(t);
+
+					Files.copy(file, Paths.get(t));
+
+					return FileVisitResult.CONTINUE;
+				}
+			};
+
+			Files.walkFileTree(Paths.get(sourcepath), finder);
+		}
 	}
 }

@@ -1255,19 +1255,19 @@ public class Format
 	 * (InvalidKeySpecException e) { Log.OutException(e); } }
 	 */
 
-	public static void main(String[] args) throws ClassNotFoundException, IOException
-	{
-		try
-		{
-			System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
-		}
-		catch (InvalidKeyException e)
-		{
-			Log.OutException(e);
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			Log.OutException(e);
-		}
-	}
+//	public static void main(String[] args) throws ClassNotFoundException, IOException
+//	{
+//		try
+//		{
+//			System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
+//		}
+//		catch (InvalidKeyException e)
+//		{
+//			Log.OutException(e);
+//		}
+//		catch (NoSuchAlgorithmException e)
+//		{
+//			Log.OutException(e);
+//		}
+//	}
 }
