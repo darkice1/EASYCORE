@@ -13,6 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
 import easy.io.JFile;
+import easy.sql.Row;
 
 /**
  * @author starneo@gmail.com 2017年6月17日
@@ -26,7 +27,7 @@ public class ChromePackage
 	 * @param targetpath
 	 * @throws IOException
 	 */
-	public static void release(String sourcepath, String targetpath,List<String> jslist)
+	public static void release(String sourcepath, String targetpath,List<Row> jslist)
 			throws IOException
 	{
 		JFile.copyDir(sourcepath, targetpath);
@@ -42,29 +43,38 @@ public class ChromePackage
 //					String ext = Format.getFileExtName(file.getFileName().toString()).toLowerCase();
 					
 //					if ("js".equals(ext))
-					boolean isok = false;
-					for(String f :jslist)
+					for(Row f :jslist)
 					{
-						if (sp.indexOf(f) >= 0)
+//						System.out.println(f);
+						String name = f.getString("name");
+						if (sp.indexOf(name) >= 0)
 						{
-							isok = true;
+							String type = f.getString("type");
+							Log.OutLog("混浊[%s][%s]",type,file);
+							
+							JFile jf = new JFile(sp);
+							String con = jf.readAllText();
+							
+							String enjs = null;
+							if ("p".equals(f.getString("type")))
+							{
+								enjs = JsEncode.jsPacker(con);
+							}
+							else
+							{
+								enjs = JsEncode.uglify(con);
+							}
+							
+							if (enjs != null)
+							{
+								jf.WriteText(enjs);
+							}
+							jf.close();
+							
 							break;
 						}
 					}
-					
-					if (isok)
-					{
-						Log.OutLog("混浊[%s]",file);
-						JFile f = new JFile(sp);
-						String con = f.readAllText();
-						String enjs = JsEncode.encode(con);
-						if (enjs != null)
-						{
-							f.WriteText(enjs);
-						}
-						f.close();
-					}
-					
+										
 					return FileVisitResult.CONTINUE;
 				}
 

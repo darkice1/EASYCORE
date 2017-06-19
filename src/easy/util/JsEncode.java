@@ -16,7 +16,21 @@ import easy.io.EHttpClient;
  */
 public class JsEncode
 {
-	public static String encode(String js) throws ClientProtocolException, IOException
+	public static String uglify(String js) throws ClientProtocolException, IOException
+	{
+		String ec = null;
+		
+		EHttpClient client = new EHttpClient();
+		Map<String,String> post = new HashMap<String,String>();
+		
+		post.put("code", js);
+		
+		ec = client.postToString("http://tool.css-js.com/!nodejs3/uglify.do?action=compressor&loops=true&sequences=true&if_return=true&unused=true&evaluate=true&hoist_funs=true&comparisons=true&hoist_vars=true&conditionals=true&dead_code=true&booleans=true&properties=false&unsafe=false&join_vars=true", post);
+		
+		return ec;
+	}
+	
+	public static String jsPacker(String js) throws ClientProtocolException, IOException
 	{
 		String ec = null;
 		
@@ -37,7 +51,7 @@ public class JsEncode
 //	 */
 //	public static void main(String[] args) throws ClientProtocolException, IOException
 //	{
-//		System.out.println(encode("abc"));
+//		System.out.println(uglify("var a=1;"));
 //
 //	}
 }
