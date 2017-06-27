@@ -11,7 +11,6 @@ cp easy.jar /Users/Neo/Documents/git/TEJIA/web/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JyAlarmSystem/lib
 cp easy.jar /Users/Neo/Documents/git/EXCORE/WebRoot/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/EXCHANGETOOLS/libs
-cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AllEx/WebRoot/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AFASURL/ROOT/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JEX/ROOT/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AUTOWEIBO/libs
