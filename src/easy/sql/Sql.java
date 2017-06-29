@@ -217,11 +217,11 @@ public abstract class Sql implements  AutoCloseable
 					{
 						ds = cds.getDataSet();
 						
-//						for (Row r: cds.getDataSet().getRowList())
-//						{
-//							ds.AddRow(r);
-//							r = null;
-//						}
+						for (Row r: cds.getDataSet().getRowList())
+						{
+							ds.AddRow(r);
+							r = null;
+						}
 //						ds.setRowList(cds.getDataSet().getRowList());
 						EDate d = new EDate();
 						d.setTime(end);
