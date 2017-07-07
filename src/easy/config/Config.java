@@ -207,4 +207,14 @@ public class Config
 //		Config.getInstance().PPS.store(fos,comment);
 //		fos.close();
 	}
+
+	
+	public static String getString()
+	{
+		if (CFG == null)
+		{
+			getInstance();
+		}
+		return CFG.PPS.toString();
+	}
 }
