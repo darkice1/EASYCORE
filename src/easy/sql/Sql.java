@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import easy.config.Config;
 import easy.io.JFile;
@@ -60,7 +59,6 @@ public abstract class Sql implements  AutoCloseable
 
 	protected int resultSetConncurrency = ResultSet.CONCUR_READ_ONLY;
 
-	protected Properties info = new Properties();
 	
 	protected long upcount=0;
 	protected long insertcount=0;

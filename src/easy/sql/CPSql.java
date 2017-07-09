@@ -29,6 +29,8 @@ public class CPSql extends Sql
 	protected String dbclass;
 	
 	protected boolean usepool = true;
+	
+	protected Properties info = new Properties();
 
 	/**
 	 * @see easy.sql.Sql#init()
@@ -39,8 +41,6 @@ public class CPSql extends Sql
 		password = Config.getProperty("DBPASSWORD");
 		jdbcurl = Config.getProperty("DBURL");
 		dbclass = Config.getProperty("DBCLASS");
-		
-		usepool = "true".equals(Config.getProperty("USEDBPPOOL","true"));
 	}
 	
 //	protected void finalize() throws Throwable
@@ -56,6 +56,8 @@ public class CPSql extends Sql
 	 */
 	protected void initdb()
 	{
+		usepool = "true".equals(Config.getProperty("USEDBPPOOL","true"));
+
 		alias = Config.getProperty("PROJECT")+Format.Md5(String.format("%s-%s-%s-%s", user,password,dbclass,jdbcurl));
 		poolurl = "proxool." +alias+":";
 
