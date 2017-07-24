@@ -303,6 +303,7 @@ public class DataSet implements Serializable
 	 */
 	public void setCount(int count)
 	{
+		this.cursor = count;
 	}
 	
 	/**

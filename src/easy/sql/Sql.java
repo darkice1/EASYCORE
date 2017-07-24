@@ -214,12 +214,16 @@ public abstract class Sql implements  AutoCloseable
 					else
 					{
 						ds = cds.getDataSet();
-						
-						for (Row r: cds.getDataSet().getRowList())
-						{
-							ds.AddRow(r);
-							r = null;
-						}
+						ds.setCount(-1);
+//						System.out.println(ds.getCursor());
+//						ds = new DataSet();
+//						
+//						List<Row> list = cds.getDataSet().getRowList();
+//						for (Row r: list)
+//						{
+//							ds.AddRow(r);
+//							r = null;
+//						}
 //						ds.setRowList(cds.getDataSet().getRowList());
 						EDate d = new EDate();
 						d.setTime(end);
@@ -238,7 +242,7 @@ public abstract class Sql implements  AutoCloseable
 				}
 				catch (Exception e)
 				{
-					//Log.OutException(e);
+//					Log.OutException(e);
 					neednew = true;
 				}
 			}
