@@ -45,6 +45,7 @@ public class EDate
 	public EDate ()
 	{
 		date=new Date();
+		calendar.setTime (date);
 	}
 
 	public EDate (Date pdate)
