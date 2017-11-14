@@ -40,6 +40,11 @@ public class Row implements Comparable<Row>,Serializable
 //		sortfield = null;
 //	}
 	
+	public boolean containsKey(String key)
+	{
+		return row.containsKey(key);
+	}
+	
 	public int compareTo(Row o)
 	{
 		Row r = (Row)o;
