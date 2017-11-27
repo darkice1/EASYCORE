@@ -339,35 +339,45 @@ public class EHttpClient
 	 */
 	public String dump(HttpEntity entity, String charset) throws IOException
 	{
-		if (charset == null)
+		String html = null;
+		if (entity != null)
 		{
-			Header h = entity.getContentEncoding();
-			if (h != null)
-			{
-				charset = h.getValue();
-			}
 			if (charset == null)
 			{
-				Header ct = entity.getContentType();
-				if (ct != null)
+				Header h = entity.getContentEncoding();
+				if (h != null)
 				{
-					HeaderElement values[] = ct.getElements();
-//					for (int i=0; i<values.length ;i++)
-//					{
-//						System.out.println(values[i]);
-//					}
-					
-					if (values.length > 0)
+					charset = h.getValue();
+				}
+				if (charset == null)
+				{
+					Header ct = entity.getContentType();
+					if (ct != null)
 					{
-						NameValuePair param = values[0].getParameterByName("charset");
-						if (param != null)
+						HeaderElement values[] = ct.getElements();
+//						for (int i=0; i<values.length ;i++)
+//						{
+//							System.out.println(values[i]);
+//						}
+						
+						if (values.length > 0)
 						{
-							charset = param.getValue();
+							NameValuePair param = values[0].getParameterByName("charset");
+							if (param != null)
+							{
+								charset = param.getValue();
+							}
 						}
 					}
 				}
 			}
+			
+			
+			JFile file = new JFile(entity.getContent());
+
+			html = file.readAllText(charset);
 		}
+
 		
 		//System.out.println(charset);
 		
@@ -381,11 +391,7 @@ public class EHttpClient
 		// BufferedReader br = new BufferedReader(new
 		// InputStreamReader(entity.getContent(), charset));
 		// br.close();
-		JFile file = new JFile(entity.getContent());
-		//byte[] con = file.readAllBytes();
-		//System.out.println(Format.getEncode(con));
-		//String html = new String(con,"gbk");
-		String html = file.readAllText(charset);
+
 
 		return html;
 	}

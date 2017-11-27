@@ -37,6 +37,10 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
 import easy.config.Config;
 import easy.net.Proxy;
 import easy.util.Format;
@@ -484,7 +488,14 @@ public class JFile
 		{
 			URL u = new URL(url);
 
-			HttpURLConnection uc = (HttpURLConnection) u.openConnection();
+			HttpsURLConnection uc = (HttpsURLConnection) u.openConnection();
+			uc.setHostnameVerifier(new HostnameVerifier() {
+				 @Override
+				 public boolean verify(String arg0, SSLSession arg1) {
+				 return true;
+				 }
+				 });
+			
 			uc.setDoOutput(true);// POST
 			if (useragent == null)
 			{
@@ -1017,5 +1028,13 @@ public class JFile
 
 			Files.walkFileTree(Paths.get(sourcepath), finder);
 		}
+	}
+	
+	
+	public static void main(String[] args) throws ConnectException, IOException
+	{
+		String  u = args[0];
+		System.out.println(JFile.loadHttpFile(u));
+
 	}
 }
