@@ -199,10 +199,32 @@ public class Row implements Comparable<Row>,Serializable
 	
 	public void putJSONObjet(JSONObject json)
 	{
+		putJSONObjet(json,null);
+	}
+	
+	public void putJSONObjet(JSONObject json,String[] addkeys)
+	{
 		Iterator<?> keys = json.keys();
 		while (keys.hasNext())
 		{
 			String key = (String) keys.next();
+
+			if (addkeys !=null)
+			{
+				boolean canadd = false;
+				for (String k : addkeys)
+				{
+					if (k.equals(key))
+					{
+						canadd = true;
+						break;
+					}
+				}
+				if (canadd == false)
+				{
+					continue;
+				}
+			}
 			putString(key,json.getString(key));
 		}
 	}
