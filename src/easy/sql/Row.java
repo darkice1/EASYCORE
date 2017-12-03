@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import easy.util.Log;
+import net.sf.json.JSONObject;
 
 /**
  * <p>
@@ -194,7 +195,17 @@ public class Row implements Comparable<Row>,Serializable
 	public void putDouble(String key, double value)
 	{
 		put(key,new Col(key,Double.toString(value),Types.DOUBLE));
-	}	
+	}
+	
+	public void putJSONObjet(JSONObject json)
+	{
+		Iterator<?> keys = json.keys();
+		while (keys.hasNext())
+		{
+			String key = (String) keys.next();
+			putString(key,json.getString(key));
+		}
+	}
 	
 	/**
 	 * @return Returns the sortfield.
