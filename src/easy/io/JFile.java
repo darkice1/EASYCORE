@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -290,6 +291,7 @@ public class JFile
 		GZIPOutputStream zfs = new GZIPOutputStream(out);
 		writeObject(zfs, obj);
 
+		zfs.finish();
 		zfs.close();
 		zfs = null;
 	}
@@ -1030,6 +1032,51 @@ public class JFile
 		}
 	}
 	
+	public static byte[] serialize(Object object)
+	{
+		ObjectOutputStream oos = null;
+		ByteArrayOutputStream baos = null;
+		try
+		{
+			// 序列化
+			baos = new ByteArrayOutputStream();
+			GZIPOutputStream go = new GZIPOutputStream(baos);
+			oos = new ObjectOutputStream(go);
+			oos.writeObject(object);
+			go.flush();
+			go.finish();
+			
+			byte[] bytes = baos.toByteArray();
+//			System.out.println(bytes.length);
+			return bytes;
+		}
+		catch (Exception e)
+		{
+			Log.OutException(e);
+		}
+		return null;
+	}
+
+	public static Object unserialize(byte[] bytes)
+	{
+		if (bytes != null)
+		{
+			ByteArrayInputStream bais = null;
+			try
+			{
+				// 反序列化
+				bais = new ByteArrayInputStream(bytes);
+				ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(bais));
+				return ois.readObject();
+			}
+			catch (Exception e)
+			{
+				Log.OutException(e);
+			}			
+		}
+
+		return null;
+	}
 	
 	public static void main(String[] args) throws ConnectException, IOException
 	{
