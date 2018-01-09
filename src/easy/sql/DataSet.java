@@ -52,13 +52,22 @@ public class DataSet implements Serializable
 	{
 		ResultSetMetaData rsmd = rs.getMetaData();
 		
+		rs.last();
+		int count = rs.getRow();
+		rs.first();
+		rs.beforeFirst();
+		
+		rowList = new ArrayList<Row>(count);
+//		list.ensureCapacity();
+//		System.out.println("count "+ count);
+		
 		int cols = rsmd.getColumnCount();
 		String[] colsName = new String[cols+1];
 		for (int i=1;i<=cols;i++)
 		{
 			colsName[i] = rsmd.getColumnLabel(i);
 		}
-		
+		//
 		while (rs.next())
 		{
 			Row row = new Row();
@@ -166,6 +175,7 @@ public class DataSet implements Serializable
 			rowList.add(row);
 			row = null; 
 		}
+
 		colsName = null;
 		rsmd = null;
 	}

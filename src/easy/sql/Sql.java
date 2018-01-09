@@ -55,7 +55,7 @@ public abstract class Sql implements  AutoCloseable
 
 	protected PreparedStatement ps;
 
-	protected int resultSetType = ResultSet.TYPE_FORWARD_ONLY;
+	protected int resultSetType = ResultSet.TYPE_FORWARD_ONLY;//TYPE_FORWARD_ONLY
 
 	protected int resultSetConncurrency = ResultSet.CONCUR_READ_ONLY;
 
