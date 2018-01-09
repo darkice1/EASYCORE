@@ -299,9 +299,14 @@ public class EHttpClient
 			String ts[] = c.split("=",2);
 			if (ts.length >= 2)
 			{
+//				System.out.println(ts[0]+"    "+ts[1]);
 				BasicClientCookie pc = new BasicClientCookie(ts[0], ts[1]);
 				pc.setDomain(domain);
+				pc.setPath("/");
+				pc.setAttribute(ClientCookie.DOMAIN_ATTR, "true");
+
 				cookieStore.addCookie(pc);
+				
 
 				pc = null;
 			}
