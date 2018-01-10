@@ -490,8 +490,8 @@ public class Format
 		for (Field f : fs)
 		{
 			// System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
-			f.toString();
-			if (f.getGenericType().getTypeName().indexOf("java.lang.Class.") < 0)
+//			f.toString();
+			if (f.toString().indexOf(" transient ") < 0 &&f.getGenericType().getTypeName().indexOf("java.lang.Class.") < 0)
 			{
 				list.add(f);
 			}
