@@ -513,8 +513,9 @@ public class Format
 	 */
 	public static String beanToString(Object o, boolean getsuper)
 	{
-		StringBuffer buf = new StringBuffer();
+//		StringBuffer buf = new StringBuffer();
 		// Field[] fields = o.getClass().getDeclaredFields();
+		JSONObject json = new JSONObject();
 		try
 		{
 			List<Field> fields = getAllField(o.getClass().getName(), getsuper);
@@ -529,23 +530,23 @@ public class Format
 					// System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
 					if (po != null && po.getClass().isArray())
 					{
-						buf.append(f.getName());
-						buf.append(":[");
+						JSONArray arr = new JSONArray();
+//						buf.append(f.getName());
+//						buf.append(":[");
 						int len = Array.getLength(po);
 						for (int i = 0; i < len; i++)
 						{
-							buf.append(Array.get(po, i));
-							buf.append(",");
+//							buf.append(Array.get(po, i));
+//							buf.append(",");
+							arr.add(po);
 						}
-						if (len > 0)
-						{
-							buf.setLength(buf.length() - 1);
-						}
-						buf.append("]\n");
+						json.put(f.getName(), arr);
+
 					}
 					else
 					{
-						buf.append(String.format("%s:[%s]\n", f.getName(), po));
+						json.put(f.getName(), po);
+//						buf.append(String.format("%s:[%s]\n", f.getName(), po));
 					}
 				}
 				catch (IllegalArgumentException e)
@@ -565,7 +566,7 @@ public class Format
 		}
 		// System.out.println(toListString(fields));
 
-		return buf.toString();
+		return json.toString();
 	}
 
 	/**
