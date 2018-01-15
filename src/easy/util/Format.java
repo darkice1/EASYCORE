@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.net.ConnectException;
@@ -34,9 +33,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.mozilla.universalchardet.UniversalDetector;
 
 import easy.io.JFile;
@@ -44,6 +40,9 @@ import easy.servlet.PageInfo;
 import easy.sql.CPSql;
 import easy.sql.DataSet;
 import easy.sql.Row;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 /**
  * <p>
@@ -515,7 +514,10 @@ public class Format
 	{
 //		StringBuffer buf = new StringBuffer();
 		// Field[] fields = o.getClass().getDeclaredFields();
-		JSONObject json = new JSONObject();
+		JsonConfig jsonconfig = new JsonConfig();
+		jsonconfig.setAllowNonStringKeys(true);
+
+		JSONObject json = JSONObject.fromObject("{}",jsonconfig);
 		try
 		{
 			List<Field> fields = getAllField(o.getClass().getName(), getsuper);
@@ -527,25 +529,32 @@ public class Format
 				try
 				{
 					Object po = f.get(o);
-					// System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
-					if (po != null && po.getClass().isArray())
+//					 System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
+					if (po != null && (po.getClass().isArray() || po instanceof java.util.List ))
 					{
-						JSONArray arr = new JSONArray();
+						JSONArray arr =  JSONArray.fromObject("[]",jsonconfig);
 //						buf.append(f.getName());
 //						buf.append(":[");
-						int len = Array.getLength(po);
-						for (int i = 0; i < len; i++)
+						if (po.getClass().isArray())
 						{
-//							buf.append(Array.get(po, i));
-//							buf.append(",");
-							arr.add(po);
+							arr.add(po);			
 						}
-						json.put(f.getName(), arr);
+						else if(po instanceof java.util.List)
+						{
+//							System.out.println("####"+f.getName());
+							for (Object ppo : (List<?>)po)
+							{
+								arr.add(ppo.toString());	
+							}
+//							arr.add(po);
+						}
 
+						json.put(f.getName(), arr);
 					}
 					else
 					{
-						json.put(f.getName(), po);
+//						System.out.println("#"+f.getName()+"#"+po);
+						json.put(f.getName(),po);							
 //						buf.append(String.format("%s:[%s]\n", f.getName(), po));
 					}
 				}
