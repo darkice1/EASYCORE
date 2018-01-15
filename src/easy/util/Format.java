@@ -43,6 +43,7 @@ import easy.sql.Row;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+import net.sf.json.util.CycleDetectionStrategy;
 
 /**
  * <p>
@@ -516,64 +517,11 @@ public class Format
 		// Field[] fields = o.getClass().getDeclaredFields();
 		JsonConfig jsonconfig = new JsonConfig();
 		jsonconfig.setAllowNonStringKeys(true);
+		jsonconfig.setCycleDetectionStrategy(CycleDetectionStrategy.LENIENT);  
+		jsonconfig.setIgnoreDefaultExcludes(true);
 
-		JSONObject json = JSONObject.fromObject("{}",jsonconfig);
-		try
-		{
-			List<Field> fields = getAllField(o.getClass().getName(), getsuper);
-
-			for (Field f : fields)
-			{
-				boolean accessFlag = f.isAccessible();
-				f.setAccessible(true);
-				try
-				{
-					Object po = f.get(o);
-//					 System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
-					if (po != null && (po.getClass().isArray() || po instanceof java.util.List ))
-					{
-						JSONArray arr =  JSONArray.fromObject("[]",jsonconfig);
-//						buf.append(f.getName());
-//						buf.append(":[");
-						if (po.getClass().isArray())
-						{
-							arr.add(po);			
-						}
-						else if(po instanceof java.util.List)
-						{
-//							System.out.println("####"+f.getName());
-							for (Object ppo : (List<?>)po)
-							{
-								arr.add(ppo.toString());	
-							}
-//							arr.add(po);
-						}
-
-						json.put(f.getName(), arr);
-					}
-					else
-					{
-//						System.out.println("#"+f.getName()+"#"+po);
-						json.put(f.getName(),po);							
-//						buf.append(String.format("%s:[%s]\n", f.getName(), po));
-					}
-				}
-				catch (IllegalArgumentException e)
-				{
-					// e.printStackTrace();
-				}
-				catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-				f.setAccessible(accessFlag);
-			}
-		}
-		catch (ClassNotFoundException e1)
-		{
-			Log.OutException(e1);
-		}
-		// System.out.println(toListString(fields));
+		JSONObject json = JSONObject.fromObject(o,jsonconfig);
+	
 
 		return json.toString();
 	}
