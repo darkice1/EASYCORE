@@ -65,6 +65,8 @@ public class Format
 	private final static String HEXSTRING = "01234567890abcdef";
 
 	private static final String HMAC_SHA1 = "HmacSHA1";
+	
+	private static final String HMAC_SHA256 = "HmacSHA256";
 
 	// private final static Pattern URLPAT
 	// =Pattern.compile("(http://|https://)[^\\s]*");
@@ -878,6 +880,22 @@ public class Format
 		return HMACSha1(key.getBytes(),data.getBytes());
 	}
 
+	public static byte[] HMACSha256(byte[] key, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256);
+		Mac mac = Mac.getInstance(HMAC_SHA256);
+		mac.init(signingKey);
+		byte[] rawHmac = mac.doFinal(data);
+
+		return rawHmac;
+	}
+	
+	
+	public static byte[] HMACSha256(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		return HMACSha256(key.getBytes(),data.getBytes());
+	}
+	
 	public static String fileMd5(final String inputFile) throws IOException
 	{
 		File file = new File(inputFile);
