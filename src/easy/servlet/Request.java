@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -161,7 +161,7 @@ public class Request
 							while (f.exists())
 							{
 								//System.out.println( f.getName());
-								String filename = "{"+new Random(System.currentTimeMillis()).nextLong()+"}" + f.getName();
+								String filename = "{"+ThreadLocalRandom.current().nextLong()+"}" + f.getName();
 								path = f.getParent()+"/"+filename;
 								//System.out.println(path);
 								f = new File (path);

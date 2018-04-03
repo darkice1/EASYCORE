@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,7 +105,7 @@ public class Format
 
 	public static String getGaeURL(String u)
 	{
-		int idx = (int) (Math.random() * GURLLIST.size());
+		int idx = ThreadLocalRandom.current().nextInt(GURLLIST.size());
 		String url = null;
 		try
 		{
@@ -749,7 +750,7 @@ public class Format
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
 		{
-			int pos = (int) (Math.random() * len);
+			int pos = ThreadLocalRandom.current().nextInt(len);
 			buf.append(NUMLOWSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();
@@ -782,7 +783,7 @@ public class Format
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
 		{
-			int pos = (int) (Math.random() * len);
+			int pos = ThreadLocalRandom.current().nextInt(len);
 			buf.append(LOWSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();
@@ -802,7 +803,7 @@ public class Format
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
 		{
-			int pos = (int) (Math.random() * len);
+			int pos = ThreadLocalRandom.current().nextInt(len);
 			buf.append(ALLSTRING.substring(pos, pos + 1));
 		}
 		return buf.toString();

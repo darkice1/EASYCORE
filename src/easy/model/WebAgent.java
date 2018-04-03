@@ -5,6 +5,7 @@ package easy.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Neo(starneo@gmail.com)2013-11-16
@@ -71,11 +72,11 @@ public class WebAgent
 	
 	public static String getRandMobAgent()
 	{
-		return MOBLIST.get((int)(MOBLIST.size()*Math.random()));
+		return MOBLIST.get(ThreadLocalRandom.current().nextInt(MOBLIST.size()));
 	}
 
 	public static String getRandAgent()
 	{
-		return LIST.get((int)(LIST.size()*Math.random()));
+		return LIST.get(ThreadLocalRandom.current().nextInt(LIST.size()));
 	}
 }

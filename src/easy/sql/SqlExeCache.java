@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 import easy.config.Config;
 import easy.io.JFile;
@@ -57,7 +58,7 @@ public class SqlExeCache implements Runnable,FileFilter
 	 */
 	public static void writeCache(final String tablename,final String sql)
 	{
-		String filename = String.format("%s/%s_%s_%f.%s", DBEXECACHEPATH,tablename,EDate.getLogDate(new Date()),Math.random(),DBEXECACHEEXT);
+		String filename = String.format("%s/%s_%s_%f.%s", DBEXECACHEPATH,tablename,EDate.getLogDate(new Date()),ThreadLocalRandom.current().nextDouble(),DBEXECACHEEXT);
 		String tmpfilename = String.format("%s_tmp", filename);
 		JFile file = new JFile(tmpfilename);
 		file.WriteText(sql);
