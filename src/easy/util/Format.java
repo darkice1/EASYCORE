@@ -1,8 +1,10 @@
 package easy.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -1272,6 +1274,17 @@ public class Format
 		return code;
 
 	}
+	
+	public static InputStream getStringStream(String sInputString)
+	{
+		if (sInputString != null)
+		{
+			ByteArrayInputStream tInputStringStream = new ByteArrayInputStream(sInputString.getBytes());  
+			return tInputStringStream;  
+		}
+		return null;  
+	
+	} 
 	/*
 	 * public static void main(String[] args) { long a =
 	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
