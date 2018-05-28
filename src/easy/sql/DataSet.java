@@ -32,7 +32,7 @@ public class DataSet implements Serializable
 	private static final long serialVersionUID = 1L;
 	private transient int cursor = -1; 
 	//private List<Row> rowList = Collections.synchronizedList(new LinkedList<Row>());
-	private List<Row> rowList = new ArrayList<Row>();
+	private ArrayList<Row> rowList = new ArrayList<Row>();
 	protected final static String DBENCODEING = Config.getProperty("DBENCODEING");
 	protected final static String DBENSTRINGCODEING = Config.getProperty("DBENSTRINGCODEING");
 	

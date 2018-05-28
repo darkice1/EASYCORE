@@ -8,11 +8,11 @@ cp easy.jar /Users/Neo/Documents/git/STOCK/web/WEB-INF/lib
 #cp easy.jar /Users/Neo/Documents/eclipse\ workspace/5PVSend/libs
 cp easy.jar /Users/Neo/Documents/git/PVTools/libs
 cp easy.jar /Users/Neo/Documents/git/TEJIA/web/WEB-INF/lib
-cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JyAlarmSystem/lib
+cp easy.jar /Users/Neo/Documents/git/JyAlarmSystem/lib
 cp easy.jar /Users/Neo/Documents/git/EXCORE/WebRoot/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/EXCHANGETOOLS/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AFASURL/ROOT/WEB-INF/lib
-cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JEX/ROOT/WEB-INF/lib
+cp easy.jar /Users/Neo/Documents/git/JEX/ROOT/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/AUTOWEIBO/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/ADTEST/libs
 cp easy.jar /Users/Neo/Documents/eclipse\ workspace/JYSPARK/libs
@@ -20,4 +20,4 @@ cp easy.jar /Users/Neo/Documents/eclipse\ workspace/RENWOZHE/WebContent/WEB-INF/
 cp easy.jar /Users/Neo/Documents/git/GEARCORE/web/WEB-INF/lib
 cp easy.jar /Users/Neo/Documents/git/TAOKE/WebContent/WEB-INF/lib
 
-mv easy.jar /Users/Neo/Documents/eclipse\ workspace/KejetExChange/lib
+mv easy.jar /Users/Neo/Documents/git/KejetExChange/lib

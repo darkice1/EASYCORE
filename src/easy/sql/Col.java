@@ -14,6 +14,10 @@ public class Col implements Comparable<Col>,Serializable
 	private String fieldname;
 	private String value;
 	
+	public Col()
+	{
+	}
+	
 	public Col (String fieldname,String value,int type)
 	{
 		this.fieldname = fieldname;

@@ -18,6 +18,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketException;
@@ -29,12 +31,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeSet;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -42,8 +55,17 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers;
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+
 import easy.config.Config;
 import easy.net.Proxy;
+import easy.sql.Col;
+import easy.sql.DataSet;
+import easy.sql.Row;
 import easy.util.Format;
 import easy.util.Log;
 
@@ -1032,6 +1054,116 @@ public class JFile
 		}
 	}
 	
+	public static Kryo getKryo() 
+	{
+        Kryo kryo = new Kryo();
+        
+		kryo.getFieldSerializerConfig().setOptimizedGenerics(true);
+        kryo.setReferences(true); 
+        kryo.setRegistrationRequired(false);
+        
+        kryo.register(Message.class);
+        kryo.register(DataSet.class);
+        kryo.register(Row.class);
+        kryo.register(Col.class);
+
+        kryo.register(BigDecimal.class, new DefaultSerializers.BigDecimalSerializer());
+        kryo.register(BigInteger.class, new DefaultSerializers.BigIntegerSerializer());
+
+        kryo.register(HashMap.class);
+        kryo.register(ArrayList.class);
+        kryo.register(LinkedList.class);
+        kryo.register(HashSet.class);
+        kryo.register(TreeSet.class);
+        kryo.register(Hashtable.class);
+        kryo.register(Date.class);
+        kryo.register(Calendar.class);
+        kryo.register(ConcurrentHashMap.class);
+        kryo.register(SimpleDateFormat.class);
+        kryo.register(GregorianCalendar.class);
+        kryo.register(Vector.class);
+        kryo.register(BitSet.class);
+        kryo.register(StringBuffer.class);
+        kryo.register(StringBuilder.class);
+        kryo.register(Object.class);
+        kryo.register(Object[].class);
+        kryo.register(String[].class);
+        kryo.register(byte[].class);
+        kryo.register(char[].class);
+        kryo.register(int[].class);
+        kryo.register(float[].class);
+        kryo.register(double[].class);
+        return kryo;
+    }
+
+	public static Object kryoBytesUnSerialize(byte[] bytes)
+	{
+		if (bytes != null)
+		{
+			Kryo kryo = getKryo();
+
+			Input input = new Input(bytes,0,bytes.length);
+			return kryo.readClassAndObject(input);
+			
+//		      ByteArrayInputStream bais = null;
+//		      try
+//		      {
+//		        // 反序列化
+//		        bais = new ByteArrayInputStream(bytes);
+//		        ObjectInputStream ois = new ObjectInputStream(bais);
+//		        return kryoUnserialize(ois);
+//		      }
+//		      catch (Exception e)
+//		      {
+//		        Log.OutException(e);
+//		      }	
+		}
+
+		return null;
+	}
+	
+	public static byte[] kryoSerializeToBytes(Object object)
+	{
+		byte[] bytes = null;
+		
+		ByteArrayOutputStream baos = null;
+		baos = new ByteArrayOutputStream();
+		try
+		{
+			
+			bytes = baos.toByteArray();
+			kryoSerialize(object,baos);			
+			bytes = baos.toByteArray();
+
+			baos.close();
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
+		
+		return bytes;
+	}
+	
+	public static void kryoSerialize(Object object,OutputStream out)
+	{
+		Kryo kryo = getKryo();
+
+		Output output = new Output(out,1024*1024);
+//		kryo.writeObject(output, ds);
+		kryo.writeClassAndObject(output, object);
+		output.flush();
+//		output.close();
+	}
+	
+	public static Object kryoUnserialize(InputStream in)
+	{
+		Kryo kryo = getKryo();
+        
+		Input input = new Input(in,1024*1024);
+		return kryo.readClassAndObject(input);
+	}
+	
 	public static byte[] serialize(Object object)
 	{
 		ObjectOutputStream oos = null;
@@ -1080,8 +1212,10 @@ public class JFile
 	
 	public static void main(String[] args) throws ConnectException, IOException
 	{
-		String  u = args[0];
-		System.out.println(JFile.loadHttpFile(u));
+		String a = "ASDf   adfadsf";
+		byte[] bs = JFile.kryoSerializeToBytes(a);
+		System.out.println(new String(bs));
+		System.out.println(JFile.kryoBytesUnSerialize(bs));
 
 	}
 }
