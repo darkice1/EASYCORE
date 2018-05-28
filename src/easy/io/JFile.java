@@ -1059,7 +1059,7 @@ public class JFile
         Kryo kryo = new Kryo();
         
 		kryo.getFieldSerializerConfig().setOptimizedGenerics(true);
-        kryo.setReferences(true); 
+        kryo.setReferences(false); 
         kryo.setRegistrationRequired(false);
         
         kryo.register(Message.class);
