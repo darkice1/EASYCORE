@@ -7,10 +7,12 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import easy.net.Proxy;
+import easy.util.Log;
 
 /**
  * <p>
@@ -117,18 +119,40 @@ public class SendTextMail
 	{
 		this.cc = cc;
 	}
+	
+	private InternetAddress[] toInternetAddresss(String mails)
+	{
+		InternetAddress[] itos = null;
+		if (mails != null)
+		{
+			String[] tos = to.split(";");
+			itos = new InternetAddress[tos.length];
+			for (int i=0,len=tos.length;i<len;i++)
+			{
+				try
+				{
+					itos[i] = new InternetAddress(tos[i]);
+				}
+				catch (AddressException e)
+				{
+					Log.OutException(e);
+				}
+			}			
+		}
+		
+		return itos;
+	}
 
 	public boolean send()
 	{
 		try
 		{
 			newMessage.setFrom(new InternetAddress(from));
-			newMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(to));
+			newMessage.addRecipients(Message.RecipientType.TO,toInternetAddresss(to));
+			
 			if (cc != null)
 			{
-				newMessage.addRecipient(Message.RecipientType.CC,
-						new InternetAddress(cc));
+				newMessage.addRecipients(Message.RecipientType.CC,toInternetAddresss(cc));
 			}
 
 			newMessage.setSubject(subject,"utf-8");
