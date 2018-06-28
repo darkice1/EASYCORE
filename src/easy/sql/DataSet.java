@@ -114,9 +114,9 @@ public class DataSet implements Serializable
 					{
 						try
 						{
-							if (rs.getInt(i) != 0)
+							if (rs.getTimestamp(i).getTime() != 0)
 							{
-								rowstr = rs.getString(i).substring(0,rs.getString(i).length()-2);
+								rowstr = rs.getString(i).substring(0,rs.getString(i).length());
 							}
 							else
 							{
