@@ -128,7 +128,7 @@ public class DataSet implements Serializable
 						catch(Exception e)
 						{
 							Log.OutException(e);
-							rowstr = rs.getString(i).substring(0,rs.getString(i).length()-2);
+							rowstr = rs.getString(i);
 						}
 					}
 					else if (type == Types.CLOB)
