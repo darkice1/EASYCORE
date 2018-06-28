@@ -116,7 +116,7 @@ public class DataSet implements Serializable
 						{
 							if (rs.getTimestamp(i).getTime() != 0)
 							{
-								rowstr = rs.getString(i).substring(0,rs.getString(i).length());
+								rowstr = rs.getString(i);
 							}
 							else
 							{
