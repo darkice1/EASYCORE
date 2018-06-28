@@ -6,6 +6,7 @@ import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,7 +115,8 @@ public class DataSet implements Serializable
 					{
 						try
 						{
-							if (rs.getTimestamp(i).getTime() != 0)
+							Timestamp ts = rs.getTimestamp(i);
+							if (ts !=null && ts.getTime() != 0)
 							{
 								rowstr = rs.getString(i);
 							}
