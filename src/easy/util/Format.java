@@ -1158,16 +1158,29 @@ public class Format
 
 	public static List<String> getUrls(final String str)
 	{
-		final Pattern URLPAT = Pattern
-						.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+//		final Pattern URLPAT = Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+		final Pattern URLPAT = Pattern.compile("((http(|s):)?//[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+
 		List<String> list = new LinkedList<String>();
 		Matcher matcher = URLPAT.matcher(str);
 		while (matcher.find())
 		{
-			list.add(matcher.group());
+			String url = matcher.group();
+			if (url.indexOf("//") == 0)
+			{
+				url = "https:"+url;
+			}
+			list.add(url);
 		}
 		return list;
 	}
+	
+//	public static void main(String[] args)
+//	{
+//		System.out.println(getUrls("<div id=\"4d703977f553755f624215ea80180c89\" style=\"width:300px;height:250px;\"><script type=\"text/javascript\" src=\"http://adx.haoad.org/p/4d703977f553755f624215ea80180c89.js\"></script></div>"));
+//		System.out.println(getUrls("<script type=\"text/javascript\" smua=\"d=p&s=b&u=u3501065&w=300&h=250\" src=\"//www.nkscdn.com/smu0/o.js\"></\"></script>"));
+//
+//	}
 
 	public static List<String> getAts(final String str)
 	{
