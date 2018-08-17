@@ -734,6 +734,14 @@ public class BaseTable
 	{
 		this.where = where;
 	}
+	
+	/**
+	 * 是否有信息
+	 */
+	public boolean hasinfo()
+	{
+		return params.isEmpty()==false || proparams.isEmpty()==false;
+	}
 /*
 	public static void main(String[] args)
 	{
