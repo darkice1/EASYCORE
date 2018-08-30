@@ -8,9 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,9 +20,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -40,10 +35,12 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.ClientCookie;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
@@ -79,7 +76,7 @@ public class EHttpClient
 	// private CloseableHttpClient client = HttpClients.custom().build();
 	private String agent = WebAgent.getRandAgent();
 	private RequestConfig requestconfig;
-	private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+	private PoolingHttpClientConnectionManager connectionManager = null;
 	private String baseAuthorization = null;
 
 	public final static String POSTSPLIT = new String(new char[] { 0, 9 });
@@ -144,64 +141,38 @@ public class EHttpClient
 		connectionManager.closeIdleConnections(idleTimeout, tunit);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void init(final String host, final Integer port)
 	{
 		setProxy(host, port);
 
 		try
 		{
+			SSLContext sslContext  = SSLContexts.custom().loadTrustMaterial(null, new TrustStrategy() {
+								
+								@Override
+								public boolean isTrusted(X509Certificate[] arg0, String arg1)
+										throws CertificateException {
+									return true;
+								}
+							}).build();
+
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory( sslContext, new String[] { "TLSv1" }, null,SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+			@SuppressWarnings("rawtypes")
+			Registry registry = RegistryBuilder.create().register("http", PlainConnectionSocketFactory.INSTANCE).register("https", sslsf).build();
+
+			connectionManager = new PoolingHttpClientConnectionManager(registry);
 			connectionManager.setMaxTotal(1000);
 			connectionManager.setDefaultMaxPerRoute(200);
 			httpbuilder.setConnectionManager(connectionManager);
 
-			SSLContext sslContext = new SSLContextBuilder()
-					.loadTrustMaterial(null, new TrustStrategy()
-					{
-						@Override
-						public boolean isTrusted(X509Certificate[] chain,
-								String authType)
-								throws java.security.cert.CertificateException
-						{
-							return true;
-						}
-					}).build();
-			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-					sslContext, new X509HostnameVerifier()
-					{
-
-						@Override
-						public boolean verify(String arg0, SSLSession arg1)
-						{
-							return true;
-						}
-
-						@Override
-						public void verify(String host, SSLSocket ssl)
-								throws IOException
-						{
-						}
-
-						@Override
-						public void verify(String host, X509Certificate cert)
-								throws SSLException
-						{
-						}
-
-						@Override
-						public void verify(String host, String[] cns,
-								String[] subjectAlts) throws SSLException
-						{
-						}
-
-					});
-
 			httpbuilder.setDefaultCookieStore(cookieStore);
-			httpbuilder.setSSLSocketFactory(sslsf);
+//			httpbuilder.setSSLSocketFactory(sslsf);
 
 			client = httpbuilder.build();
 		}
-		catch (KeyManagementException | NoSuchAlgorithmException
-				| KeyStoreException e)
+		catch (Exception e)
 		{
 			Log.OutException(e);
 		}
@@ -951,5 +922,18 @@ public class EHttpClient
 	// System.out.println(client.post("http://s.x.cn.xtgreat.com/cx", request,
 	// header));
 	// }
+//	public static void main (String args[])
+//	{
+//		EHttpClient client = new EHttpClient();
+//		
+//		try
+//		{
+//			System.out.println(client.get("https://www.zbjuran.com/quweitupian/list_2_2.html"));
+//		}
+//		catch (IOException e)
+//		{
+//			Log.OutException(e);
+//		}
+//	}
 
 }
