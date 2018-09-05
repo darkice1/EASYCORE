@@ -25,7 +25,7 @@ public class JsEncode
 		
 		post.put("code", js);
 		
-		ec = client.postToString("http://tool.css-js.com/!nodejs3/uglify.do?action=compressor&loops=true&sequences=true&if_return=true&unused=true&evaluate=true&hoist_funs=true&comparisons=true&hoist_vars=true&conditionals=true&dead_code=true&booleans=true&properties=false&unsafe=false&join_vars=true", post);
+		ec = client.postToString("https://tool.css-js.com/!nodejs3/uglify.do?action=compressor&loops=true&sequences=true&if_return=true&unused=true&evaluate=true&hoist_funs=true&comparisons=true&hoist_vars=true&conditionals=true&dead_code=true&booleans=true&properties=false&unsafe=false&join_vars=true", post);
 		
 		return ec;
 	}
@@ -39,7 +39,7 @@ public class JsEncode
 		
 		post.put("code", js);
 		
-		ec = client.postToString("http://tool.css-js.com/actions/jspacker.php?type=encode", post);
+		ec = client.postToString("https://tool.css-js.com/actions/jspacker.php?type=encode", post);
 		
 		return ec;
 	}
