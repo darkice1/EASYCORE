@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 import easy.config.Config;
+import easy.util.EDate;
 import easy.util.Log;
 
 
@@ -118,7 +119,12 @@ public class DataSet implements Serializable
 							Timestamp ts = rs.getTimestamp(i);
 							if (ts !=null && ts.getTime() != 0)
 							{
-								rowstr = rs.getString(i);
+//								rowstr = rs.getString(i);
+								EDate d = new EDate();
+								d.setTime(rs.getTimestamp(i).getTime());
+								rowstr = d.toString();
+//								System.out.println("DATE   " +    rowstr);
+
 							}
 							else
 							{
