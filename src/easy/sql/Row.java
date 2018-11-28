@@ -2,10 +2,10 @@ package easy.sql;
 
 import java.io.Serializable;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import easy.util.Log;
 import net.sf.json.JSONObject;
@@ -28,7 +28,7 @@ public class Row implements Comparable<Row>,Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Map<String, Col> row = new HashMap<String, Col>();
+	private Map<String, Col> row = new ConcurrentHashMap<String, Col>();
 	protected String sortfield;
 	
 	
