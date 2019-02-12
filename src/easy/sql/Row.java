@@ -28,7 +28,7 @@ public class Row implements Comparable<Row>,Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Map<String, Col> row = new ConcurrentHashMap<String, Col>();
+	private Map<String, Col> row = new ConcurrentHashMap<>();
 	protected String sortfield;
 	
 	
