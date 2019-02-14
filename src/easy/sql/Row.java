@@ -1,7 +1,6 @@
 package easy.sql;
 
 import java.io.Serializable;
-import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,14 +64,21 @@ public class Row implements Comparable<Row>,Serializable
 
 	public Integer getInt(String key)
 	{
-		String value = row.get(key).getValue();
+		Object value = row.get(key).getValue();
 		if (value == null)
 		{
 			return null;
 		}
 		try
 		{
-			return Integer.parseInt(value);
+			if (value instanceof Integer)
+			{
+				return (Integer)value;				
+			}
+			else
+			{
+				return Integer.parseInt(value.toString());
+			}
 		}
 		catch (NumberFormatException ex)
 		{
@@ -88,7 +94,7 @@ public class Row implements Comparable<Row>,Serializable
 	
 	public Long getLong(String key)
 	{
-		String value = row.get(key).getValue();
+		Object value = row.get(key).getValue();
 		if (value == null)
 		{
 			return null;
@@ -96,7 +102,14 @@ public class Row implements Comparable<Row>,Serializable
 
 		try
 		{
-			return Long.parseLong(value);
+			if (value instanceof Long)
+			{
+				return (Long)value;				
+			}
+			else
+			{
+				return Long.parseLong(value.toString());
+			}
 		}
 		catch (NumberFormatException ex)
 		{
@@ -109,16 +122,24 @@ public class Row implements Comparable<Row>,Serializable
 			return null;
 		}
 	}	
+	
 	public Float getFloat(String key)
 	{
-		String value = row.get(key).getValue();
+		Object value = row.get(key).getValue();
 		if (value == null)
 		{
 			return null;
 		}
 		try
 		{
-			return Float.parseFloat(value);
+			if (value instanceof Float)
+			{
+				return (Float)value;				
+			}
+			else
+			{
+				return Float.parseFloat(value.toString());
+			}
 		}
 		catch (NumberFormatException ex)
 		{
@@ -135,12 +156,22 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		try
 		{
-			String value = row.get(key).getValue();
+			Col c = row.get(key);
+			Object value = c.getValue();
 			if (value == null)
 			{
+				c = null;
 				return null;
 			}
-			return Double.parseDouble(value);
+						
+			if (value instanceof Double)
+			{
+				return (Double)value;				
+			}
+			else
+			{
+				return Double.parseDouble(value.toString());
+			}
 		}
 		catch (NumberFormatException ex)
 		{
@@ -157,7 +188,15 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		try
 		{
-			return row.get(key).getValue();
+			Object value = row.get(key).getValue();
+			if (value == null)
+			{
+				return "";
+			}
+			else
+			{
+				return value.toString();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -169,32 +208,33 @@ public class Row implements Comparable<Row>,Serializable
 	public void put(String key, Col value)
 	{
 		row.put(key, value);
+		value = null;
 	}
 	
 	public void putString(String key, String value)
 	{
-		put(key,new Col(key,value,Types.VARCHAR));
+		put(key,new Col(key,value));
 	}
 	
 	public void putInteger(String key, int value)
 	{
-		put(key,new Col(key,value,Types.INTEGER));
+		put(key,new Col(key,value));
 	}
 	
 	public void putLong(String key, long value)
 	{
-		put(key,new Col(key,Long.toString(value),Types.BIGINT));
+		put(key,new Col(key,value));
 	}
 	
 	
 	public void putFloat(String key, float value)
 	{
-		put(key,new Col(key,Float.toString(value),Types.FLOAT));
+		put(key,new Col(key,value));
 	}
 	
 	public void putDouble(String key, double value)
 	{
-		put(key,new Col(key,Double.toString(value),Types.DOUBLE));
+		put(key,new Col(key,value));
 	}
 	
 	public void putJSONObjet(JSONObject json)

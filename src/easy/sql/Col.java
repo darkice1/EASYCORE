@@ -1,7 +1,6 @@
 package easy.sql;
 
 import java.io.Serializable;
-import java.sql.Types;
 
 public class Col implements Comparable<Col>,Serializable
 {
@@ -10,51 +9,60 @@ public class Col implements Comparable<Col>,Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private int type;
 	private String fieldname;
-	private String value;
+	private Object value;
 	
 	public Col()
 	{
 	}
 	
-	public Col (String fieldname,String value,int type)
+	public Col (String fieldname,String value)
 	{
 		this.fieldname = fieldname;
 		this.value = value;
-		this.type = type;
 	}
 	
-	public Col (String fieldname,int value,int type)
+	public Col (String fieldname,int value)
 	{
 		this.fieldname = fieldname;
-		this.value = Integer.toString(value);
-		this.type = type;
-	}	
+		this.value = new Integer(value);
+	}
+	
+	public Col (String fieldname,float value)
+	{
+		this.fieldname = fieldname;
+		this.value = new Float(value);
+	}
+	
+	public Col (String fieldname,double value)
+	{
+		this.fieldname = fieldname;
+		this.value = new Double(value);
+	}
 	
 	public int compareTo(Col o)
 	{
-		Col c = (Col)o;
+//		Col c = (Col)o;
 
-		if (type == Types.INTEGER)
+		if (value instanceof Integer)
 		{
-			return Integer.parseInt(value) - Integer.parseInt(c.value);
+			return Integer.compare((Integer)value, (Integer)o.value);
 		}
-		else if (type == Types.BIGINT)
+		else if (value instanceof Long)
 		{
-			return (int)(Long.parseLong(value) - (Long.parseLong(c.value)));
+			return Long.compare((Long)value, (Long)o.value);
 		}
-		else if (type == Types.FLOAT)
+		else if (value instanceof Float)
 		{
-			return Float.compare(Float.parseFloat(value), Float.parseFloat(c.value));
+			return Float.compare((Float)value, (Float)o.value);
 		}
-		else if (type == Types.DECIMAL || type == Types.DOUBLE)
+		else if (value instanceof Double)
 		{
-			return Double.compare(Double.parseDouble(value), Double.parseDouble(c.value));
+			return Double.compare((Double)value, (Double)o.value);
 		}
 		else
 		{
-			return value.compareTo(c.value);
+			return value.toString().compareTo(o.value.toString());
 		}
 	}
 
@@ -64,24 +72,10 @@ public class Col implements Comparable<Col>,Serializable
 		return fieldname;
 	}
 
-
-	public int getType()
-	{
-		return type;
-	}
-
-	/**
-	 * @param type the type to set
-	 */
-	public void setType(int type)
-	{
-		this.type = type;
-	}
-
 	/**
 	 * @return Returns the value.
 	 */
-	public String getValue()
+	public Object getValue()
 	{
 		return value;
 	}

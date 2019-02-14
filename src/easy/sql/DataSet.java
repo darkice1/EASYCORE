@@ -77,7 +77,7 @@ public class DataSet implements Serializable
 			{
 				try
 				{
-					String rowstr;
+					String rowstr = null;
 					//Log.OutLog(String.format("%s %d %d %d",rsmd.getColumnName(i) ,rsmd.getColumnType(i),Types.CLOB,Types.TIMESTAMP));
 					int type = rsmd.getColumnType(i);
 					if (type == -4)
@@ -150,6 +150,18 @@ public class DataSet implements Serializable
 						}
 						clob = null;
 					}
+					else if (type == Types.INTEGER || type == Types.SMALLINT  || type == Types.TINYINT)
+					{
+						row.put(colsName[i],new Col(colsName[i],rs.getInt(i)));
+					}
+					else if (type == Types.FLOAT)
+					{
+						row.put(colsName[i],new Col(colsName[i],rs.getFloat(i)));
+					}
+					else if (type == Types.DOUBLE)
+					{
+						row.put(colsName[i],new Col(colsName[i],rs.getDouble(i)));
+					}
 					else
 					{
 						byte[] buf = rs.getBytes(i);
@@ -171,12 +183,15 @@ public class DataSet implements Serializable
 						buf = null;
 					}
 
-					row.put(colsName[i],new Col(colsName[i],rowstr == null?"":rowstr,type));
+					if (rowstr != null)
+					{
+						row.put(colsName[i],new Col(colsName[i],rowstr == null?"":rowstr));						
+					}
 					rowstr = null;
 				}
 				catch (Exception e)
 				{
-					row.put(colsName[i],new Col(colsName[i],"",rsmd.getColumnType(i)));
+					row.put(colsName[i],new Col(colsName[i],""));
 					Log.OutException(e);
 				}		
 			}
@@ -260,7 +275,7 @@ public class DataSet implements Serializable
 	{
 		for (Row r : rowList)
 		{
-			r.put(colname,new Col(colname,r.getString(colname).replaceAll(regex,replacement),r.get(colname).getType()));
+			r.put(colname,new Col(colname,r.getString(colname).replaceAll(regex,replacement)));
 			r = null;
 		}
 	}
@@ -280,32 +295,32 @@ public class DataSet implements Serializable
 	
 	public void putString (String colname,String value)
 	{
-		put (colname,new Col(colname,value,Types.VARCHAR));
+		put (colname,new Col(colname,value));
 	}
 	
 	public void putString (int idx,String colname,String value)
 	{
-		put (idx,colname,new Col(colname,value,Types.VARCHAR));
+		put (idx,colname,new Col(colname,value));
 	}
 	
 	public void putDouble(String colname,double value)
 	{
-		put (colname,new Col(colname,Double.toString(value),Types.DOUBLE));
+		put (colname,new Col(colname,value));
 	}
 	
 	public void putDouble (int idx,String colname,double value)
 	{
-		put (idx,colname,new Col(colname,Double.toString(value),Types.DOUBLE));
+		put (idx,colname,new Col(colname,value));
 	}
 	
 	public void putInteger(String colname,int value)
 	{
-		put (colname,new Col(colname,Integer.toString(value),Types.INTEGER));
+		put (colname,new Col(colname,value));
 	}
 	
 	public void putInteger (int idx,String colname,int value)
 	{
-		put (idx,colname,new Col(colname,Integer.toString(value),Types.INTEGER));
+		put (idx,colname,new Col(colname,value));
 	}	
 	
 	/**
@@ -356,18 +371,10 @@ public class DataSet implements Serializable
 	        cursor = position;
 	    }
 	}
-	
-	public void setFieldType(String field,int type)
-	{
-		for (Row r : rowList)
-		{
-			r.get(field).setType(type);
-		}
-	}
+
 	
 	public void sort(String fieldname,int type)
 	{
-		setFieldType(fieldname,type);
 		sort( fieldname);
 	}
 
@@ -483,7 +490,6 @@ public class DataSet implements Serializable
 	
 	public void reverse(String fieldname,int type)
 	{		
-		setFieldType(fieldname,type);	
 		reverse(fieldname);
 	}
 
@@ -708,5 +714,11 @@ public class DataSet implements Serializable
 		//ds.reverse("a");
 		//ds.sort("a");
 		System.out.println(ds.getRowList());
+		
+		Row a = new Row();
+		a.putString("test", null);
+		System.out.println(a.getDouble("test"));
+
+		System.out.println("#"+a.getString("test"));
 	}
 }

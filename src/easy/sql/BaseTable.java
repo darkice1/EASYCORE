@@ -89,10 +89,13 @@ public class BaseTable
 	
 	public void AddRow(Row r)
 	{
-		for (String k : r.getColsNameList())
+		String[] cols = r.getColsNameList();
+		for (String k : cols)
 		{
 			params.put(k, r.getString(k));
 		}
+		cols =null;
+		r = null;
 	}
 
 	public void clear()

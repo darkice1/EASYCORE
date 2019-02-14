@@ -60,9 +60,9 @@ public abstract class Sql implements  AutoCloseable
 	protected int resultSetConncurrency = ResultSet.CONCUR_READ_ONLY;
 
 	
-	protected long upcount=0;
-	protected long insertcount=0;
-	protected long deltcount=0;
+//	protected long upcount=0;
+//	protected long insertcount=0;
+//	protected long deltcount=0;
 
 	/**
 	 * ������ݿ⣬�û�������,ip��
@@ -455,25 +455,25 @@ public abstract class Sql implements  AutoCloseable
 	{
 		try
 		{
-			if (sql.length()>6)
-			{
-				String t = sql.substring(0,6).toLowerCase();
-				
-				if (t.equals("insert"))
-				{
-					insertcount++;
-				}
-				else if (t.equals("delete"))
-				{
-					deltcount++;
-				}
-				else if (t.equals("update"))
-				{
-					upcount++;
-				}
-				t = null;
-				
-			}
+//			if (sql.length()>6)
+//			{
+//				String t = sql.substring(0,6).toLowerCase();
+//				
+//				if (t.equals("insert"))
+//				{
+//					insertcount++;
+//				}
+//				else if (t.equals("delete"))
+//				{
+//					deltcount++;
+//				}
+//				else if (t.equals("update"))
+//				{
+//					upcount++;
+//				}
+//				t = null;
+//				
+//			}
 			getStmt().addBatch(sql);
 			Log.OutSql(sql);
 		}
@@ -483,37 +483,11 @@ public abstract class Sql implements  AutoCloseable
 		}
 	}
 
-	/**
-	 * @return the upcount
-	 */
-	public long getUpcount()
-	{
-		return upcount;
-	}
-
-	/**
-	 * @return the insertcount
-	 */
-	public long getInsertcount()
-	{
-		return insertcount;
-	}
-
-	/**
-	 * @return the deltcount
-	 */
-	public long getDeltcount()
-	{
-		return deltcount;
-	}
 
 	public int[] executeBatch()
 	{
 		try
 		{
-			upcount=0;
-			insertcount=0;
-			deltcount=0;
 			return getStmt().executeBatch();
 		}
 		catch (Exception ex)

@@ -30,8 +30,6 @@ public class CPSql extends Sql
 	
 	protected boolean usepool = true;
 	
-	protected Properties info = new Properties();
-
 	/**
 	 * @see easy.sql.Sql#init()
 	 */
@@ -61,28 +59,31 @@ public class CPSql extends Sql
 		alias = Config.getProperty("PROJECT")+Format.Md5(String.format("%s-%s-%s-%s", user,password,dbclass,jdbcurl));
 		poolurl = "proxool." +alias+":";
 
-		info = new Properties();
-		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
-		//info.setProperty("proxool.house-keeping-test-sql", "select current_date from dual");
-		info.setProperty("proxool.house-keeping-test-sql", "select 1");
-		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","70000"));
-		
-		info.setProperty("proxool.maximum-connection-lifetime",  Config.getProperty("DBMAXCONNECTIONLIFTIME","120000"));
-		info.setProperty("proxool.house-keeping-sleep-time",  Config.getProperty("DBMAXKEEPINGSLEEPTIME","30000"));
-		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
-		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("SIMULTANEOUSBUILDTHROTTLE","10"));
-		info.setProperty("proxool.test-before-use",  "true");
-		//info.setProperty("proxool.statistics-log-level", "ERROR");
-		//info.setProperty("house-keeping-sleep-time", "30000");
-		info.setProperty("user",user);
-		info.setProperty("password",password);
+
 		
 		try
         {
 			if (usepool)
 			{
 	        	Class.forName(POOLCLASS);
+	    		Properties info = new Properties();
+	    		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
+	    		//info.setProperty("proxool.house-keeping-test-sql", "select current_date from dual");
+	    		info.setProperty("proxool.house-keeping-test-sql", "select 1");
+	    		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","70000"));
+	    		
+	    		info.setProperty("proxool.maximum-connection-lifetime",  Config.getProperty("DBMAXCONNECTIONLIFTIME","120000"));
+	    		info.setProperty("proxool.house-keeping-sleep-time",  Config.getProperty("DBMAXKEEPINGSLEEPTIME","30000"));
+	    		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
+	    		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("SIMULTANEOUSBUILDTHROTTLE","10"));
+	    		info.setProperty("proxool.test-before-use",  "true");
+	    		//info.setProperty("proxool.statistics-log-level", "ERROR");
+	    		//info.setProperty("house-keeping-sleep-time", "30000");
+	    		info.setProperty("user",user);
+	    		info.setProperty("password",password);
+	    		
 				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
+				info = null;
 			}
 			else
 			{

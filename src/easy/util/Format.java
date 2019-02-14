@@ -64,11 +64,11 @@ public class Format
 	private final static String LOWSTRING = "abcdefghijklmnopqrstuvwxyz";
 	private final static String NUMLOWSTRING = "abcdefghijklmnopqrstuvwxyz1234567890";
 	private final static String ALLSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-	
+
 	private final static String HEXSTRING = "01234567890abcdef";
 
 	private static final String HMAC_SHA1 = "HmacSHA1";
-	
+
 	private static final String HMAC_SHA256 = "HmacSHA256";
 
 	// private final static Pattern URLPAT
@@ -98,7 +98,7 @@ public class Format
 		for (String host : GAELIST)
 		{
 			GURLLIST.add(String.format("http://%s/c?action=GetUrl&z=%%s&u=%%s",
-							host));
+					host));
 		}
 		// GURLLIST.add("http://wosoproxy1.appspot.com/c?action=GetUrl&z=%s&u=%s");
 		// GURLLIST.add("http://wosoproxy2.appspot.com/c?action=GetUrl&z=%s&u=%s");
@@ -112,7 +112,7 @@ public class Format
 		try
 		{
 			url = String.format(GURLLIST.get(idx), "n",
-							java.net.URLEncoder.encode(u, "utf-8"));
+					java.net.URLEncoder.encode(u, "utf-8"));
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -127,7 +127,7 @@ public class Format
 		try
 		{
 			url = String.format(GURLLIST.get(idx), "y",
-							java.net.URLEncoder.encode(u, "utf-8"));
+					java.net.URLEncoder.encode(u, "utf-8"));
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -258,21 +258,20 @@ public class Format
 	{
 		StringBuffer buf = new StringBuffer();
 		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		buf.append(String
-						.format("<rs count=\"%s\" pageSize=\"%s\" pageCount=\"%s\" pageNum=\"%s\" use_time=\"%s\">",
-										pi.getRecordCount(), pi.getPageSize(),
-										pi.getTotalPage(), pi.getPageNumber(),
-										use_time));
+		buf.append(String.format(
+				"<rs count=\"%s\" pageSize=\"%s\" pageCount=\"%s\" pageNum=\"%s\" use_time=\"%s\">",
+				pi.getRecordCount(), pi.getPageSize(), pi.getTotalPage(),
+				pi.getPageNumber(), use_time));
 
 		for (int i = pi.getStartIndex(), k = 1; i < pi.getRecordCount()
-						&& k <= pi.getPageSize(); i++, k++)
+				&& k <= pi.getPageSize(); i++, k++)
 		{
 			Row r = ds.getRow(i);
 			buf.append("<r");
 			for (String str : r.getColsNameList())
 			{
 				buf.append(String.format(" %s=\"%s\"", toHTMLString(str, true),
-								toHTMLString(r.getString(str), true)));
+						toHTMLString(r.getString(str), true)));
 			}
 			buf.append("/>");
 		}
@@ -376,7 +375,7 @@ public class Format
 	}
 
 	public static String replaceContent(String str, String start, String end,
-					String newstring)
+			String newstring)
 	{
 		try
 		{
@@ -385,22 +384,22 @@ public class Format
 			int ei = str.indexOf(end, ssi);
 
 			return String.format("%s%s%s", str.substring(0, ssi), newstring,
-							str.substring(ei, str.length()));
+					str.substring(ei, str.length()));
 		}
 		catch (Exception e)
 		{
 			return null;
 		}
 	}
-	
-	private static Map<String,String> getPinYinMap()
+
+	private static Map<String, String> getPinYinMap()
 	{
-		
+
 		if (PINYINMAP == null)
 		{
-			PINYINMAP = new HashMap<String,String>();
-			JFile file = new JFile(FORMAT.getClass().getResourceAsStream(
-							"pinyin.txt"));
+			PINYINMAP = new HashMap<String, String>();
+			JFile file = new JFile(
+					FORMAT.getClass().getResourceAsStream("pinyin.txt"));
 			List<String> list = file.getLineList();
 			for (String t : list)
 			{
@@ -415,7 +414,7 @@ public class Format
 			list = null;
 			file = null;
 		}
-		
+
 		return PINYINMAP;
 	}
 
@@ -471,36 +470,58 @@ public class Format
 		return buf.toString();
 	}
 
-	public static List<Field> getAllField(String classname, boolean getsuper)
-					throws ClassNotFoundException
+	public static List<Field> getAllField(Object obj, boolean getsuper)
+			throws ClassNotFoundException
+	{
+		return getAllField(obj.getClass(),getsuper);
+	}
+	
+	public static List<Field> getAllField(Class<?> c, boolean getsuper)
+			throws ClassNotFoundException
 	{
 		List<Field> list = new ArrayList<Field>();
 
-		Class<?> c = Class.forName(classname);
+//		Class<?> c =  obj.getClass();
 		if (getsuper)
 		{
 			String supername = c.getSuperclass().getName();
 			// System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
 
 			if (supername != null
-							&& "java.lang.Object".equals(supername) == false)
+					&& "java.lang.Object".equals(supername) == false)
 			{
-				list.addAll(getAllField(supername, true));
+				list.addAll(getAllField(c.getSuperclass(), true));
 			}
 		}
 
 		// System.out.println("#########"+c.getName());
 		Field[] fs = c.getDeclaredFields();
+		c = null;
 		for (Field f : fs)
 		{
-			// System.out.println(f+" "+f.getGenericType().getTypeName()+" "+f.getName());
-//			f.toString();
-			if (f.toString().indexOf(" transient ") < 0 &&f.getGenericType().getTypeName().indexOf("java.lang.Class.") < 0)
+			// System.out.println(f+" "+f.getGenericType().getTypeName()+"
+			// "+f.getName());
+			// f.toString();
+			if (f.toString().indexOf(" transient ") < 0 && f.getGenericType()
+					.getTypeName().indexOf("java.lang.Class.") < 0)
 			{
 				list.add(f);
 			}
+			f = null;
 		}
+		fs = null;
 
+		return list;
+	}
+
+	public static List<Field> getAllField(String classname, boolean getsuper)
+			throws ClassNotFoundException
+	{
+		Class<?> c = Class.forName(classname);
+	
+		List<Field> list = getAllField(c,getsuper);
+		c = null;
+		
 		return list;
 	}
 
@@ -517,15 +538,17 @@ public class Format
 	 */
 	public static String beanToString(Object o, boolean getsuper)
 	{
-//		StringBuffer buf = new StringBuffer();
+
+		// StringBuffer buf = new StringBuffer();
 		// Field[] fields = o.getClass().getDeclaredFields();
 		JsonConfig jsonconfig = new JsonConfig();
 		jsonconfig.setAllowNonStringKeys(true);
 
-		JSONObject json = JSONObject.fromObject("{}",jsonconfig);
+		JSONObject json = JSONObject.fromObject("{}", jsonconfig);
+		jsonconfig = null;
 		try
 		{
-			List<Field> fields = getAllField(o.getClass().getName(), getsuper);
+			List<Field> fields = getAllField(o, getsuper);
 
 			for (Field f : fields)
 			{
@@ -534,34 +557,39 @@ public class Format
 				try
 				{
 					Object po = f.get(o);
-//					 System.out.println(f.getName()+" "+po.getClass().isArray()+" "+po);
-					if (po != null && (po.getClass().isArray() || po instanceof java.util.List ))
+					// System.out.println(f.getName()+"
+					// "+po.getClass().isArray()+" "+po);
+					if (po != null && (po.getClass().isArray()
+							|| po instanceof java.util.List))
 					{
-						JSONArray arr =  JSONArray.fromObject("[]",jsonconfig);
-//						buf.append(f.getName());
-//						buf.append(":[");
+						JSONArray arr = JSONArray.fromObject("[]", jsonconfig);
+						// buf.append(f.getName());
+						// buf.append(":[");
 						if (po.getClass().isArray())
 						{
-							arr.add(po);			
+							arr.add(po);
 						}
-						else if(po instanceof java.util.List)
+						else if (po instanceof java.util.List)
 						{
-//							System.out.println("####"+f.getName());
-							for (Object ppo : (List<?>)po)
+							// System.out.println("####"+f.getName());
+							for (Object ppo : (List<?>) po)
 							{
-								arr.add(ppo.toString());	
+								arr.add(ppo.toString());
 							}
-//							arr.add(po);
+							// arr.add(po);
 						}
 
 						json.put(f.getName(), arr);
+						arr = null;
 					}
 					else
 					{
-//						System.out.println("#"+f.getName()+"#"+po);
-						json.put(f.getName(),po);							
-//						buf.append(String.format("%s:[%s]\n", f.getName(), po));
+						// System.out.println("#"+f.getName()+"#"+po);
+						json.put(f.getName(), po);
+						// buf.append(String.format("%s:[%s]\n", f.getName(),
+						// po));
 					}
+					po = null;
 				}
 				catch (IllegalArgumentException e)
 				{
@@ -573,14 +601,17 @@ public class Format
 				}
 				f.setAccessible(accessFlag);
 			}
+			fields = null;
 		}
 		catch (ClassNotFoundException e1)
 		{
 			Log.OutException(e1);
 		}
 		// System.out.println(toListString(fields));
+		String str = json.toString();
+		json = null;
 
-		return json.toString();
+		return str;
 	}
 
 	/**
@@ -633,8 +664,8 @@ public class Format
 					temp = 1;
 				}
 				// 左边+1,上边+1, 左上角+temp取最小
-				d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1]
-								+ temp);
+				d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1,
+						d[i - 1][j - 1] + temp);
 			}
 		}
 		return d[n][m];
@@ -724,8 +755,7 @@ public class Format
 	public static String long2ip(long ipLong)
 	{
 		// long ipLong = 1037591503;
-		long mask[] =
-		{ 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
+		long mask[] = { 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
 		long num = 0;
 		StringBuffer ipInfo = new StringBuffer();
 		for (int i = 0; i < 4; i++)
@@ -757,7 +787,7 @@ public class Format
 		}
 		return buf.toString();
 	}
-	
+
 	public static String getRandHex(int num)
 	{
 		StringBuffer buf = new StringBuffer();
@@ -867,7 +897,8 @@ public class Format
 		return MessageDigest("md2", str);
 	}
 
-	public static byte[] HMACSha1(byte[] key, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException
+	public static byte[] HMACSha1(byte[] key, byte[] data)
+			throws NoSuchAlgorithmException, InvalidKeyException
 	{
 		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 		Mac mac = Mac.getInstance(HMAC_SHA1);
@@ -876,14 +907,15 @@ public class Format
 
 		return rawHmac;
 	}
-	
-	
-	public static byte[] HMACSha1(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException
+
+	public static byte[] HMACSha1(String key, String data)
+			throws NoSuchAlgorithmException, InvalidKeyException
 	{
-		return HMACSha1(key.getBytes(),data.getBytes());
+		return HMACSha1(key.getBytes(), data.getBytes());
 	}
 
-	public static byte[] HMACSha256(byte[] key, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException
+	public static byte[] HMACSha256(byte[] key, byte[] data)
+			throws NoSuchAlgorithmException, InvalidKeyException
 	{
 		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256);
 		Mac mac = Mac.getInstance(HMAC_SHA256);
@@ -892,20 +924,20 @@ public class Format
 
 		return rawHmac;
 	}
-	
-	
-	public static byte[] HMACSha256(String key, String data) throws NoSuchAlgorithmException, InvalidKeyException
+
+	public static byte[] HMACSha256(String key, String data)
+			throws NoSuchAlgorithmException, InvalidKeyException
 	{
-		return HMACSha256(key.getBytes(),data.getBytes());
+		return HMACSha256(key.getBytes(), data.getBytes());
 	}
-	
+
 	public static String fileMd5(final String inputFile) throws IOException
 	{
 		File file = new File(inputFile);
 		String value = null;
 		FileInputStream filein = new FileInputStream(file);
-		MappedByteBuffer byteBuffer = filein.getChannel().map(
-						FileChannel.MapMode.READ_ONLY, 0, file.length());
+		MappedByteBuffer byteBuffer = filein.getChannel()
+				.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
 		MessageDigest md5;
 		try
 		{
@@ -930,7 +962,7 @@ public class Format
 	{
 		return MessageDigest("md5", bytes);
 	}
-	
+
 	public static String Md5(String str)
 	{
 		return MessageDigest("md5", str);
@@ -970,7 +1002,7 @@ public class Format
 
 		return Long.parseLong(buf.toString());
 	}
-	
+
 	public static byte[] MessageDigest(String m, byte bytes[])
 	{
 		byte[] mstr = null;
@@ -989,22 +1021,23 @@ public class Format
 	public static String MessageDigest(String m, String str)
 	{
 		String mstr = null;
-		mstr = byte2hex(MessageDigest(m,str.getBytes()));
-		
+		mstr = byte2hex(MessageDigest(m, str.getBytes()));
+
 		return mstr;
 	}
-	
-	public static byte[] hex2byte (String s) 
+
+	public static byte[] hex2byte(String s)
 	{
-        String s2;
-        byte[] b = new byte[s.length() / 2];
-        int i;
-        for (i = 0; i < s.length() / 2; i++) {
-            s2 = s.substring(i * 2, i * 2 + 2);
-            b[i] = (byte)(Integer.parseInt(s2, 16) & 0xff);
-        }
-        return b;
-    }
+		String s2;
+		byte[] b = new byte[s.length() / 2];
+		int i;
+		for (i = 0; i < s.length() / 2; i++)
+		{
+			s2 = s.substring(i * 2, i * 2 + 2);
+			b[i] = (byte) (Integer.parseInt(s2, 16) & 0xff);
+		}
+		return b;
+	}
 
 	public static String byte2hex(byte[] b) // 二行制转字符串
 	{
@@ -1027,43 +1060,43 @@ public class Format
 
 	public static String encodeBase64Url(final byte[] buf) throws IOException
 	{
-        byte[] encoded = ENBASE64URL.encode(buf);
-        
-		//BASE64Encoder en = new sun.misc.BASE64Encoder();
+		byte[] encoded = ENBASE64URL.encode(buf);
+
+		// BASE64Encoder en = new sun.misc.BASE64Encoder();
 		return new String(encoded);
 	}
 
 	public static byte[] decodeBase64Url(final String str) throws IOException
 	{
-		//BASE64Decoder decoder = new BASE64Decoder();
-		//return decoder.decodeBuffer(str);
+		// BASE64Decoder decoder = new BASE64Decoder();
+		// return decoder.decodeBuffer(str);
 		return DEBASE64URL.decode(str);
 	}
-	
+
 	public static String encodeBase64(final byte[] buf) throws IOException
 	{
-        byte[] encoded = ENBASE64.encode(buf);
-        
-		//BASE64Encoder en = new sun.misc.BASE64Encoder();
+		byte[] encoded = ENBASE64.encode(buf);
+
+		// BASE64Encoder en = new sun.misc.BASE64Encoder();
 		return new String(encoded);
 	}
 
 	public static byte[] decodeBase64(final String str) throws IOException
 	{
-		//BASE64Decoder decoder = new BASE64Decoder();
-		//return decoder.decodeBuffer(str);
+		// BASE64Decoder decoder = new BASE64Decoder();
+		// return decoder.decodeBuffer(str);
 		return DEBASE64.decode(str);
 	}
 
 	public static String encodeDes(String mykey, String encryptedString)
-					throws UnsupportedEncodingException, InvalidKeyException,
-					NoSuchAlgorithmException, NoSuchPaddingException,
-					InvalidKeySpecException
+			throws UnsupportedEncodingException, InvalidKeyException,
+			NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeySpecException
 	{
 		byte[] keyAsBytes = mykey.getBytes("utf-8");
 		DESKeySpec myKeySpec = new DESKeySpec(keyAsBytes);
 		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
-						.getInstance("DES");
+				.getInstance("DES");
 		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
 
 		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
@@ -1084,14 +1117,14 @@ public class Format
 	}
 
 	public static String decodeDes(String mykey, String encryptedString)
-					throws UnsupportedEncodingException, InvalidKeyException,
-					NoSuchAlgorithmException, NoSuchPaddingException,
-					InvalidKeySpecException
+			throws UnsupportedEncodingException, InvalidKeyException,
+			NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeySpecException
 	{
 		byte[] keyAsBytes = mykey.getBytes("utf-8");
 		KeySpec myKeySpec = new DESKeySpec(keyAsBytes);
 		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
-						.getInstance("DES");
+				.getInstance("DES");
 		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
 		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
 
@@ -1141,7 +1174,7 @@ public class Format
 				for (int i = 0, len = fs.length; i < len; i++)
 				{
 					buf.append(String.format(" %d:%f", i + 1,
-									ds.getDouble(fs[i])));
+							ds.getDouble(fs[i])));
 				}
 				buf.append("\n");
 			}
@@ -1158,8 +1191,10 @@ public class Format
 
 	public static List<String> getUrls(final String str)
 	{
-//		final Pattern URLPAT = Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
-		final Pattern URLPAT = Pattern.compile("((http(|s):)?//[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+		// final Pattern URLPAT =
+		// Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+		final Pattern URLPAT = Pattern
+				.compile("((http(|s):)?//[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
 
 		List<String> list = new LinkedList<String>();
 		Matcher matcher = URLPAT.matcher(str);
@@ -1168,19 +1203,23 @@ public class Format
 			String url = matcher.group();
 			if (url.indexOf("//") == 0)
 			{
-				url = "https:"+url;
+				url = "https:" + url;
 			}
 			list.add(url);
 		}
 		return list;
 	}
-	
-//	public static void main(String[] args)
-//	{
-//		System.out.println(getUrls("<div id=\"4d703977f553755f624215ea80180c89\" style=\"width:300px;height:250px;\"><script type=\"text/javascript\" src=\"http://adx.haoad.org/p/4d703977f553755f624215ea80180c89.js\"></script></div>"));
-//		System.out.println(getUrls("<script type=\"text/javascript\" smua=\"d=p&s=b&u=u3501065&w=300&h=250\" src=\"//www.nkscdn.com/smu0/o.js\"></\"></script>"));
-//
-//	}
+
+	// public static void main(String[] args)
+	// {
+	// System.out.println(getUrls("<div id=\"4d703977f553755f624215ea80180c89\"
+	// style=\"width:300px;height:250px;\"><script type=\"text/javascript\"
+	// src=\"http://adx.haoad.org/p/4d703977f553755f624215ea80180c89.js\"></script></div>"));
+	// System.out.println(getUrls("<script type=\"text/javascript\"
+	// smua=\"d=p&s=b&u=u3501065&w=300&h=250\"
+	// src=\"//www.nkscdn.com/smu0/o.js\"></\"></script>"));
+	//
+	// }
 
 	public static List<String> getAts(final String str)
 	{
@@ -1188,10 +1227,9 @@ public class Format
 
 		if (str != null)
 		{
-			final Pattern ATPAT = Pattern
-							.compile(String.format(
-											"@[[^@\\s%s]0-9]{1,20}",
-											"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"));
+			final Pattern ATPAT = Pattern.compile(String.format(
+					"@[[^@\\s%s]0-9]{1,20}",
+					"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"));
 			Matcher matcher = ATPAT.matcher(str);
 			while (matcher.find())
 			{
@@ -1224,8 +1262,8 @@ public class Format
 		try
 		{
 			String content = JFile.loadHttpFile(
-							"http://iframe.ip138.com/ic.asp", null, null,
-							"gbk", "http://ip138.com/");
+					"http://iframe.ip138.com/ic.asp", null, null, "gbk",
+					"http://ip138.com/");
 			String ip = Format.getContent(content, "[", "]");
 			String area = Format.getContent(content, "来自：", "</center>");
 			all.put("ip", ip);
@@ -1287,17 +1325,18 @@ public class Format
 		return code;
 
 	}
-	
+
 	public static InputStream getStringStream(String sInputString)
 	{
 		if (sInputString != null)
 		{
-			ByteArrayInputStream tInputStringStream = new ByteArrayInputStream(sInputString.getBytes());  
-			return tInputStringStream;  
+			ByteArrayInputStream tInputStringStream = new ByteArrayInputStream(
+					sInputString.getBytes());
+			return tInputStringStream;
 		}
-		return null;  
-	
-	} 
+		return null;
+
+	}
 	/*
 	 * public static void main(String[] args) { long a =
 	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
@@ -1311,8 +1350,8 @@ public class Format
 	 * "http://s.click.taobao.com/t?e=m%3D2%26s%3DWXz%2BpQdcHYccQipKwQzePOeEDrYVVa64Qih%2F7PxfOKS5VBFTL4hn2dFYoGP7L3a4NGaA%2Fv7qa0ST6eDNmvF6jBLOI4%2FU6Dke38XymDefB1EyH37S5WIg5fE%2FJZ20M53%2Bcy7llBOuH5ssPuCO17knxsYOae24fhW0"
 	 * ); System.out.println(str); System.out.println(decodeDes(key,str));
 	 * 
-	 * //http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk
-	 * /zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
+	 * //http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/
+	 * B0OvI3cIUDlFk /zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
 	 * System.out.println(decodeDes("UlTdTr8Y",
 	 * "tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk/zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p"
 	 * )); } catch (InvalidKeyException e) { Log.OutException(e); } catch
@@ -1322,19 +1361,20 @@ public class Format
 	 * (InvalidKeySpecException e) { Log.OutException(e); } }
 	 */
 
-//	public static void main(String[] args) throws ClassNotFoundException, IOException
-//	{
-//		try
-//		{
-//			System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
-//		}
-//		catch (InvalidKeyException e)
-//		{
-//			Log.OutException(e);
-//		}
-//		catch (NoSuchAlgorithmException e)
-//		{
-//			Log.OutException(e);
-//		}
-//	}
+	// public static void main(String[] args) throws ClassNotFoundException,
+	// IOException
+	// {
+	// try
+	// {
+	// System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
+	// }
+	// catch (InvalidKeyException e)
+	// {
+	// Log.OutException(e);
+	// }
+	// catch (NoSuchAlgorithmException e)
+	// {
+	// Log.OutException(e);
+	// }
+	// }
 }
