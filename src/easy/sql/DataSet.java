@@ -178,7 +178,7 @@ public class DataSet implements Serializable
 						}
 						else
 						{
-							rowstr = null;
+							rowstr = "";
 						}
 						buf = null;
 					}
@@ -676,49 +676,5 @@ public class DataSet implements Serializable
 				}
 			}
 		}
-	}
-	
-	public static void main(String[] args)
-	{
-		DataSet ds = new DataSet();
-		List<Row>  srclist = ds.getRowList();
-		List<Row>  list = new ArrayList<Row>();
-
-		for (int i=0;i<=10;i++)
-		{
-			Row sr = new Row();
-			Row r = new Row();
-			
-			sr.putDouble("a", Math.random());
-			r.putString("b", ""+i);
-			r.putString("c", "ccc"+i);
-
-			srclist.add(sr);
-			list.add(r);
-		}
-		
-		//System.out.println(srclist);
-		//System.out.println(list);
-
-		//join(srclist,list,"a","b");
-		String []fieldnames = {"a"};
-		String []fieldTypes = {"double"};
-		Boolean []isDESC = {false};
-		ds.sort(fieldnames, fieldTypes, isDESC);
-
-		Boolean []isDESC2 = {true};
-		System.out.println(ds.getRowList());
-
-		ds.sort(fieldnames, fieldTypes, isDESC2);
-
-		//ds.reverse("a");
-		//ds.sort("a");
-		System.out.println(ds.getRowList());
-		
-		Row a = new Row();
-		a.putString("test", null);
-		System.out.println(a.getDouble("test"));
-
-		System.out.println("#"+a.getString("test"));
 	}
 }

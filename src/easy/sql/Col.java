@@ -34,6 +34,12 @@ public class Col implements Comparable<Col>,Serializable
 		this.value = new Float(value);
 	}
 	
+	public Col (String fieldname,long value)
+	{
+		this.fieldname = fieldname;
+		this.value = new Long(value);
+	}
+	
 	public Col (String fieldname,double value)
 	{
 		this.fieldname = fieldname;
