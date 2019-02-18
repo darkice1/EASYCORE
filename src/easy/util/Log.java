@@ -80,7 +80,12 @@ public class Log
 	{	
 		return OutException(ex,null);
 	}
-
+	
+	public static String OutException (Exception ex,String formate,Object... strs)
+	{
+		String str = String.format(formate,strs);
+		return OutException (ex,str);
+	}
 
 	public static String OutException (Exception ex,String outstr)
 	{

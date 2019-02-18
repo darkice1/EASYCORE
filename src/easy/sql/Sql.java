@@ -450,30 +450,18 @@ public abstract class Sql implements  AutoCloseable
 	{
 		return new DataSet(getStmt().getResultSet());
 	}
+	
+	
+	public void addBatch(String formate,Object... strs)
+	{
+		String sql = String.format(formate,strs);
+		addBatch(sql);
+	}
 
 	public void addBatch(String sql)
 	{
 		try
 		{
-//			if (sql.length()>6)
-//			{
-//				String t = sql.substring(0,6).toLowerCase();
-//				
-//				if (t.equals("insert"))
-//				{
-//					insertcount++;
-//				}
-//				else if (t.equals("delete"))
-//				{
-//					deltcount++;
-//				}
-//				else if (t.equals("update"))
-//				{
-//					upcount++;
-//				}
-//				t = null;
-//				
-//			}
 			getStmt().addBatch(sql);
 			Log.OutSql(sql);
 		}

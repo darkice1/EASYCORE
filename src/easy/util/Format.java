@@ -35,6 +35,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
@@ -545,7 +546,6 @@ public class Format
 		jsonconfig.setAllowNonStringKeys(true);
 
 		JSONObject json = JSONObject.fromObject("{}", jsonconfig);
-		jsonconfig = null;
 		try
 		{
 			List<Field> fields = getAllField(o, getsuper);
@@ -608,10 +608,27 @@ public class Format
 			Log.OutException(e1);
 		}
 		// System.out.println(toListString(fields));
+		jsonconfig = null;
+
 		String str = json.toString();
 		json = null;
 
 		return str;
+	}
+	
+	public static String getRequestUrl(HttpServletRequest req) 
+	{
+		StringBuffer buf = new StringBuffer(req.getServerName());
+		buf.append("/");
+		buf.append(req.getServletPath());
+		
+		String q = req.getQueryString();
+		if (q != null)
+		{
+			buf.append("?").append(q);
+		}
+		
+		return buf.toString();
 	}
 
 	/**
