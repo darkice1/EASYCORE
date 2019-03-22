@@ -1,10 +1,10 @@
 package easy.sql;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -29,9 +29,9 @@ public class BaseTable
 
 	protected String where;
 
-	protected Map<String, String> params = new ConcurrentHashMap<String, String>();
+	protected Map<String, String> params = new HashMap<>();
 
-	protected Map<String, String> proparams = new ConcurrentHashMap<String, String>();
+	protected Map<String, String> proparams = new HashMap<>();
 
 	protected final static String LASTSQL = "SELECT LAST_INSERT_ID() id";
 
@@ -89,13 +89,10 @@ public class BaseTable
 	
 	public void AddRow(Row r)
 	{
-		String[] cols = r.getColsNameList();
-		for (String k : cols)
+		for (String k : r.getColsNameList())
 		{
 			params.put(k, r.getString(k));
 		}
-		cols =null;
-		r = null;
 	}
 
 	public void clear()
