@@ -1,17 +1,16 @@
 package rmbz;
 
-import java.io.IOException;
-import java.net.ConnectException;
-
-import net.sf.json.JSONObject;
 import easy.io.JFile;
 import easy.robot.chat.ChatRobot;
 import easy.util.Log;
+import net.sf.json.JSONObject;
+
+import java.io.IOException;
 
 public class Rmbz extends ChatRobot
 {
 	@Override
-	public String chat(String msg) throws ConnectException, IOException
+	public String chat(String msg) throws IOException
 	{
 		msg = msg.replace("#", "");
 
@@ -20,11 +19,10 @@ public class Rmbz extends ChatRobot
 		String html = JFile.loadHttpFile(url);
 		//System.out.println(html);
 		JSONObject json = JSONObject.fromObject(html);
-		String recontent = json.getString("message");
 		//System.out.println(json.get("message"));
 		//System.out.println(json.get("msgbox"));
 
-		return recontent;
+		return json.getString("message");
 	}
 
 	/**
