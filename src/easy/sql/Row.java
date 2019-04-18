@@ -321,9 +321,6 @@ public class Row implements Comparable<Row>,Serializable
 			c = m.getValue();
 			buf.append(String.format("[%s]:[%s]\n",m.getKey(),c.getValue() ));
 		}
-		rs = null;
-		m = null;
-		c = null;
 		
 		return buf.toString();
 	}

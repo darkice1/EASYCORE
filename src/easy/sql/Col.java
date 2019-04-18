@@ -18,8 +18,15 @@ public class Col implements Comparable<Col>,Serializable
 	
 	public Col (String fieldname,String value)
 	{
+		if (value == null)
+		{
+			this.value = "";
+		}
+		else
+		{
+			this.value = value;
+		}
 		this.fieldname = fieldname;
-		this.value = value;
 	}
 	
 	public Col (String fieldname,int value)

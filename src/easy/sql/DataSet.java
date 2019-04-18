@@ -148,7 +148,6 @@ public class DataSet implements Serializable
 						{
 							rowstr = "";
 						}
-						clob = null;
 					}
 					else if (type == Types.INTEGER || type == Types.SMALLINT  || type == Types.TINYINT)
 					{
@@ -185,7 +184,7 @@ public class DataSet implements Serializable
 
 					if (rowstr != null)
 					{
-						row.put(colsName[i],new Col(colsName[i],rowstr == null?"":rowstr));						
+						row.put(colsName[i],new Col(colsName[i],rowstr));
 					}
 					rowstr = null;
 				}
