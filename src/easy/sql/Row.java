@@ -47,7 +47,7 @@ public class Row implements Comparable<Row>,Serializable
 	
 	public int compareTo(Row o)
 	{
-		Row r = (Row)o;
+		Row r = o;
 		return get(sortfield).compareTo(r.get(sortfield));
 	}
 	
@@ -156,11 +156,9 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		try
 		{
-			Col c = row.get(key);
-			Object value = c.getValue();
+			Object value = row.get(key).getValue();
 			if (value == null)
 			{
-				c = null;
 				return null;
 			}
 						
@@ -189,14 +187,15 @@ public class Row implements Comparable<Row>,Serializable
 		try
 		{
 			Object value = row.get(key).getValue();
-			if (value == null)
-			{
-				return "";
-			}
-			else
-			{
-				return value.toString();
-			}
+//			if (value == null)
+//			{
+//				return "";
+//			}
+//			else
+//			{
+//				return value.toString();
+//			}
+			return value.toString();
 		}
 		catch (Exception ex)
 		{
@@ -208,7 +207,6 @@ public class Row implements Comparable<Row>,Serializable
 	public void put(String key, Col value)
 	{
 		row.put(key, value);
-		value = null;
 	}
 	
 	public void putString(String key, String value)
@@ -298,7 +296,6 @@ public class Row implements Comparable<Row>,Serializable
 		{
 			fieldbuf.append(String.format("%s,",str));
 			valuebuf.append(String.format("'%s',", getString(str).replaceAll("'","''")));
-			str = null;
 		}
 		fieldbuf.setLength(fieldbuf.length()-1);
 		valuebuf.setLength(valuebuf.length()-1);
