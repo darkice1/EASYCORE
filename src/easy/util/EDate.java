@@ -1,11 +1,14 @@
 package easy.util;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 import easy.config.Config;
+import easy.io.JFile;
+import net.sf.json.JSONObject;
 
 /**
  * <p><i>Copyright: 9esoft.com (c) 2005-2006<br>
@@ -247,4 +250,31 @@ public class EDate
 		date.setTime(time);
 		calendar.setTime (date);
 	}
+
+	public static boolean isWorkday(Date d)
+	{
+		boolean isok = true;
+		String dstr = EDate.toString(d,"yyyyMMdd");
+		String url = String.format("http://api.goseek.cn/Tools/holiday?date=%s",dstr);
+		try
+		{
+			String html = JFile.loadHttpFile(url);
+			JSONObject json = JSONObject.fromObject(html);
+			if (json.getInt("data")!=0)
+			{
+				isok = false;
+			}
+			/* System.out.println(html); */
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
+		return isok;
+	}
+
+//	public static void main(String[] args)
+//	{
+//		System.out.println(isWorkday(new EDate("2019-05-05 00:00:00").getDate()));
+//	}
 }
