@@ -1105,9 +1105,10 @@ public class JFile
 		{
 			Kryo kryo = getKryo();
 
-			Input input = new Input(bytes,0,bytes.length);
-			InputStream cin = new InflaterInputStream(input);
-			obj = kryo.readClassAndObject((Input) cin);
+//			Input input = new Input(bytes,0,bytes.length);
+//			InputStream cin = new InflaterInputStream(input);
+			Input input = new Input(new InflaterInputStream(new ByteArrayInputStream(bytes)));
+			obj = kryo.readClassAndObject(input);
 			input.close();
 
 			return obj;
