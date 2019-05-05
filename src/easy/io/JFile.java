@@ -48,8 +48,10 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.InflaterInputStream;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -1095,6 +1097,48 @@ public class JFile
         kryo.register(double[].class);
         return kryo;
     }
+
+	public static Object kryoCompressBytesUnSerialize(byte[] bytes)
+	{
+		Object obj;
+		if (bytes != null)
+		{
+			Kryo kryo = getKryo();
+
+			Input input = new Input(bytes,0,bytes.length);
+			InputStream cin = new InflaterInputStream(input);
+			obj = kryo.readClassAndObject((Input) cin);
+			input.close();
+
+			return obj;
+		}
+
+		return null;
+	}
+
+	public static byte[] kryoSerializeToCompressBytes(Object object)
+	{
+		byte[] bytes = new byte[0];
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try
+		{
+			DeflaterOutputStream cout = new DeflaterOutputStream(baos);
+			bytes = baos.toByteArray();
+
+			kryoSerialize(object,cout);
+			cout.finish();
+
+			bytes = baos.toByteArray();
+			baos.close();
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
+
+		return bytes;
+	}
 
 	public static Object kryoBytesUnSerialize(byte[] bytes)
 	{

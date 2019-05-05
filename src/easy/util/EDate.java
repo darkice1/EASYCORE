@@ -206,6 +206,7 @@ public class EDate
 		return new EDate().LOGFORMAT.format(new Date());
 	}
 
+	@Override
 	public String toString ()
 	{
 		return DATEFORMAT.format (date);
