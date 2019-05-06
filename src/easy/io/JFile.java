@@ -70,6 +70,7 @@ import easy.sql.DataSet;
 import easy.sql.Row;
 import easy.util.Format;
 import easy.util.Log;
+import org.apache.http.client.entity.GzipCompressingEntity;
 
 /**
  * <p>
@@ -1107,6 +1108,16 @@ public class JFile
 //			Input input = new Input(bytes,0,bytes.length);
 //			InputStream cin = new InflaterInputStream(input);
 			Input input = new Input(new InflaterInputStream(new ByteArrayInputStream(bytes)));
+//			Input input = null;
+//			try
+//			{
+//				input = new Input(new GZIPInputStream(new ByteArrayInputStream(bytes)));
+//			}
+//			catch (IOException e)
+//			{
+//				Log.OutException(e);
+//			}
+
 			obj = kryo.readClassAndObject(input);
 			input.close();
 
@@ -1124,13 +1135,15 @@ public class JFile
 		try
 		{
 			DeflaterOutputStream cout = new DeflaterOutputStream(baos);
-//			bytes = baos.toByteArray();
+//			GZIPOutputStream cout = new GZIPOutputStream(baos);
+
+			//			bytes = baos.toByteArray();
 
 			kryoSerialize(object,cout);
 			cout.finish();
 
 			bytes = baos.toByteArray();
-			baos.close();
+			cout.close();
 		}
 		catch (IOException e)
 		{
@@ -1256,10 +1269,48 @@ public class JFile
 	
 	public static void main(String[] args) throws ConnectException, IOException
 	{
-		String a = "ASDf   adfadsf";
+		String a = "ASDf   adfaerweqrqwereqwrqewrdsf";
+		int max = 10000;
 		byte[] bs = JFile.kryoSerializeToBytes(a);
-		System.out.println(new String(bs));
+
+
+		long ts = System.currentTimeMillis();
+		for (int i=0; i<max; i++)
+		{
+			JFile.kryoSerializeToBytes(a);
+		}
+		Log.OutLog("%d",System.currentTimeMillis()-ts);
+		//		System.out.println(new String(bs));
+		ts = System.currentTimeMillis();
+
+		for (int i=0; i<max; i++)
+		{
+			JFile.kryoBytesUnSerialize(bs);
+		}
+		Log.OutLog("%d",System.currentTimeMillis()-ts);
 		System.out.println(JFile.kryoBytesUnSerialize(bs));
+
+
+		bs = JFile.kryoSerializeToCompressBytes(a);
+
+		ts = System.currentTimeMillis();
+
+		for (int i=0; i<max; i++)
+		{
+			JFile.kryoSerializeToCompressBytes(a);
+		}
+		Log.OutLog("%d",System.currentTimeMillis()-ts);
+
+		System.out.println(JFile.kryoCompressBytesUnSerialize(bs));
+		//		System.out.println(new String(bs));
+		ts = System.currentTimeMillis();
+
+		for (int i=0; i<max; i++)
+		{
+			JFile.kryoCompressBytesUnSerialize(bs);
+		}
+		Log.OutLog("%d",System.currentTimeMillis()-ts);
+
 
 	}
 }
