@@ -105,8 +105,7 @@ public class JFile
 	public static boolean exists(String filename)
 	{
 		File f = new File(filename);
-		boolean b = f.exists();
-		return b;
+		return f.exists();
 	}
 
 	public static boolean delete(String filename)
@@ -1119,13 +1118,13 @@ public class JFile
 
 	public static byte[] kryoSerializeToCompressBytes(Object object)
 	{
-		byte[] bytes = new byte[0];
+		byte[] bytes = null;
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try
 		{
 			DeflaterOutputStream cout = new DeflaterOutputStream(baos);
-			bytes = baos.toByteArray();
+//			bytes = baos.toByteArray();
 
 			kryoSerialize(object,cout);
 			cout.finish();
@@ -1176,7 +1175,7 @@ public class JFile
 		try
 		{
 			
-			bytes = baos.toByteArray();
+//			bytes = baos.toByteArray();
 			kryoSerialize(object,baos);			
 			bytes = baos.toByteArray();
 
