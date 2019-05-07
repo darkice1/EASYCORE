@@ -105,12 +105,7 @@ public abstract class Sql implements  AutoCloseable
 		return Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));
 	}
 
-	/**
-	 * 数据库查询
-	 * @param sql
-	 * @return
-	 * @throws SQLException
-	 */
+
 	public DataSet executeQuery(String sql) throws SQLException
 	{
 		try
@@ -131,15 +126,13 @@ public abstract class Sql implements  AutoCloseable
 	public DataSet executeQueryCache(String formate,Object... strs) throws SQLException, IOException
 	{
 		String sql = String.format(formate,strs);
-		DataSet ds =  executeQueryCache(sql);
-		return ds;
+		return executeQueryCache(sql);
 	}
 	
 	public DataSet executeQueryCache(long keeptime,String formate,Object... strs) throws SQLException, IOException
 	{
 		String sql = String.format(formate,strs);
-		DataSet ds = executeQueryCache(sql,keeptime);
-		return ds;
+		return executeQueryCache(sql,keeptime);
 	}
 	
 	public DataSet executeQueryCache(String sql) throws SQLException, IOException
@@ -228,15 +221,11 @@ public abstract class Sql implements  AutoCloseable
 					}
 
 				}
-				catch (ClassNotFoundException e)
-				{
-					neednew = true;
-				}
 				catch (Exception e)
 				{
-//					Log.OutException(e);
 					neednew = true;
-				}
+				}//					Log.OutException(e);
+
 			}
 			else
 			{
@@ -361,11 +350,6 @@ public abstract class Sql implements  AutoCloseable
 		return executeUpdate(sql);
 	}
 
-	/**
-	 * 数据库更新
-	 * @param sql
-	 * @return
-	 */
 	public int executeUpdate(String sql)
 	{
 		try
@@ -421,19 +405,12 @@ public abstract class Sql implements  AutoCloseable
 		//		}
 		return stmtwrite;
 	}
-	
-	/**
-	 * 数据库更新（返回异常）
-	 * @param sql
-	 * @return
-	 * @throws SQLException
-	 */
+
 	public int executeUpdateEx(String sql) throws SQLException
 	{
 		String sqlstr = checksql(sql);
 		Log.OutSql(sql);
-		int re = getStmtWrite().executeUpdate(sqlstr);
-		return re;
+		return getStmtWrite().executeUpdate(sqlstr);
 	}
 
 //	protected void finalize() throws Throwable
@@ -456,9 +433,8 @@ public abstract class Sql implements  AutoCloseable
 
 	protected String checksql(String sql)
 	{
-		char zero[] = { 0 };
-		sql.replaceAll(new String(zero), "");
-		return sql;
+		final char[] zero = {0};
+		return Format.replaceAll(sql,new String(zero), "");
 	}
 
 	public DataSet getResultSet() throws SQLException

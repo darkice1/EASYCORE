@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,7 +59,7 @@ import net.sf.json.JsonConfig;
 
 public class Format
 {
-	private static Map<String, String> PINYINMAP = new HashMap<String, String>();
+	private static Map<String, String> PINYINMAP = new HashMap<>();
 
 	private final static Format FORMAT = new Format();
 
@@ -74,8 +75,8 @@ public class Format
 
 	// private final static Pattern URLPAT
 	// =Pattern.compile("(http://|https://)[^\\s]*");
-	protected final transient static List<String> GURLLIST = new ArrayList<String>();
-	public final transient static List<String> GAELIST = new ArrayList<String>();
+	protected final transient static List<String> GURLLIST = new ArrayList<>();
+	public final transient static List<String> GAELIST = new ArrayList<>();
 	static
 	{
 		GAELIST.add("hwosoproxy1.appspot.com");
@@ -130,7 +131,7 @@ public class Format
 			url = String.format(GURLLIST.get(idx), "y",
 					java.net.URLEncoder.encode(u, "utf-8"));
 		}
-		catch (UnsupportedEncodingException e)
+		catch (UnsupportedEncodingException ignored)
 		{
 		}
 		return url;
@@ -145,10 +146,10 @@ public class Format
 	public static String toScriptString(String src)
 	{
 		String tmp = src;
-		tmp = tmp.replaceAll("\r|\n", "");
-		tmp = tmp.replaceAll("\"", "\\\\\"");
-		tmp = tmp.replaceAll("</script>", "\"+\"<\"+\"/script>\"+\"");
-		tmp = tmp.replaceAll("</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"");
+		tmp = Format.replaceAll(tmp,"\r|\n", "");
+		tmp = Format.replaceAll(tmp,"\"", "\\\\\"");
+		tmp = Format.replaceAll(tmp,"</script>", "\"+\"<\"+\"/script>\"+\"");
+		tmp = Format.replaceAll(tmp,"</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"");
 
 		return tmp;
 	}
@@ -160,14 +161,7 @@ public class Format
 	 */
 	public static boolean isEmpty(String str)
 	{
-		if (str == null || "".equals(str))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return str == null || "".equals(str);
 	}
 
 	public static String replaceAll(String source, String searchString, String replaceString)
@@ -224,13 +218,13 @@ public class Format
 		StringBuffer sb = new StringBuffer(length);
 		while (e != -1)
 		{
-			sb.append(source.substring(s, e));
+			sb.append(source, s, e);
 			sb.append(replaceString);
 			s = e + sl;
 			e = source.indexOf(searchString, s);
 		}
 		e = len;
-		sb.append(source.substring(s, e));
+		sb.append(source, s, e);
 		return sb.toString();
 	}
 
@@ -247,14 +241,14 @@ public class Format
 			return "";
 		}
 		String tmp = src;
-		tmp = tmp.replaceAll("&", "&amp;");
+		tmp = Format.replaceAll(tmp,"&", "&amp;");
 		if (isnoquotes == true)
 		{
-			tmp = tmp.replaceAll("\"", "&quot;");
-			tmp = tmp.replaceAll("'", "&#039;");
+			tmp = Format.replaceAll(tmp,"\"", "&quot;");
+			tmp = Format.replaceAll(tmp,"'", "&#039;");
 		}
-		tmp = tmp.replaceAll("<", "&lt;");
-		tmp = tmp.replaceAll(">", "&gt;");
+		tmp = Format.replaceAll(tmp,"<", "&lt;");
+		tmp = Format.replaceAll(tmp,">", "&gt;");
 
 		return tmp;
 	}
@@ -310,7 +304,7 @@ public class Format
 
 		for (Row r : list)
 		{
-			HashMap<String, String> map = new HashMap<String, String>();
+			HashMap<String, String> map = new HashMap<>();
 			for (String col : r.getColsNameList())
 			{
 				map.put(col, r.getString(col));
@@ -385,15 +379,9 @@ public class Format
 		return buf.toString();
 	}
 
-	/**
-	 * 返回list输出字符串，使用,分割
-	 * 
-	 * @param list
-	 * @return
-	 */
 	public static String toListString(String[] strs)
 	{
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (String t : strs)
 		{
 			list.add(t);
@@ -466,7 +454,7 @@ public class Format
 			int ei = str.indexOf(end, ssi);
 
 			return String.format("%s%s%s", str.substring(0, ssi), newstring,
-					str.substring(ei, str.length()));
+					str.substring(ei));
 		}
 		catch (Exception e)
 		{
@@ -479,7 +467,7 @@ public class Format
 
 		if (PINYINMAP == null)
 		{
-			PINYINMAP = new HashMap<String, String>();
+			PINYINMAP = new HashMap<>();
 			JFile file = new JFile(
 					FORMAT.getClass().getResourceAsStream("pinyin.txt"));
 			List<String> list = file.getLineList();
@@ -488,13 +476,9 @@ public class Format
 				String[] s = t.split(" ", 2);
 				if (s.length >= 2)
 				{
-					PINYINMAP.put(new String(s[0]), new String(s[1]));
+					PINYINMAP.put(s[0], s[1]);
 				}
-				s = null;
-				t = null;
 			}
-			list = null;
-			file = null;
 		}
 
 		return PINYINMAP;
@@ -545,7 +529,7 @@ public class Format
 			}
 			else
 			{
-				buf.append(t.substring(0, 1));
+				buf.append(t, 0, 1);
 			}
 		}
 
@@ -559,9 +543,8 @@ public class Format
 	}
 	
 	public static List<Field> getAllField(Class<?> c, boolean getsuper)
-			throws ClassNotFoundException
 	{
-		List<Field> list = new ArrayList<Field>();
+		List<Field> list = new ArrayList<>();
 
 //		Class<?> c =  obj.getClass();
 		if (getsuper)
@@ -578,7 +561,6 @@ public class Format
 
 		// System.out.println("#########"+c.getName());
 		Field[] fs = c.getDeclaredFields();
-		c = null;
 		for (Field f : fs)
 		{
 			// System.out.println(f+" "+f.getGenericType().getTypeName()+"
@@ -589,9 +571,7 @@ public class Format
 			{
 				list.add(f);
 			}
-			f = null;
 		}
-		fs = null;
 
 		return list;
 	}
@@ -600,11 +580,8 @@ public class Format
 			throws ClassNotFoundException
 	{
 		Class<?> c = Class.forName(classname);
-	
-		List<Field> list = getAllField(c,getsuper);
-		c = null;
-		
-		return list;
+
+		return getAllField(c,getsuper);
 	}
 
 	public static String beanToString(Object o)
@@ -682,17 +659,14 @@ public class Format
 				}
 				f.setAccessible(accessFlag);
 			}
-			fields = null;
 		}
 		catch (ClassNotFoundException e1)
 		{
 			Log.OutException(e1);
 		}
 		// System.out.println(toListString(fields));
-		jsonconfig = null;
 
 		String str = json.toString();
-		json = null;
 
 		return str;
 	}
@@ -721,7 +695,7 @@ public class Format
 	 */
 	public static int ld(String str1, String str2)
 	{
-		int d[][]; // 矩阵
+		int[][] d; // 矩阵
 		int n = str1.length();
 		int m = str2.length();
 		int i; // 遍历str1的
@@ -853,7 +827,7 @@ public class Format
 	public static String long2ip(long ipLong)
 	{
 		// long ipLong = 1037591503;
-		long mask[] = { 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
+		long[] mask = {0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000};
 		long num = 0;
 		StringBuffer ipInfo = new StringBuffer();
 		for (int i = 0; i < 4; i++)
@@ -863,7 +837,6 @@ public class Format
 				ipInfo.insert(0, ".");
 			ipInfo.insert(0, Long.toString(num, 10));
 		}
-		mask = null;
 		return ipInfo.toString();
 	}
 
@@ -881,7 +854,7 @@ public class Format
 		for (int i = 0; i < num; i++)
 		{
 			int pos = ThreadLocalRandom.current().nextInt(len);
-			buf.append(NUMLOWSTRING.substring(pos, pos + 1));
+			buf.append(NUMLOWSTRING, pos, pos + 1);
 		}
 		return buf.toString();
 	}
@@ -894,7 +867,7 @@ public class Format
 		for (int i = 0; i < num; i++)
 		{
 			int pos = (int) (Math.random() * len);
-			buf.append(HEXSTRING.substring(pos, pos + 1));
+			buf.append(HEXSTRING, pos, pos + 1);
 		}
 		return buf.toString();
 	}
@@ -914,7 +887,7 @@ public class Format
 		for (int i = 0; i < num; i++)
 		{
 			int pos = ThreadLocalRandom.current().nextInt(len);
-			buf.append(LOWSTRING.substring(pos, pos + 1));
+			buf.append(LOWSTRING, pos, pos + 1);
 		}
 		return buf.toString();
 	}
@@ -934,7 +907,7 @@ public class Format
 		for (int i = 0; i < num; i++)
 		{
 			int pos = ThreadLocalRandom.current().nextInt(len);
-			buf.append(ALLSTRING.substring(pos, pos + 1));
+			buf.append(ALLSTRING, pos, pos + 1);
 		}
 		return buf.toString();
 	}
@@ -1075,9 +1048,8 @@ public class Format
 	public static String getFileExtName(String filename)
 	{
 		int idx = filename.lastIndexOf(".") + 1;
-		String ext = filename.substring(idx);
 
-		return ext;
+		return filename.substring(idx);
 	}
 
 	public static Long getNumber(String str)
@@ -1101,7 +1073,7 @@ public class Format
 		return Long.parseLong(buf.toString());
 	}
 
-	public static byte[] MessageDigest(String m, byte bytes[])
+	public static byte[] MessageDigest(String m, byte[] bytes)
 	{
 		byte[] mstr = null;
 		try
@@ -1187,11 +1159,11 @@ public class Format
 	}
 
 	public static String encodeDes(String mykey, String encryptedString)
-			throws UnsupportedEncodingException, InvalidKeyException,
+			throws InvalidKeyException,
 			NoSuchAlgorithmException, NoSuchPaddingException,
 			InvalidKeySpecException
 	{
-		byte[] keyAsBytes = mykey.getBytes("utf-8");
+		byte[] keyAsBytes = mykey.getBytes(StandardCharsets.UTF_8);
 		DESKeySpec myKeySpec = new DESKeySpec(keyAsBytes);
 		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
 				.getInstance("DES");
@@ -1205,7 +1177,7 @@ public class Format
 			cipher.init(Cipher.ENCRYPT_MODE, key);
 			byte[] plainText = cipher.doFinal(encryptedString.getBytes());
 
-			encryptedText = new String(Base64UrlSafe.encodeBase64(plainText));
+			encryptedText = Base64UrlSafe.encodeBase64(plainText);
 		}
 		catch (Exception e)
 		{
@@ -1215,11 +1187,11 @@ public class Format
 	}
 
 	public static String decodeDes(String mykey, String encryptedString)
-			throws UnsupportedEncodingException, InvalidKeyException,
+			throws InvalidKeyException,
 			NoSuchAlgorithmException, NoSuchPaddingException,
 			InvalidKeySpecException
 	{
-		byte[] keyAsBytes = mykey.getBytes("utf-8");
+		byte[] keyAsBytes = mykey.getBytes(StandardCharsets.UTF_8);
 		KeySpec myKeySpec = new DESKeySpec(keyAsBytes);
 		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
 				.getInstance("DES");
@@ -1244,7 +1216,7 @@ public class Format
 	/**
 	 * 返回svm字符串
 	 * 
-	 * @param sql
+	 * @param sql sql
 	 * @param type
 	 *            类别字段
 	 * @param fields
@@ -1253,12 +1225,12 @@ public class Format
 	 */
 	public static String sqlToSvm(String sqlstr, String type, String fields)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		String[] fs = fields.split(",");
 		for (int i = 0, len = fs.length; i < len; i++)
 		{
-			fs[i] = new String(fs[i].trim());
+			fs[i] = fs[i].trim();
 		}
 
 		CPSql sql = new CPSql();
@@ -1321,7 +1293,7 @@ public class Format
 
 	public static List<String> getAts(final String str)
 	{
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 
 		if (str != null)
 		{
@@ -1355,7 +1327,7 @@ public class Format
 
 	public static Map<String, String> getMyIpAll()
 	{
-		Map<String, String> all = new HashMap<String, String>();
+		Map<String, String> all = new HashMap<>();
 
 		try
 		{
@@ -1386,12 +1358,12 @@ public class Format
 
 	public static String getDomain(final String url)
 	{
-		String t[] = url.split("/");
+		String[] t = url.split("/");
 		String domain = "";
 
 		if (t.length >= 3)
 		{
-			domain = new String(t[2]);
+			domain = t[2];
 		}
 
 		t = null;
@@ -1401,7 +1373,7 @@ public class Format
 
 	public static String getChartset(byte[] bytes)
 	{
-		String code = null;
+		String code;
 
 		UniversalDetector detector = new UniversalDetector(null);
 		detector.handleData(bytes, 0, bytes.length);

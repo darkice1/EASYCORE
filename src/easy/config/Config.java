@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import easy.util.Log;
@@ -45,9 +46,8 @@ public class Config
 	public static void load(String filepath) throws FileNotFoundException
 	{
 		CFG = Config.getInstance();
-		
-		InputStream is = null;
-		is = new FileInputStream(new File(filepath));
+
+		InputStream is = new FileInputStream(new File(filepath));
 
 		try
 		{
@@ -63,29 +63,24 @@ public class Config
 		}
 	}
 
-	/**
-	 * ��ȡconfig�ļ�
-	 * 
-	 * @return value
-	 */
 	public static void load()
 	{
 		CFG = new Config();
 		File f = new File(CFG.getClass().getResource("Config.class").toString());
 
 		String path = f.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getPath();
-		path = new String(path.replaceAll("jar:", ""));
-		path = new String(path.replaceAll("file\\:", ""));
-		path = new String(path.replaceAll("file/:", ""));
-		path = new String(path.replaceAll("%20", " "));
-		path = new String(String.format("%s/config.txt", path));
+		path = path.replaceAll("jar:", "");
+		path = path.replaceAll("file\\:", "");
+		path = path.replaceAll("file/:", "");
+		path = path.replaceAll("%20", " ");
+		path = String.format("%s/config.txt", path);
 
 		String path1 = f.getParentFile().getParentFile().getParentFile().getParentFile().getPath();
-		path1 = new String(path1.replaceAll("jar:", ""));
-		path1 = new String(path1.replaceAll("file\\:", ""));
-		path1 = new String(path1.replaceAll("file/:", ""));
-		path1 = new String(path1.replaceAll("%20", " "));
-		path1 = new String(String.format("%s/config.txt", path1));
+		path1 = path1.replaceAll("jar:", "");
+		path1 = path1.replaceAll("file\\:", "");
+		path1 = path1.replaceAll("file/:", "");
+		path1 = path1.replaceAll("%20", " ");
+		path1 = String.format("%s/config.txt", path1);
 
 
 		try
@@ -98,18 +93,12 @@ public class Config
 			{
 				load(path1);
 			}
-			catch (Exception e)
+			catch (Exception ignored)
 			{
 			}
 		}
 	}
 
-	/**
-	 * ȡ��keyֵ
-	 * 
-	 * @param key
-	 * @return value
-	 */
 	public static String getProperty(String key)
 	{
 		try
@@ -117,7 +106,7 @@ public class Config
 			String tmp = Config.getInstance().PPS.getProperty(key);
 			if (tmp != null)
 			{
-				return new String(tmp.getBytes("latin1"),"utf-8");
+				return new String(tmp.getBytes("latin1"), StandardCharsets.UTF_8);
 			}
 			else
 			{
@@ -131,13 +120,7 @@ public class Config
 		}
 	}
 	
-	/**
-	 * ȡ��keyֵ
-	 * 
-	 * @param key
-	 * @param defvalue
-	 * @return value
-	 */
+
 	public static String getProperty(String key,String defvalue)
 	{		
 		try
@@ -145,7 +128,7 @@ public class Config
 			String tmp = Config.getInstance().PPS.getProperty(key,defvalue);
 			if (tmp != null)
 			{
-				return new String(tmp.getBytes("latin1"),"utf-8");
+				return new String(tmp.getBytes("latin1"), StandardCharsets.UTF_8);
 			}
 			else
 			{
@@ -159,13 +142,7 @@ public class Config
 		}
 	}
 	
-	/**
-	 * �޸�config��Ӧ��ֵ
-	 * 
-	 * @param key
-	 * @param newvalue
-	 * @param comment
-	 */
+
 	public static void setProperty(String key,String newvalue)
 	{
 		Config.getInstance().PPS.setProperty(key,newvalue);
