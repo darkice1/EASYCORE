@@ -24,6 +24,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -112,26 +113,22 @@ public class JFile
 	public static boolean delete(String filename)
 	{
 		File f = new File(filename);
-		boolean b = f.delete();
-		return b;
+		return f.delete();
 	}
 
 	public JFile(String p_filename, boolean append)
 	{
-		filename = new String(p_filename);
+		filename = p_filename;
 
-		if (append)
+		try
 		{
-			try
-			{
-				out = new BufferedWriter(
-								new OutputStreamWriter(new FileOutputStream(
-												filename, append), "UTF-8"));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			out = new BufferedWriter(
+					new OutputStreamWriter(new FileOutputStream(
+							filename, append), StandardCharsets.UTF_8));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 
@@ -204,7 +201,7 @@ public class JFile
 
 	public byte[] readAllBytes() throws IOException
 	{
-		byte[] content = null;
+		byte[] content;
 		try
 		{
 			BufferedInputStream p_in = null;
@@ -217,12 +214,14 @@ public class JFile
 				p_in = new BufferedInputStream(in);
 			}
 
-			 ByteArrayOutputStream out = new ByteArrayOutputStream(1024);        
+			final int BUFSIZE = 1024;
+
+			 ByteArrayOutputStream out = new ByteArrayOutputStream(BUFSIZE);
 		       
 			 //System.out.println("Available bytes:" + in.available());        
 		       
-			 byte[] temp = new byte[1024];        
-			 int size = 0;        
+			 byte[] temp = new byte[BUFSIZE];
+			 int size;
 			 while ((size = p_in.read(temp)) != -1) 
 			 {        
 				 out.write(temp, 0, size);        
@@ -317,18 +316,8 @@ public class JFile
 
 		zfs.finish();
 		zfs.close();
-		zfs = null;
 	}
 
-	/**
-	 * 读取对象
-	 * 
-	 * @param file
-	 *            读取文件名
-	 * @return
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
 	public static Object readObject(InputStream in)
 					throws ClassNotFoundException, IOException
 	{
@@ -451,15 +440,14 @@ public class JFile
 		this.in = in;
 	}
 
-	public static String loadGaeFile(String url) throws ConnectException,
-					IOException
+	public static String loadGaeFile(String url) throws IOException
 	{
 		return loadGaeFile(url, null, null, null, null);
 	}
 
 	public static String loadGaeFile(String url, String cookie,
 					String useragent, String chartset, String ref)
-					throws ConnectException, IOException
+					throws IOException
 	{
 		String u;
 		if (GAEOPEN)
@@ -474,8 +462,7 @@ public class JFile
 	}
 
 	public static String loadGaeZipFile(String url, String cookie,
-					String useragent, String ref) throws ConnectException,
-					IOException
+					String useragent, String ref) throws IOException
 	{
 		String u = url;
 		String html;
@@ -493,20 +480,18 @@ public class JFile
 		return html;
 	}
 
-	public static String loadHttpFile(String url) throws ConnectException,
-					IOException
+	public static String loadHttpFile(String url) throws IOException
 	{
 		return loadHttpFile(url, null, null, null, null);
 	}
 
-	public static Object loadHttpObject(String url) throws ConnectException,
-					IOException
+	public static Object loadHttpObject(String url) throws IOException
 	{
 		return loadHttpObject(url, null, null);
 	}
 
 	public static Object loadHttpObject(String url, String cookie,
-					String useragent) throws ConnectException, IOException
+					String useragent) throws IOException
 	{
 		Proxy.initCfgProxy();
 		String httpstr = null;
@@ -564,13 +549,13 @@ public class JFile
 	}
 
 	public static Object loadHttpGZipObject(String url)
-					throws ConnectException, IOException
+					throws IOException
 	{
 		return loadHttpGZipObject(url, null, null);
 	}
 
 	public static Object loadHttpGZipObject(String url, String cookie,
-					String useragent) throws ConnectException, IOException
+					String useragent) throws IOException
 	{
 		return loadHttpGZipObject(url, cookie, useragent, null);
 	}
@@ -633,7 +618,7 @@ public class JFile
 
 	public static String loadHttpFile(String url, String cookie,
 					String useragent, String chartset, String ref, int timeout,
-					String post) throws ConnectException, IOException
+					String post) throws IOException
 	{
 		if (post != null)
 		{
@@ -649,14 +634,14 @@ public class JFile
 
 	public static HashMap<String, String> loadHttpFilePost(String url,
 					HashMap<String, String> head, String chartset, int timeout,
-					byte[] post) throws ConnectException, IOException
+					byte[] post) throws IOException
 	{
 		return loadHttpFilePost(url, head, chartset, timeout, post, true);
 	}
 	
 	public static HashMap<String, String> loadHttpFilePost(String url,
 					HashMap<String, String> head, String chartset, int timeout,
-					byte[] post, boolean followredirects) throws ConnectException, IOException
+					byte[] post, boolean followredirects) throws IOException
 	{
 		return loadHttpFilePost(url,head,chartset,timeout,post,followredirects,true);
 	}
@@ -664,18 +649,18 @@ public class JFile
 	public static HashMap<String, String> loadHttpFilePost(String url,
 					HashMap<String, String> head, String chartset, int timeout,
 					byte[] post, boolean followredirects,boolean useproxy)
-					throws ConnectException, IOException
+					throws IOException
 	{
 		if (head == null)
 		{
-			head = new HashMap<String, String>();
+			head = new HashMap<>();
 		}
-		HashMap<String, String> all = new HashMap<String, String>();
+		HashMap<String, String> all = new HashMap<>();
 		if (useproxy)
 		{
 			Proxy.initCfgProxy();
 		}
-		String httpstr = null;
+		String httpstr;
 		try
 		{
 			URL u = new URL(url);
@@ -747,7 +732,7 @@ public class JFile
 				Entry<String, List<String>> entry = headiter.next();
 				String key = entry.getKey();
 				List<String> hvlist = entry.getValue();
-				StringBuffer buf = new StringBuffer();
+				StringBuilder buf = new StringBuilder();
 				for (String v : hvlist)
 				{
 					buf.append(String.format("%s\n", v));
@@ -782,7 +767,7 @@ public class JFile
 						int idx = tc.indexOf("charset=");
 						if (idx >= 0)
 						{
-							chartset = tc.substring(idx + 8, tc.length());
+							chartset = tc.substring(idx + 8);
 						}
 					}
 				}
@@ -817,9 +802,9 @@ public class JFile
 
 	public static String loadHttpFilePost(String url, String cookie,
 					String useragent, String chartset, String ref, int timeout,
-					byte[] post) throws ConnectException, IOException
+					byte[] post) throws IOException
 	{
-		HashMap<String, String> request = new HashMap<String, String>();
+		HashMap<String, String> request = new HashMap<>();
 
 		if (cookie != null)
 		{
@@ -840,7 +825,7 @@ public class JFile
 
 	public static String loadHttpFile(String url, String cookie,
 					String useragent, String chartset, String ref)
-					throws ConnectException, IOException
+					throws IOException
 	{
 		return loadHttpFilePost(url, cookie, useragent, chartset, ref, 30000,
 						null);
@@ -876,7 +861,7 @@ public class JFile
 		{
 			newFile.createNewFile();
 		}
-		int byteread = 0;
+		int byteread;
 
 		InputStream inStream = uc.getInputStream();
 		FileOutputStream fs = new FileOutputStream(newFile);
@@ -911,12 +896,6 @@ public class JFile
 		}
 	}
 
-	/**
-	 * ȡ���ļ��ߴ�
-	 * 
-	 * @param file
-	 * @return
-	 */
 	public static long getFileSize(String file)
 	{
 		File f = new File(file);
@@ -980,7 +959,6 @@ public class JFile
 					// System.out.println(bytesum);
 					fs.write(buffer, 0, byteread);
 				}
-				buffer = null;
 				inStream.close();
 				fs.close();
 				result = true;
@@ -1183,13 +1161,13 @@ public class JFile
 	{
 		byte[] bytes = null;
 		
-		ByteArrayOutputStream baos = null;
+		ByteArrayOutputStream baos;
 		baos = new ByteArrayOutputStream();
 		try
 		{
-			
+
 //			bytes = baos.toByteArray();
-			kryoSerialize(object,baos);			
+			kryoSerialize(object,baos);
 			bytes = baos.toByteArray();
 
 			baos.close();
@@ -1198,7 +1176,7 @@ public class JFile
 		{
 			Log.OutException(e);
 		}
-		
+
 		return bytes;
 	}
 	
@@ -1206,7 +1184,7 @@ public class JFile
 	{
 		Kryo kryo = getKryo();
 
-		Output output = new Output(out,1024*1024);
+		Output output = new Output(out,4*1024);
 //		kryo.writeObject(output, ds);
 		kryo.writeClassAndObject(output, object);
 		output.flush();
@@ -1217,14 +1195,14 @@ public class JFile
 	{
 		Kryo kryo = getKryo();
         
-		Input input = new Input(in,1024*1024);
+		Input input = new Input(in,4*1024);
 		return kryo.readClassAndObject(input);
 	}
 	
 	public static byte[] serialize(Object object)
 	{
-		ObjectOutputStream oos = null;
-		ByteArrayOutputStream baos = null;
+		ObjectOutputStream oos;
+		ByteArrayOutputStream baos;
 		try
 		{
 			// 序列化
@@ -1234,10 +1212,9 @@ public class JFile
 			oos.writeObject(object);
 			go.flush();
 			go.finish();
-			
-			byte[] bytes = baos.toByteArray();
-//			System.out.println(bytes.length);
-			return bytes;
+
+			//			System.out.println(bytes.length);
+			return baos.toByteArray();
 		}
 		catch (Exception e)
 		{
@@ -1250,7 +1227,7 @@ public class JFile
 	{
 		if (bytes != null)
 		{
-			ByteArrayInputStream bais = null;
+			ByteArrayInputStream bais;
 			try
 			{
 				// 反序列化
@@ -1261,13 +1238,13 @@ public class JFile
 			catch (Exception e)
 			{
 				Log.OutException(e);
-			}			
+			}
 		}
 
 		return null;
 	}
 	
-	public static void main(String[] args) throws ConnectException, IOException
+	public static void main(String[] args)
 	{
 		String a = "ASDf   adfaerweqrqwereqwrqewrdsf";
 		int max = 10000;
@@ -1310,7 +1287,5 @@ public class JFile
 			JFile.kryoCompressBytesUnSerialize(bs);
 		}
 		Log.OutLog("%d",System.currentTimeMillis()-ts);
-
-
 	}
 }
