@@ -36,22 +36,27 @@ public abstract class Sql implements  AutoCloseable
 	protected final long CACHEKEEPTIME = Long.parseLong(Config.getProperty("CACHEKEEPTIME","600000"));
 
 	protected Connection conn;
+	protected Connection connwrite;
 
 	protected Statement stmt;
+	protected Statement stmtwrite;
 
 	//protected ResultSet rs;
 
 	protected String user = "";
-
 	protected String password = "";
-
 	protected String db = "";
-
 	protected String host;
-
 	protected int port;
-
 	protected String jdbcurl = "";
+
+
+	protected String userwrite = "";
+	protected String passwordwrite = "";
+	protected String dbwrite = "";
+	protected String hostwrite;
+	protected int portwrite;
+	protected String jdbcurlwrite = "";
 
 	protected PreparedStatement ps;
 
@@ -64,15 +69,10 @@ public abstract class Sql implements  AutoCloseable
 //	protected long insertcount=0;
 //	protected long deltcount=0;
 
-	/**
-	 * ������ݿ⣬�û�������,ip��
-	 */
+
 	protected abstract void init();
 	protected boolean isinit = false;
 
-	/**
-	 * ��ʼ����ݿ�
-	 */
 	protected abstract void initdb();
 
 	protected void instance()
@@ -97,9 +97,7 @@ public abstract class Sql implements  AutoCloseable
 	public DataSet executeQuery(String formate,Object... strs) throws SQLException
 	{
 		String sql = String.format(formate,strs);
-		DataSet ds =  executeQuery(sql);
-		sql = null;
-		return ds;
+		return executeQuery(sql);
 	}
 	
 	public static String getDBCachePath()
@@ -121,7 +119,6 @@ public abstract class Sql implements  AutoCloseable
 			ResultSet rs = getStmt().executeQuery(sql);
 			DataSet ds = new DataSet(rs);
 			rs.close();
-			rs=null;
 			return ds;
 		}
 		catch (SQLException ex)
@@ -135,7 +132,6 @@ public abstract class Sql implements  AutoCloseable
 	{
 		String sql = String.format(formate,strs);
 		DataSet ds =  executeQueryCache(sql);
-		sql = null;
 		return ds;
 	}
 	
@@ -143,7 +139,6 @@ public abstract class Sql implements  AutoCloseable
 	{
 		String sql = String.format(formate,strs);
 		DataSet ds = executeQueryCache(sql,keeptime);
-		sql = null;
 		return ds;
 	}
 	
@@ -162,7 +157,7 @@ public abstract class Sql implements  AutoCloseable
 		else
 		{
 			File file = new File(getDBCachePath());
-			boolean pathok =false;
+			boolean pathok;
 			if (file.exists() == false)
 			{
 				pathok = file.mkdir();
@@ -197,7 +192,7 @@ public abstract class Sql implements  AutoCloseable
 			String path = String.format("%s/%s.db", getDBCachePath(),md5);
 			//System.out.println(path);
 
-			boolean neednew = false;
+			boolean neednew;
 			if (JFile.exists(path))
 			{
 				try
@@ -228,13 +223,10 @@ public abstract class Sql implements  AutoCloseable
 						EDate d = new EDate();
 						d.setTime(end);
 						Log.OutSql(String.format("[CACHE/%s]%s",d,sql));
-						
-						d = null;
-						cds = null;
+
 						return ds;
 					}
-					
-					cds = null;
+
 				}
 				catch (ClassNotFoundException e)
 				{
@@ -279,12 +271,8 @@ public abstract class Sql implements  AutoCloseable
 				}
 
 				fo.close();
-				
-				cds = null;
+
 			}
-			file  = null;
-			md5 = null;
-			path = null;
 		}
 
 	
@@ -311,8 +299,14 @@ public abstract class Sql implements  AutoCloseable
 			if (stmt != null )
 			{
 				stmt.close();
-				stmt = null;
 			}
+			if (stmtwrite != null && stmtwrite != stmt)
+			{
+				stmtwrite.close();
+			}
+
+			stmt = null;
+			stmtwrite = null;
 		}
 		catch (SQLException ex)
 		{
@@ -324,8 +318,13 @@ public abstract class Sql implements  AutoCloseable
 			if (conn != null && conn.isClosed()==false)
 			{
 				conn.close();
-				conn = null;
 			}
+			if (connwrite != null && connwrite != conn && connwrite.isClosed()==false)
+			{
+				connwrite.close();
+			}
+			conn = null;
+			connwrite = null;
 		}
 		catch (SQLException ex)
 		{
@@ -359,9 +358,7 @@ public abstract class Sql implements  AutoCloseable
 	public int executeUpdate(String formate,Object... strs)
 	{
 		String sql = String.format(formate,strs);
-		int re =  executeUpdate(sql);
-		sql = null;
-		return re;
+		return executeUpdate(sql);
 	}
 
 	/**
@@ -375,15 +372,17 @@ public abstract class Sql implements  AutoCloseable
 		{
 			String sqlstr = checksql(sql);
 			Log.OutSql(sql);
-			int re = getStmt().executeUpdate(sqlstr);
-			sqlstr= null;
-			return re;
+			return getStmtWrite().executeUpdate(sqlstr);
 		}
 		catch (SQLException ex)
 		{
 			if (ex.toString().indexOf("Data truncation: Data truncated for column") <= 0)
 			{
-				Log.OutException(ex, jdbcurl + "\r\n" + sql);
+				if (Format.isEmpty(jdbcurlwrite ))
+				{
+					jdbcurlwrite = jdbcurl;
+				}
+				Log.OutException(ex, jdbcurlwrite + "\r\n" + sql);
 			}
 			
 			return -1;
@@ -404,6 +403,24 @@ public abstract class Sql implements  AutoCloseable
 //		}
 		return stmt;
 	}
+
+	private Statement getStmtWrite()
+	{
+		if (isinit == false)
+		{
+			instance();
+			isinit = true;
+		}
+		if (stmtwrite == null)
+		{
+			stmtwrite = stmt;
+		}
+		//		if (stmt==null)
+		//		{
+		//			initdb();
+		//		}
+		return stmtwrite;
+	}
 	
 	/**
 	 * 数据库更新（返回异常）
@@ -415,8 +432,7 @@ public abstract class Sql implements  AutoCloseable
 	{
 		String sqlstr = checksql(sql);
 		Log.OutSql(sql);
-		int re = getStmt().executeUpdate(sqlstr);
-		sqlstr = null;
+		int re = getStmtWrite().executeUpdate(sqlstr);
 		return re;
 	}
 
@@ -442,7 +458,6 @@ public abstract class Sql implements  AutoCloseable
 	{
 		char zero[] = { 0 };
 		sql.replaceAll(new String(zero), "");
-		zero = null;
 		return sql;
 	}
 
@@ -462,12 +477,16 @@ public abstract class Sql implements  AutoCloseable
 	{
 		try
 		{
-			getStmt().addBatch(sql);
+			getStmtWrite().addBatch(sql);
 			Log.OutSql(sql);
 		}
 		catch (Exception ex)
 		{
-			Log.OutException(ex, jdbcurl + "\r\n" + sql);
+			if (Format.isEmpty(jdbcurlwrite ))
+			{
+				jdbcurlwrite = jdbcurl;
+			}
+			Log.OutException(ex, jdbcurlwrite + "\r\n" + sql);
 		}
 	}
 
@@ -476,11 +495,15 @@ public abstract class Sql implements  AutoCloseable
 	{
 		try
 		{
-			return getStmt().executeBatch();
+			return getStmtWrite().executeBatch();
 		}
 		catch (Exception ex)
 		{
-			Log.OutException(ex, jdbcurl);
+			if (Format.isEmpty(jdbcurlwrite ))
+			{
+				jdbcurlwrite = jdbcurl;
+			}
+			Log.OutException(ex, jdbcurlwrite);
 			return null;
 		}
 	}
@@ -490,11 +513,20 @@ public abstract class Sql implements  AutoCloseable
 		return conn;
 	}
 
+	public Connection getWriteConnection()
+	{
+		if (connwrite == null)
+		{
+			connwrite = conn;
+		}
+		return connwrite;
+	}
+
 	public String getClobString(Clob clob)
 	{
 		try
 		{
-			return clob.getSubString(1l, (int) clob.length());
+			return clob.getSubString(1L, (int) clob.length());
 		}
 		catch (Exception ex)
 		{
@@ -509,7 +541,7 @@ public abstract class Sql implements  AutoCloseable
 		PreparedStatement pstmt = null;
 		try
 		{
-			pstmt = conn.prepareStatement(sql);
+			pstmt = getWriteConnection().prepareStatement(sql);
 		}
 		catch (Exception ex)
 		{	
@@ -520,7 +552,7 @@ public abstract class Sql implements  AutoCloseable
 
 	public void prepareStatement(String sql) throws SQLException
 	{
-		ps = conn.prepareStatement(sql);
+		ps = getWriteConnection().prepareStatement(sql);
 	}
 	
 	public Statement getStatement()

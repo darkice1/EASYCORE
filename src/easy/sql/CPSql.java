@@ -1,12 +1,11 @@
 package easy.sql;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-
 import easy.config.Config;
 import easy.util.Format;
 import easy.util.Log;
+
+import java.sql.DriverManager;
+import java.util.Properties;
 
 /**
  * <p><i>Copyright: Easy (c) 2005-2005<br>
@@ -27,7 +26,8 @@ public class CPSql extends Sql
 	
 	protected String poolurl;
 	protected String dbclass;
-	
+	protected String dbclasswrite;
+
 	protected boolean usepool = true;
 	
 	/**
@@ -39,8 +39,31 @@ public class CPSql extends Sql
 		password = Config.getProperty("DBPASSWORD");
 		jdbcurl = Config.getProperty("DBURL");
 		dbclass = Config.getProperty("DBCLASS");
+
+
+		userwrite = Config.getProperty("DBUSERWRITE");
+		passwordwrite = Config.getProperty("DBPASSWORDWRITE");
+		jdbcurlwrite = Config.getProperty("DBURLWRITE");
+		dbclasswrite = Config.getProperty("DBCLASSWRITE");
 	}
-	
+
+
+	private Properties getProperties()
+	{
+		Properties info = new Properties();
+		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
+		//info.setProperty("proxool.house-keeping-test-sql", "select current_date from dual");
+		info.setProperty("proxool.house-keeping-test-sql", "select 1");
+		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","70000"));
+
+		info.setProperty("proxool.maximum-connection-lifetime",  Config.getProperty("DBMAXCONNECTIONLIFTIME","120000"));
+		info.setProperty("proxool.house-keeping-sleep-time",  Config.getProperty("DBMAXKEEPINGSLEEPTIME","30000"));
+		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
+		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("SIMULTANEOUSBUILDTHROTTLE","10"));
+		info.setProperty("proxool.test-before-use",  "true");
+
+		return info;
+	}
 //	protected void finalize() throws Throwable
 //	{
 //		super.finalize();
@@ -66,40 +89,51 @@ public class CPSql extends Sql
 			if (usepool)
 			{
 	        	Class.forName(POOLCLASS);
-	    		Properties info = new Properties();
-	    		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
-	    		//info.setProperty("proxool.house-keeping-test-sql", "select current_date from dual");
-	    		info.setProperty("proxool.house-keeping-test-sql", "select 1");
-	    		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","70000"));
-	    		
-	    		info.setProperty("proxool.maximum-connection-lifetime",  Config.getProperty("DBMAXCONNECTIONLIFTIME","120000"));
-	    		info.setProperty("proxool.house-keeping-sleep-time",  Config.getProperty("DBMAXKEEPINGSLEEPTIME","30000"));
-	    		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
-	    		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("SIMULTANEOUSBUILDTHROTTLE","10"));
-	    		info.setProperty("proxool.test-before-use",  "true");
+	    		Properties info = getProperties();
 	    		//info.setProperty("proxool.statistics-log-level", "ERROR");
 	    		//info.setProperty("house-keeping-sleep-time", "30000");
 	    		info.setProperty("user",user);
 	    		info.setProperty("password",password);
 	    		
 				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
-				info = null;
+
+				if (Format.isEmpty(userwrite) == false || Format.isEmpty(passwordwrite) == false || Format.isEmpty(jdbcurlwrite) == false || Format.isEmpty(dbclasswrite) == false )
+				{
+					Properties writeinfo = getProperties();
+					//info.setProperty("proxool.statistics-log-level", "ERROR");
+					//info.setProperty("house-keeping-sleep-time", "30000");
+					writeinfo.setProperty("user",userwrite);
+					writeinfo.setProperty("password",passwordwrite);
+
+					connwrite = DriverManager.getConnection(poolurl+dbclasswrite+":"+jdbcurlwrite,writeinfo);
+				}
+				else
+				{
+					connwrite = conn;
+				}
 			}
 			else
 			{
 	        	Class.forName(dbclass);
 				conn = DriverManager.getConnection(jdbcurl,user,password);
+
+				if (Format.isEmpty(userwrite) == false || Format.isEmpty(passwordwrite) == false || Format.isEmpty(jdbcurlwrite) == false || Format.isEmpty(dbclasswrite) == false )
+				{
+					Class.forName(dbclasswrite);
+					connwrite = DriverManager.getConnection(jdbcurlwrite,userwrite,passwordwrite);
+				}
+				else
+				{
+					connwrite = conn;
+				}
 			}
 			stmt = conn.createStatement(resultSetType,resultSetConncurrency);
+			stmtwrite = connwrite.createStatement(resultSetType,resultSetConncurrency);
         }
-        catch (SQLException ex)
-        {
-        	Log.OutException (ex,jdbcurl);
-        }
-        catch (Exception ex)
-        {
-        	Log.OutException (ex,jdbcurl);
-        }
+		catch (Exception ex)
+		{
+			Log.OutException (ex,jdbcurl);
+		}
 	}
 	
 	public CPSql()
