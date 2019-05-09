@@ -101,7 +101,7 @@ public class JFile
 
 	public JFile(String p_filename)
 	{
-		this(p_filename, false);
+		this(p_filename, true);
 	}
 
 	public static boolean exists(String filename)
