@@ -208,7 +208,13 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		row.put(key, value);
 	}
-	
+
+	public void put(Col value)
+	{
+		row.put(value.getFieldname(), value);
+	}
+
+
 	public void putString(String key, String value)
 	{
 		put(key,new Col(key,value));

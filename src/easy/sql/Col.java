@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 public class Col implements Comparable<Col>,Serializable
 {
+	public void setFieldname(String fieldname)
+	{
+		this.fieldname = fieldname;
+	}
+
 	/**
 	 * 
 	 */
@@ -11,7 +16,12 @@ public class Col implements Comparable<Col>,Serializable
 	
 	private String fieldname;
 	private Object value;
-	
+
+	public void setValue(Object value)
+	{
+		this.value = value;
+	}
+
 	public Col()
 	{
 	}
@@ -32,25 +42,25 @@ public class Col implements Comparable<Col>,Serializable
 	public Col (String fieldname,int value)
 	{
 		this.fieldname = fieldname;
-		this.value = new Integer(value);
+		this.value = value;
 	}
 	
 	public Col (String fieldname,float value)
 	{
 		this.fieldname = fieldname;
-		this.value = new Float(value);
+		this.value = value;
 	}
 	
 	public Col (String fieldname,long value)
 	{
 		this.fieldname = fieldname;
-		this.value = new Long(value);
+		this.value = value;
 	}
 	
 	public Col (String fieldname,double value)
 	{
 		this.fieldname = fieldname;
-		this.value = new Double(value);
+		this.value = value;
 	}
 	
 	public int compareTo(Col o)

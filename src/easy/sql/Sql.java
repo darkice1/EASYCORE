@@ -79,7 +79,7 @@ public abstract class Sql implements  AutoCloseable
 	{
 		init();
 		initdb();
-		
+
 		isinit = true;
 	}
 
@@ -379,7 +379,6 @@ public abstract class Sql implements  AutoCloseable
 		if (isinit == false)
 		{
 			instance();
-			isinit = true;
 		}
 //		if (stmt==null)
 //		{
@@ -486,11 +485,20 @@ public abstract class Sql implements  AutoCloseable
 
 	public Connection getConnection()
 	{
+		if (isinit == false)
+		{
+			instance();
+		}
 		return conn;
 	}
 
 	public Connection getWriteConnection()
 	{
+		if (isinit == false)
+		{
+			instance();
+		}
+
 		if (connwrite == null)
 		{
 			connwrite = conn;
