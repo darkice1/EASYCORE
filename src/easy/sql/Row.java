@@ -182,6 +182,38 @@ public class Row implements Comparable<Row>,Serializable
 			return null;
 		}		
 	}
+
+	public byte[] getBytes(String key)
+	{
+		try
+		{
+			Object value = row.get(key).getValue();
+			if (value == null)
+			{
+				return null;
+			}
+
+			if (value instanceof byte[])
+			{
+				return (byte[])value;
+			}
+			else
+			{
+				return value.toString().getBytes();
+			}
+		}
+		catch (NumberFormatException ex)
+		{
+			//Log.OutException(ex,String.format("%s field value %s can't cover number.",key,value));
+			return null;
+		}
+		catch (Exception ex)
+		{
+			Log.OutException(ex,String.format("%s field not find",key));
+			return null;
+		}
+	}
+
 	public String getString(String key)
 	{
 		try

@@ -34,7 +34,7 @@ public class DataSet implements Serializable
 	private static final long serialVersionUID = 1L;
 	private transient int cursor = -1; 
 	//private List<Row> rowList = Collections.synchronizedList(new LinkedList<Row>());
-	private ArrayList<Row> rowList = new ArrayList<Row>();
+	private ArrayList<Row> rowList = new ArrayList<>();
 	protected final static String DBENCODEING = Config.getProperty("DBENCODEING");
 	protected final static String DBENSTRINGCODEING = Config.getProperty("DBENSTRINGCODEING");
 	
@@ -59,7 +59,7 @@ public class DataSet implements Serializable
 		rs.first();
 		rs.beforeFirst();
 		
-		rowList = new ArrayList<Row>(count);
+		rowList = new ArrayList<>(count);
 //		list.ensureCapacity();
 //		System.out.println("count "+ count);
 		
@@ -83,23 +83,23 @@ public class DataSet implements Serializable
 					if (type == -4)
 					{
 						//-4Ϊmy sql��blob
-						Blob blob = rs.getBlob(i);
-						if (blob != null)
-						{
-							if (DBENCODEING == null  || DBENCODEING.equals(""))
-							{
-								rowstr = new String(blob.getBytes(1l,(int)blob.length()));
-							}
-							else
-							{
-								rowstr = new String(blob.getBytes(1l,(int)blob.length()),DBENCODEING);
-							}
-						}
-						else
-						{
-							rowstr = null;
-						}
-						blob = null;
+//						Blob blob = rs.getBlob(i);
+//						if (blob != null)
+//						{
+//							if (DBENCODEING == null  || DBENCODEING.equals(""))
+//							{
+//								rowstr = new String(blob.getBytes(1l,(int)blob.length()));
+//							}
+//							else
+//							{
+//								rowstr = new String(blob.getBytes(1l,(int)blob.length()),DBENCODEING);
+//							}
+//						}
+//						else
+//						{
+//							rowstr = null;
+//						}
+						row.put(new Col(colsName[i],rs.getBytes(i)));
 					}
 					else if (type == Types.DATE)
 					{
@@ -149,17 +149,21 @@ public class DataSet implements Serializable
 							rowstr = "";
 						}
 					}
+					else if (type == Types.BLOB)
+					{
+						row.put(new Col(colsName[i],rs.getBytes(i)));
+					}
 					else if (type == Types.INTEGER || type == Types.SMALLINT  || type == Types.TINYINT)
 					{
-						row.put(colsName[i],new Col(colsName[i],rs.getInt(i)));
+						row.put(new Col(colsName[i],rs.getInt(i)));
 					}
 					else if (type == Types.FLOAT)
 					{
-						row.put(colsName[i],new Col(colsName[i],rs.getFloat(i)));
+						row.put(new Col(colsName[i],rs.getFloat(i)));
 					}
 					else if (type == Types.DOUBLE)
 					{
-						row.put(colsName[i],new Col(colsName[i],rs.getDouble(i)));
+						row.put(new Col(colsName[i],rs.getDouble(i)));
 					}
 					else
 					{
@@ -179,14 +183,12 @@ public class DataSet implements Serializable
 						{
 							rowstr = "";
 						}
-						buf = null;
 					}
 
 					if (rowstr != null)
 					{
 						row.put(colsName[i],new Col(colsName[i],rowstr));
 					}
-					rowstr = null;
 				}
 				catch (Exception e)
 				{
@@ -195,11 +197,7 @@ public class DataSet implements Serializable
 				}		
 			}
 			rowList.add(row);
-			row = null; 
 		}
-
-		colsName = null;
-		rsmd = null;
 	}
 	
 	/**
@@ -239,8 +237,13 @@ public class DataSet implements Serializable
 	public Double getDouble(String col)
 	{
 		return rowList.get(cursor).getDouble(col);
-	}	
-	
+	}
+
+	public byte[] getBytes(String col)
+	{
+		return rowList.get(cursor).getBytes(col);
+	}
+
 	public String getString(String col)
 	{
 		return rowList.get(cursor).getString(col);

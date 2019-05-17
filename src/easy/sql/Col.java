@@ -25,6 +25,19 @@ public class Col implements Comparable<Col>,Serializable
 	public Col()
 	{
 	}
+
+	public Col (String fieldname,Object value)
+	{
+		if (value == null)
+		{
+			this.value = "";
+		}
+		else
+		{
+			this.value = value;
+		}
+		this.fieldname = fieldname;
+	}
 	
 	public Col (String fieldname,String value)
 	{
@@ -82,6 +95,10 @@ public class Col implements Comparable<Col>,Serializable
 		else if (value instanceof Double)
 		{
 			return Double.compare((Double)value, (Double)o.value);
+		}
+		else if (value instanceof byte[])
+		{
+			return new String((byte[])value).compareTo(new String((byte[])o.value));
 		}
 		else
 		{
