@@ -1288,4 +1288,9 @@ public class JFile
 		}
 		Log.OutLog("%d",System.currentTimeMillis()-ts);
 	}
+
+	public static Object cloneObject(Object obj)
+	{
+		return JFile.kryoCompressBytesUnSerialize(JFile.kryoSerializeToCompressBytes(obj));
+	}
 }
