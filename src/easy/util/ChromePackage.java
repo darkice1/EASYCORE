@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.util;
 
 import java.io.IOException;
@@ -47,15 +44,18 @@ public class ChromePackage
 					{
 //						System.out.println(f);
 						String name = f.getString("name");
-						if (sp.indexOf(name) >= 0)
+						if (sp.contains(name))
 						{
 							String type = f.getString("type");
 							Log.OutLog("混浊[%s][%s]",type,file);
 							
 							JFile jf = new JFile(sp);
 							String con = jf.readAllText();
+							jf.close();
+
+//							System.out.println(con);
 							
-							String enjs = null;
+							String enjs;
 							if ("p".equals(f.getString("type")))
 							{
 								enjs = JsEncode.jsPacker(con);
@@ -64,13 +64,16 @@ public class ChromePackage
 							{
 								enjs = JsEncode.uglify(con);
 							}
-							
+
+//							System.out.println(enjs);
+
 							if (enjs != null)
 							{
-								jf.WriteText(enjs);
+								JFile wf = new JFile(sp,false);
+								wf.WriteText(enjs);
+								wf.close();
 							}
-							jf.close();
-							
+
 							break;
 						}
 					}
