@@ -1,13 +1,13 @@
 package easy.sql;
 
+import easy.util.Log;
+import net.sf.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import easy.util.Log;
-import net.sf.json.JSONObject;
 
 /**
  * <p>
@@ -246,6 +246,10 @@ public class Row implements Comparable<Row>,Serializable
 		row.put(value.getFieldname(), value);
 	}
 
+	public void put(String key,Object obj)
+	{
+		put(new Col(key,obj));
+	}
 
 	public void putString(String key, String value)
 	{
