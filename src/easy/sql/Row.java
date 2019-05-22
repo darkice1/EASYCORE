@@ -51,11 +51,15 @@ public class Row implements Comparable<Row>,Serializable
 		return get(sortfield).compareTo(r.get(sortfield));
 	}
 	
+	public Object getObject(String key)
+	{
+		return row.get(key).getValue();
+	}
+
 	public Col get(String key)
 	{
 		return row.get(key);
 	}
-
 	public String[] getColsNameList ()
 	{
 		String[] cols = row.keySet().toArray(new String[0]);
