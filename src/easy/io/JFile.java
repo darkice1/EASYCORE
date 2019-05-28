@@ -1,69 +1,10 @@
 package easy.io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.SocketException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.InflaterInputStream;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
-
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
-
 import easy.config.Config;
 import easy.net.Proxy;
 import easy.sql.Col;
@@ -71,7 +12,27 @@ import easy.sql.DataSet;
 import easy.sql.Row;
 import easy.util.Format;
 import easy.util.Log;
-import org.apache.http.client.entity.GzipCompressingEntity;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.SocketException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * <p>
@@ -1041,7 +1002,7 @@ public class JFile
 		kryo.getFieldSerializerConfig().setOptimizedGenerics(true);
         kryo.setReferences(false); 
         kryo.setRegistrationRequired(false);
-        
+
         kryo.register(Message.class);
         kryo.register(DataSet.class);
         kryo.register(Row.class);
@@ -1078,11 +1039,18 @@ public class JFile
 
 	public static Object kryoCompressBytesUnSerialize(byte[] bytes)
 	{
+		return kryoCompressBytesUnSerialize(null, bytes);
+	}
+
+	public static Object kryoCompressBytesUnSerialize(Kryo kryo,byte[] bytes)
+	{
 		Object obj;
 		if (bytes != null)
 		{
-			Kryo kryo = getKryo();
-
+			if (kryo == null)
+			{
+				kryo = getKryo();
+			}
 //			Input input = new Input(bytes,0,bytes.length);
 //			InputStream cin = new InflaterInputStream(input);
 			Input input = new Input(new InflaterInputStream(new ByteArrayInputStream(bytes)));
@@ -1107,6 +1075,11 @@ public class JFile
 
 	public static byte[] kryoSerializeToCompressBytes(Object object)
 	{
+		return kryoSerializeToCompressBytes(null,object);
+	}
+
+	public static byte[] kryoSerializeToCompressBytes(Kryo kryo,Object object)
+	{
 		byte[] bytes = null;
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1117,7 +1090,7 @@ public class JFile
 
 			//			bytes = baos.toByteArray();
 
-			kryoSerialize(object,cout);
+			kryoSerialize(kryo,object,cout);
 			cout.finish();
 
 			bytes = baos.toByteArray();
@@ -1179,16 +1152,25 @@ public class JFile
 
 		return bytes;
 	}
+
+	public static void kryoSerialize(Kryo kryo,Object object,OutputStream out)
+	{
+		if (kryo == null)
+		{
+			kryo = getKryo();
+		}
+
+		Output output = new Output(out,4*1024);
+		//		kryo.writeObject(output, ds);
+		kryo.writeClassAndObject(output, object);
+		output.flush();
+		//		output.close();
+	}
+
 	
 	public static void kryoSerialize(Object object,OutputStream out)
 	{
-		Kryo kryo = getKryo();
-
-		Output output = new Output(out,4*1024);
-//		kryo.writeObject(output, ds);
-		kryo.writeClassAndObject(output, object);
-		output.flush();
-//		output.close();
+		kryoSerialize(null, object, out);
 	}
 	
 	public static Object kryoUnserialize(InputStream in)
