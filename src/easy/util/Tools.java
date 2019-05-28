@@ -12,7 +12,7 @@ import it.sauronsoftware.junique.JUnique;
 
 public class Tools
 {
-	public void JUniqueOne(final String pid)
+	public static void JUniqueOne(final String pid)
 	{
 		boolean isexist;
 		try
