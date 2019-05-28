@@ -1104,33 +1104,41 @@ public class JFile
 		return bytes;
 	}
 
-	public static Object kryoBytesUnSerialize(byte[] bytes)
+	public static Object kryoBytesUnSerialize(Kryo kryo,byte[] bytes)
 	{
 		if (bytes != null)
 		{
-			Kryo kryo = getKryo();
+			if (kryo == null)
+			{
+				kryo = getKryo();
+			}
 
 			Input input = new Input(bytes,0,bytes.length);
 			return kryo.readClassAndObject(input);
-			
-//		      ByteArrayInputStream bais = null;
-//		      try
-//		      {
-//		        // 反序列化
-//		        bais = new ByteArrayInputStream(bytes);
-//		        ObjectInputStream ois = new ObjectInputStream(bais);
-//		        return kryoUnserialize(ois);
-//		      }
-//		      catch (Exception e)
-//		      {
-//		        Log.OutException(e);
-//		      }	
+
+			//		      ByteArrayInputStream bais = null;
+			//		      try
+			//		      {
+			//		        // 反序列化
+			//		        bais = new ByteArrayInputStream(bytes);
+			//		        ObjectInputStream ois = new ObjectInputStream(bais);
+			//		        return kryoUnserialize(ois);
+			//		      }
+			//		      catch (Exception e)
+			//		      {
+			//		        Log.OutException(e);
+			//		      }
 		}
 
 		return null;
 	}
+
+	public static Object kryoBytesUnSerialize(byte[] bytes)
+	{
+		return kryoBytesUnSerialize(null,bytes);
+	}
 	
-	public static byte[] kryoSerializeToBytes(Object object)
+	public static byte[] kryoSerializeToBytes(Kryo kryo,Object object)
 	{
 		byte[] bytes = null;
 		
@@ -1140,7 +1148,7 @@ public class JFile
 		{
 
 //			bytes = baos.toByteArray();
-			kryoSerialize(object,baos);
+			kryoSerialize(kryo,object,baos);
 			bytes = baos.toByteArray();
 
 			baos.close();
@@ -1151,6 +1159,11 @@ public class JFile
 		}
 
 		return bytes;
+	}
+
+	public static byte[] kryoSerializeToBytes(Object object)
+	{
+		return kryoSerializeToBytes(null,object);
 	}
 
 	public static void kryoSerialize(Kryo kryo,Object object,OutputStream out)
