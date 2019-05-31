@@ -1407,6 +1407,15 @@ public class Format
 		return null;
 
 	}
+
+	public static String getStringLen(String str,int len)
+	{
+		if (str==null || str.length() <= len)
+		{
+			return str;
+		}
+		return str.substring(0,len);
+	}
 	/*
 	 * public static void main(String[] args) { long a =
 	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
