@@ -1,22 +1,18 @@
 package easy.sql;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import easy.config.Config;
 import easy.io.JFile;
 import easy.util.EDate;
 import easy.util.Format;
 import easy.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.sql.*;
 
 /**
  * <p>
@@ -244,23 +240,30 @@ public abstract class Sql implements  AutoCloseable
 				cds.setEndtime(endtime);
 				cds.setDataSet(ds);
 				cds.setSql(sql);
-				
-				FileOutputStream fo = new FileOutputStream(path);
+
+
 				try
 				{
-					FileLock fl = fo.getChannel().tryLock();
-					if (fl != null)
+					FileOutputStream fo = new FileOutputStream(path);
+					try
 					{
-						JFile.writeGZipObject(fo, cds);
+						FileLock fl = fo.getChannel().tryLock();
+						if (fl != null)
+						{
+							JFile.writeGZipObject(fo, cds);
+						}
 					}
+					catch (OverlappingFileLockException e)
+					{
+						//Log.OutException(e);
+					}
+
+					fo.close();
 				}
-				catch (OverlappingFileLockException e)
+				catch (FileNotFoundException e)
 				{
-					//Log.OutException(e);
+					Log.OutException(e);
 				}
-
-				fo.close();
-
 			}
 		}
 
