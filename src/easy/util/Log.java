@@ -1,11 +1,11 @@
 package easy.util;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import easy.config.Config;
 import easy.io.JFile;
 import easy.mail.SendTextMail;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 
@@ -35,15 +35,15 @@ public class Log
 	protected final static JFile SQLFILE ;
 	protected final static JFile ERRORFILE;
 
-	protected final static boolean ISSEND = Config.getProperty("LOGSEND","false").equals("true")?true:false;
+	protected final static boolean ISSEND = Config.getProperty("LOGSEND", "false").equals("true");
 	
-	protected final static boolean WRITELOG = Config.getProperty("WRITELOG","false").equals("true")?true:false;
-	protected final static boolean WRITEERROR = Config.getProperty("WRITEERROR","false").equals("true")?true:false;
+	protected final static boolean WRITELOG = Config.getProperty("WRITELOG", "false").equals("true");
+	protected final static boolean WRITEERROR = Config.getProperty("WRITEERROR", "false").equals("true");
 	protected final static boolean WRITESQL = Config.getProperty("WRITESQL","false").equals("true")?true:false;
 	
 	private static boolean isTrue(String key)
 	{
-		return Config.getProperty(key,"false").equals("true")?true:false;
+		return Config.getProperty(key, "false").equals("true");
 	}
 	
 	static 
@@ -76,25 +76,25 @@ public class Log
 		sendmail.setTo (Config.getProperty("LOGTOUSER"));
 	}
 
-	public static String OutException(Exception ex)
+	public static String OutException(Throwable ex)
 	{	
 		return OutException(ex,null);
 	}
 	
-	public static String OutException (Exception ex,String formate,Object... strs)
+	public static String OutException (Throwable ex,String formate,Object... strs)
 	{
 		String str = String.format(formate,strs);
 		return OutException (ex,str);
 	}
 
-	public static String OutException (Exception ex,String outstr)
+	public static String OutException (Throwable ex,String outstr)
 	{
 		String datestr = normalformat.format (new Date());
 		
-		StringBuffer buf = new StringBuffer (datestr);
+		StringBuilder buf = new StringBuilder(datestr);
 		buf.append(LINE);
 		
-		StringBuffer strbuf = new StringBuffer();
+		StringBuilder strbuf = new StringBuilder();
 		if (outstr != null)
 		{		
 			strbuf.append (outstr);
@@ -106,12 +106,12 @@ public class Log
 		strbuf.append(CAUSE);
 		strbuf.append(ex.getCause ());
 		StackTraceElement[] trace = ex.getStackTrace ();
-        for (int i=0,len=trace.length; i < len; i++)
-        {
-        	strbuf.append(SEP);
-        	strbuf.append(TAT);
-        	strbuf.append(trace[i]);
-        }
+		for (StackTraceElement stackTraceElement : trace)
+		{
+			strbuf.append(SEP);
+			strbuf.append(TAT);
+			strbuf.append(stackTraceElement);
+		}
         strbuf.append(SEP);
         strbuf.append (LINE);
 		
@@ -144,11 +144,11 @@ public class Log
 		return OutLog (str);
 	}
 	
-	public static String OutLog (String str)
+	public static String OutLog (Object str)
 	{
 		String datestr = normalformat.format (new Date());
 		
-		String out = new String(String.format("%s%s%s", datestr,str,SEP));
+		String out = String.format("%s%s%s", datestr, str, SEP);
 		
 		if (isTrue("WRITELOG"))
 		{
