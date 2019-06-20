@@ -1,20 +1,14 @@
 package easy.sql;
 
-import java.io.Serializable;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import easy.config.Config;
 import easy.util.EDate;
 import easy.util.Log;
+
+import java.io.Serializable;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -58,7 +52,7 @@ public class DataSet implements Serializable
 		int count = rs.getRow();
 		rs.first();
 		rs.beforeFirst();
-		
+
 		rowList = new ArrayList<>(count);
 //		list.ensureCapacity();
 //		System.out.println("count "+ count);
@@ -142,7 +136,7 @@ public class DataSet implements Serializable
 						Clob clob = rs.getClob(i);
 						if (clob != null)
 						{
-							rowstr = clob.getSubString(1l, (int)clob.length());
+							rowstr = clob.getSubString(1L, (int)clob.length());
 						}
 						else
 						{
@@ -207,7 +201,7 @@ public class DataSet implements Serializable
 	 */
 	public Row getRow(int idx)
 	{
-		return (Row)rowList.get(idx);
+		return rowList.get(idx);
 	}
 	
 	/**
@@ -270,15 +264,13 @@ public class DataSet implements Serializable
 	/**
 	 * �滻ָ���ֶ�����
 	 * @param colname
-	 * @param srcstr
-	 * @param relpacestr
+	 * @param regex
 	 */
-	public void replaceAll(String colname,String regex,String replacement) throws Exception
+	public void replaceAll(String colname,String regex,String replacement)
 	{
 		for (Row r : rowList)
 		{
 			r.put(colname,new Col(colname,r.getString(colname).replaceAll(regex,replacement)));
-			r = null;
 		}
 	}
 
@@ -292,7 +284,6 @@ public class DataSet implements Serializable
 	{
 		Row r = rowList.get(idx);
 		r.put(colname,value);
-		r = null;
 	}
 	
 	public void putString (String colname,String value)
@@ -391,7 +382,7 @@ public class DataSet implements Serializable
 		//setSortFiled(fieldnames[0]);
 		//Collections.sort(rowList);
 		
-		String preField="",currField="";
+		String preField,currField;
 		currField = fieldnames[0];
 		boolean flag = true;
 		String fieldType = fieldTypes[0];
@@ -486,8 +477,6 @@ public class DataSet implements Serializable
 				}
 			}
 		}
-		preField= null;
-		currField=null;
 	}
 	
 	public void reverse(String fieldname,int type)
@@ -511,7 +500,6 @@ public class DataSet implements Serializable
 		for (Row r : rowList)
 		{
 			r.setSortfield(sortfield);
-			r = null;
 		}
 	}
 	
@@ -520,7 +508,6 @@ public class DataSet implements Serializable
 		for (Row r : rowList)
 		{
 			r.remove(field);
-			r = null;
 		}
 	}
 	
@@ -581,11 +568,11 @@ public class DataSet implements Serializable
 	 */
 	public String toCsvString(final String fields,final String split)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		String[] f = fields.split(",");
 		for (int i=0,len=f.length; i<len; i++)
 		{
-			f[i] = new String(f[i].trim());
+			f[i] = f[i].trim();
 		}
 		
 		for (Row r : rowList)
@@ -599,16 +586,11 @@ public class DataSet implements Serializable
 				{
 					buf.append(split);
 				}
-				fieldname = null;
 			}
 			buf.append("\n");
-			r = null;
 		}
-		
-		String sql =  buf.toString();
-		buf = null;
-		f = null;
-		return sql;
+
+		return buf.toString();
 	}
 	
 	/**
@@ -628,7 +610,6 @@ public class DataSet implements Serializable
 	 * @param list join数据
 	 * @param srckeys 源关联key, 分割
 	 * @param keys 源关联key, 分割
-	 * @param 向srclist增加字段, 分割
 	 */
 	public static void join(List<Row> srclist,List<Row> list,String srckeys,String keys,String addfields)
 	{
@@ -667,7 +648,7 @@ public class DataSet implements Serializable
 					}
 					else
 					{
-						String tfs[] = r.getColsNameList();
+						String[] tfs = r.getColsNameList();
 						for (String f : tfs)
 						{
 							sr.putString(f, r.getString(f));
