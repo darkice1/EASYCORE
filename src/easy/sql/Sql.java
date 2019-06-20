@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -573,63 +572,5 @@ public abstract class Sql implements  AutoCloseable
 		}
 
 		return re;
-	}
-
-	public static void main(String[] args)
-	{
-		int[] re = null;
-		CPSql sql = new CPSql();
-		sql.executeUpdate("delete from testabc;");
-/*		for (int i=0;i<100;i++)
-		{
-			BaseTable bt = new BaseTable();
-			bt.setTablename("testabc");
-			bt.Add("test",i);
-			sql.addBatch(bt.getInsertString());
-//			sql.executeUpdate(bt.getInsertString());
-			//			System.out.println(bt.getInsertString());
-
-		}
-		re = sql.executeBatch();*/
-
-		List<Row> list = new ArrayList<>();
-		for (int i=0;i<100;i++)
-		{
-			Row r = new Row();
-			r.putInteger("test",i);
-			list.add(r);
-		}
-
-		sql.preparedStatementExe("INSERT INTO testabc(test) VALUES (?)",list,new String[]{"test"});
-
-
-/*		Connection con = sql.getWriteConnection();
-		try
-		{
-			PreparedStatement ps = con.prepareStatement("INSERT INTO testabc(test) VALUES (?)");
-
-			for (int i=0;i<100;i++)
-			{
-//				ps.setString(1,""+i);
-//				ps.addBatch();
-////				if (i % 10 == 0)
-////				{
-////					re = ps.executeBatch();
-////				}
-				BaseTable bt = new BaseTable();
-				bt.setTablename("testabc");
-				bt.Add("test",i);
-				ps.addBatch(bt.getInsertString());
-			}
-			re = ps.executeBatch();
-		}
-		catch (SQLException e)
-		{
-			Log.OutException(e);
-		}*/
-
-		sql.close();
-
-		System.out.println(re.length);
 	}
 }
