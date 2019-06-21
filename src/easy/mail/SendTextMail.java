@@ -1,8 +1,7 @@
 package easy.mail;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import easy.net.Proxy;
+import easy.util.Log;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -10,9 +9,9 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import easy.net.Proxy;
-import easy.util.Log;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * <p>
@@ -181,7 +180,6 @@ public class SendTextMail
 	
 	/**
 	 * 将发送地址加入列队
-	 * @param 接收邮件地址
 	 */
 	public void add(String to)
 	{
@@ -198,7 +196,6 @@ public class SendTextMail
 		{
 			to = pto;
 			send();
-			pto = null;
 		}
 		to = tmp;
 	}

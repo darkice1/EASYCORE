@@ -1,16 +1,12 @@
 package easy.io;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-
 import easy.config.Config;
 import easy.util.Log;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.*;
 
 /**
  * <p>
@@ -188,5 +184,16 @@ public class EFileItem implements FileItem
 		}
 
 		return fileName;
+	}
+
+	@Override
+	public FileItemHeaders getHeaders()
+	{
+		return null;
+	}
+
+	@Override
+	public void setHeaders(FileItemHeaders fileItemHeaders)
+	{
 	}
 }

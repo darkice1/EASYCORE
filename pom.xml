@@ -1,9 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>EASYCORE</groupId>
-  <artifactId>EASYCORE</artifactId>
+  <artifactId>neo.easy</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+        <properties>
+            <maven.compiler.source>1.8</maven.compiler.source>
+            <maven.compiler.target>1.8</maven.compiler.target>
+            <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+        </properties>
+
   <name>easy</name>
   
 	<dependencies>
@@ -12,8 +19,69 @@
         <artifactId>kryo</artifactId>
         <version>4.0.2</version>
     </dependency>
-	</dependencies>
 
+    	<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.9</version>
+        </dependency>
+
+	<dependency>
+	    <groupId>de.huxhorn.lilith</groupId>
+	    <artifactId>de.huxhorn.lilith.3rdparty.junique</artifactId>
+	    <version>1.0.4</version>
+	</dependency>
+
+	<dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit</artifactId>
+        <version>2.35.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.googlecode.juniversalchardet</groupId>
+        <artifactId>juniversalchardet</artifactId>
+        <version>1.0.3</version>
+    </dependency>
+
+	<dependency>
+	    <groupId>net.sf.json-lib</groupId>
+	    <artifactId>json-lib</artifactId>
+	    <version>2.4</version>
+	    <classifier>jdk15</classifier>
+	</dependency>
+
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>8.0.16</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>javax.jdo</groupId>
+	    <artifactId>jdo-api</artifactId>
+	    <version>3.1</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.xerial</groupId>
+	    <artifactId>sqlite-jdbc</artifactId>
+	    <version>3.27.2.1</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>javax.mail</groupId>
+	    <artifactId>mail</artifactId>
+	    <version>1.4.7</version>
+	</dependency>
+
+	<dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.4</version>
+    </dependency>
+
+</dependencies>
 
 	<build>
 		<plugins>

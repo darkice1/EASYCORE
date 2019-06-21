@@ -3,13 +3,11 @@
  */
 package easy.util;
 
+import easy.io.EHttpClient;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.http.client.ClientProtocolException;
-
-import easy.io.EHttpClient;
 
 /**
  * @author starneo@gmail.com 2017年6月17日

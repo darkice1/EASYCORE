@@ -1,25 +1,15 @@
 package easy.mail;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.mail.BodyPart;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Part;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.internet.MimeMessage;
-
 import com.sun.mail.pop3.POP3Folder;
-
 import easy.sql.DataSet;
 import easy.sql.Row;
 import easy.util.EDate;
 import easy.util.Log;
+
+import javax.mail.*;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Properties;
 
 public class Pop3Mail
 {
@@ -129,7 +119,7 @@ public class Pop3Mail
 	}
 	
 	private String getContent(Message m) throws MessagingException, IOException{
-        StringBuffer sb=new StringBuffer("");
+        StringBuffer sb=new StringBuffer();
         return getContent(m,sb).toString();
     }
 
@@ -144,26 +134,4 @@ public class Pop3Mail
 			Log.OutException(e);
 		}
 	}
-
-	/**
-	 * @param args
-	 * @throws MessagingException 
-	 */
-	public static void main(String[] args) throws MessagingException
-	{
-		Pop3Mail pmail = new Pop3Mail("pop.163.com", "dargon_xuan@163.com","1921988122 ");
-		//System.out.println(wy.loginPop3("dargon_xuan@163.com", "1921988122"));
-
-		try
-		{
-			System.out.println(pmail.getMailList("INBOX",10).getRowList());
-			// System.out.println(pmail.getMailList("INBOX").getRowList());
-		}
-		catch (MessagingException e)
-		{
-			Log.OutException(e);
-		}
-
-	}
-
 }

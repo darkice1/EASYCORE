@@ -3,25 +3,17 @@
  */
 package easy.io;
 
+import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.util.Cookie;
+import easy.model.WebAgent;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.http.conn.ConnectTimeoutException;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
-
-import org.apache.http.conn.ConnectTimeoutException;
-
-import com.gargoylesoftware.htmlunit.CookieManager;
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.ProxyConfig;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.util.Cookie;
-
-import easy.model.WebAgent;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @author starneo@gmail.com 2016年8月17日
@@ -213,12 +205,12 @@ public class EWebClient implements  AutoCloseable
 		return p;
 	}
 	
-	public String get(String url) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	public String get(String url) throws FailingHttpStatusCodeException, IOException
 	{
 		return get(url,null);
 	}
 	
-	public String get(String url,String ref) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	public String get(String url,String ref) throws FailingHttpStatusCodeException, IOException
 	{
 		Page hp = getPage(url,ref);
 //		if (hp instanceof HtmlPage)
@@ -232,4 +224,17 @@ public class EWebClient implements  AutoCloseable
 //		System.out.println(Format.beanToString(hp.getWebResponse()));
 		return hp.getWebResponse().getContentAsString();
 	}
+
+/*	public static void main(String[] args)
+	{
+		EWebClient client = new EWebClient();
+		try
+		{
+			System.out.println(client.get("http://www.baidu.com"));
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
+	}*/
 }
