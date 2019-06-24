@@ -1,0 +1,71 @@
+<html>
+<head>
+<script>
+//解析xml的方法
+function parseXML(xmldoc)
+{
+	var info = xmldoc.getElementsByTagName('rs')[0];
+	var buf ="";
+	
+	var list = xmldoc.getElementsByTagName('r');
+	for (var i=0; i < list.length; i++)
+	{
+		buf += list[i].getAttribute("c1")+"<br />";
+	}
+	document.getElementById("xmloutput").innerHTML =  buf;
+}
+
+function loadXML(url, handler,args)
+{
+	if (window.ActiveXObject && !window.XMLHttpRequest)
+	{
+		window.XMLHttpRequest = function() 
+		{
+			return new ActiveXObject((navigator.userAgent.toLowerCase().indexOf('msie 5') != -1) ? 'Microsoft.XMLHTTP' : 'Msxml2.XMLHTTP');
+		};
+	}
+	
+	if (!window.ActiveXObject && window.XMLHttpRequest)
+	{
+		window.ActiveXObject = function(type) 
+		{
+			switch (type.toLowerCase())
+			{
+				case 'microsoft.xmlhttp':
+				case 'msxml2.xmlhttp':
+				return new XMLHttpRequest();
+			}
+			return null;
+		};
+	}
+	
+	var req = new XMLHttpRequest();
+	if (req)
+	{
+		req.onreadystatechange = function()
+		{
+			if (req.readyState == 4 && req.status == 200)
+			{
+				
+				handler(req.responseXML,args);
+			}
+		};
+		req.open('GET', url);
+		req.send(null);
+	}
+}
+
+
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<input type="submit" name="Submit" value="读取xml数据"
+	onClick="loadXML('demo.xml',parseXML)" />
+
+
+<div id="xmloutput"></div>
+</div>
+</body>
+</html>

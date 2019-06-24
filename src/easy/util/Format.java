@@ -1,0 +1,1442 @@
+package easy.util;
+
+import easy.io.JFile;
+import easy.servlet.PageInfo;
+import easy.sql.CPSql;
+import easy.sql.DataSet;
+import easy.sql.Row;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import org.mozilla.universalchardet.UniversalDetector;
+
+import javax.crypto.*;
+import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.net.ConnectException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * <p>
+ * </p>
+ * 格式化处理
+ * 
+ * @version 1.0 (<i>2005-8-17 Neo</i>)
+ */
+
+public class Format
+{
+	private static Map<String, String> PINYINMAP = new HashMap<>();
+
+	private final static Format FORMAT = new Format();
+
+	private final static String LOWSTRING = "abcdefghijklmnopqrstuvwxyz";
+	private final static String NUMLOWSTRING = "abcdefghijklmnopqrstuvwxyz1234567890";
+	private final static String ALLSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+
+	private final static String HEXSTRING = "01234567890abcdef";
+
+	private static final String HMAC_SHA1 = "HmacSHA1";
+
+	private static final String HMAC_SHA256 = "HmacSHA256";
+
+	// private final static Pattern URLPAT
+	// =Pattern.compile("(http://|https://)[^\\s]*");
+	protected final transient static List<String> GURLLIST = new ArrayList<>();
+	public final transient static List<String> GAELIST = new ArrayList<>();
+	static
+	{
+		GAELIST.add("hwosoproxy1.appspot.com");
+		GAELIST.add("hwosoproxy2.appspot.com");
+		GAELIST.add("hwosoproxy3.appspot.com");
+		GAELIST.add("hwosoproxy4.appspot.com");
+		GAELIST.add("hwosoproxy5.appspot.com");
+		GAELIST.add("hwosoproxy6.appspot.com");
+		GAELIST.add("hwosoproxy7.appspot.com");
+		GAELIST.add("hwosoproxy8.appspot.com");
+		GAELIST.add("hwosoproxy9.appspot.com");
+		GAELIST.add("hwosoproxy10.appspot.com");
+		GAELIST.add("hwosoproxy11.appspot.com");
+		GAELIST.add("hwosoproxy12.appspot.com");
+		GAELIST.add("hwosoproxy13.appspot.com");
+		GAELIST.add("hwosoproxy14.appspot.com");
+		GAELIST.add("hwosoproxy15.appspot.com");
+		GAELIST.add("hwosoproxy16.appspot.com");
+		GAELIST.add("hwosoproxy17.appspot.com");
+
+		for (String host : GAELIST)
+		{
+			GURLLIST.add(String.format("http://%s/c?action=GetUrl&z=%%s&u=%%s",
+					host));
+		}
+		// GURLLIST.add("http://wosoproxy1.appspot.com/c?action=GetUrl&z=%s&u=%s");
+		// GURLLIST.add("http://wosoproxy2.appspot.com/c?action=GetUrl&z=%s&u=%s");
+		// GURLLIST.add("http://wosoproxy3.appspot.com/c?action=GetUrl&z=%s&u=%s");
+	}
+
+	public static String getGaeURL(String u)
+	{
+		int idx = ThreadLocalRandom.current().nextInt(GURLLIST.size());
+		String url = null;
+		try
+		{
+			url = String.format(GURLLIST.get(idx), "n",
+					java.net.URLEncoder.encode(u, "utf-8"));
+		}
+		catch (UnsupportedEncodingException e)
+		{
+		}
+		return url;
+	}
+
+	public static String getGaeZipURL(String u)
+	{
+		int idx = (int) (Math.random() * GURLLIST.size());
+		String url = null;
+		try
+		{
+			url = String.format(GURLLIST.get(idx), "y",
+					java.net.URLEncoder.encode(u, "utf-8"));
+		}
+		catch (UnsupportedEncodingException ignored)
+		{
+		}
+		return url;
+	}
+
+	/**
+	 * 转换成script输出使用字符串
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String toScriptString(String src)
+	{
+		String tmp = src;
+		tmp = Format.replaceAll(tmp,"\r|\n", "");
+		tmp = Format.replaceAll(tmp,"\"", "\\\\\"");
+		tmp = Format.replaceAll(tmp,"</script>", "\"+\"<\"+\"/script>\"+\"");
+		tmp = Format.replaceAll(tmp,"</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"");
+
+		return tmp;
+	}
+
+	/**
+	 * 字符串是否为null或者空串
+	 * @param str
+	 * @return
+	 */
+	public static boolean isEmpty(String str)
+	{
+		return str == null || "".equals(str);
+	}
+
+	public static String replaceAll(String source, String searchString, String replaceString)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+
+		if ("".equals(source))
+		{
+			return source;
+		}
+
+		if (isEmpty(searchString))
+		{
+			return source;
+		}
+
+		if (replaceString == null)
+		{
+			replaceString = "";
+		}
+		int len = source.length();
+		int sl = searchString.length();
+		int rl = replaceString.length();
+		int length;
+		if (sl == rl)
+		{
+			length = len;
+		}
+		else
+		{
+			int c = 0;
+			int s = 0;
+			int e;
+			while ((e = source.indexOf(searchString, s)) != -1)
+			{
+				c++;
+				s = e + sl;
+			}
+			if (c == 0) {
+				return source;
+			}
+			length = len - (c * (sl - rl));
+		}
+
+		int s = 0;
+		int e = source.indexOf(searchString, s);
+		if (e == -1)
+		{
+			return source;
+		}
+		StringBuffer sb = new StringBuffer(length);
+		while (e != -1)
+		{
+			sb.append(source, s, e);
+			sb.append(replaceString);
+			s = e + sl;
+			e = source.indexOf(searchString, s);
+		}
+		e = len;
+		sb.append(source, s, e);
+		return sb.toString();
+	}
+
+	/**
+	 * 转换成HTML输出使用字符串。取出&,",',<,>。
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String toHTMLString(String src, boolean isnoquotes)
+	{
+		if (src == null)
+		{
+			return "";
+		}
+		String tmp = src;
+		tmp = Format.replaceAll(tmp,"&", "&amp;");
+		if (isnoquotes == true)
+		{
+			tmp = Format.replaceAll(tmp,"\"", "&quot;");
+			tmp = Format.replaceAll(tmp,"'", "&#039;");
+		}
+		tmp = Format.replaceAll(tmp,"<", "&lt;");
+		tmp = Format.replaceAll(tmp,">", "&gt;");
+
+		return tmp;
+	}
+
+	/**
+	 * 转换成HTML输出使用字符串。取出&,",',<,>。
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String toHTMLString(String src)
+	{
+		return toHTMLString(src, false);
+	}
+
+	public static String toXMLString(DataSet ds)
+	{
+		PageInfo pi = new PageInfo();
+		pi.setStartIndex(0);
+		pi.setRecordCount(ds.getCount());
+		pi.setPageSize(ds.getCount());
+
+		pi.setPageNumber(1);
+		pi.setTotalPage(1);
+
+		return toXMLString(ds, pi, -1);
+	}
+
+	/**
+	 * list转json.
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public static String listToJsonString(List<Row> list)
+	{
+		return listToJsonString(list, null);
+	}
+
+	/**
+	 * 讲row list转成json
+	 * 
+	 * @param list
+	 * @param addjson
+	 *            新增json属性
+	 * @return
+	 */
+	public static String listToJsonString(List<Row> list, JSONObject addjson)
+	{
+		JSONObject json = new JSONObject();
+
+		JSONArray array = new JSONArray();
+
+		for (Row r : list)
+		{
+			HashMap<String, String> map = new HashMap<>();
+			for (String col : r.getColsNameList())
+			{
+				map.put(col, r.getString(col));
+			}
+			array.add(map);
+		}
+
+		if (addjson != null)
+		{// Iterator<Entry<String, String>> paramsfields =
+			// params.entrySet().iterator();
+
+			@SuppressWarnings("rawtypes")
+			Iterator iter = addjson.keys();
+			while (iter.hasNext())
+			{
+				String key = (String) iter.next();
+				json.put(key, addjson.get(key));
+			}
+		}
+		json.put("total", list.size());
+		json.put("result", array);
+
+		return json.toString();
+	}
+
+	public static String toXMLString(DataSet ds, PageInfo pi, long use_time)
+	{
+		StringBuffer buf = new StringBuffer();
+		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		buf.append(String.format(
+				"<rs count=\"%s\" pageSize=\"%s\" pageCount=\"%s\" pageNum=\"%s\" use_time=\"%s\">",
+				pi.getRecordCount(), pi.getPageSize(), pi.getTotalPage(),
+				pi.getPageNumber(), use_time));
+
+		for (int i = pi.getStartIndex(), k = 1; i < pi.getRecordCount()
+				&& k <= pi.getPageSize(); i++, k++)
+		{
+			Row r = ds.getRow(i);
+			buf.append("<r");
+			for (String str : r.getColsNameList())
+			{
+				buf.append(String.format(" %s=\"%s\"", toHTMLString(str, true),
+						toHTMLString(r.getString(str), true)));
+			}
+			buf.append("/>");
+		}
+
+		buf.append("</rs>");
+
+		return buf.toString();
+	}
+
+	public static <E> String toListString(E[] array)
+	{
+		return toListString(array, ",");
+	}
+
+	public static <E> String toListString(E[] array, String splitstr)
+	{
+		StringBuffer buf = new StringBuffer();
+		for (E e : array)
+		{
+			buf.append(e);
+			buf.append(splitstr);
+		}
+		int len = buf.length();
+		if (len > 0)
+		{
+			buf.setLength(len - splitstr.length());
+		}
+
+		return buf.toString();
+	}
+
+	public static String toListString(String[] strs)
+	{
+		List<String> list = new ArrayList<>();
+		for (String t : strs)
+		{
+			list.add(t);
+		}
+
+		return toListString(list, ",");
+	}
+
+	/**
+	 * 返回list输出字符串，使用,分割
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public static String toListString(List<?> list)
+	{
+		return toListString(list, ",");
+	}
+
+	/**
+	 * 返回list输出字符串
+	 * 
+	 * @param list
+	 *            对应list
+	 * @param splitstr
+	 *            分割字符
+	 * @return
+	 */
+	public static String toListString(List<?> list, String splitstr)
+	{
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0, len = list.size(); i < len; i++)
+		{
+			buf.append(list.get(i).toString());
+			buf.append(splitstr);
+		}
+		if (list.size() > 0)
+		{
+			buf.setLength(buf.length() - splitstr.length());
+		}
+		return buf.toString();
+	}
+
+	public static String getContent(String str, String start, String end)
+	{
+		try
+		{
+			int si = str.indexOf(start);
+			if (si < 0)
+			{
+				return null;
+			}
+			int ssi = si + start.length();
+			int ei = str.indexOf(end, ssi);
+			return str.substring(ssi, ei);
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	public static String replaceContent(String str, String start, String end,
+			String newstring)
+	{
+		try
+		{
+			int si = str.indexOf(start);
+			int ssi = si + start.length();
+			int ei = str.indexOf(end, ssi);
+
+			return String.format("%s%s%s", str.substring(0, ssi), newstring,
+					str.substring(ei));
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	private static Map<String, String> getPinYinMap()
+	{
+
+		if (PINYINMAP == null)
+		{
+			PINYINMAP = new HashMap<>();
+			JFile file = new JFile(
+					FORMAT.getClass().getResourceAsStream("pinyin.txt"));
+			List<String> list = file.getLineList();
+			for (String t : list)
+			{
+				String[] s = t.split(" ", 2);
+				if (s.length >= 2)
+				{
+					PINYINMAP.put(s[0], s[1]);
+				}
+			}
+		}
+
+		return PINYINMAP;
+	}
+
+	/**
+	 * 汉字转拼音
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String getPinyin(String str)
+	{
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < str.length(); i++)
+		{
+			String k = str.substring(i, i + 1);
+			String t = getPinYinMap().get(k);
+			if (t == null)
+			{
+				buf.append(k);
+			}
+			else
+			{
+				buf.append(t);
+			}
+		}
+
+		return buf.toString();
+	}
+
+	/**
+	 * 取得拼音首字母
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String getFirstPinyin(String str)
+	{
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < str.length(); i++)
+		{
+			String k = str.substring(i, i + 1);
+			String t = getPinYinMap().get(k);
+			if (t == null)
+			{
+				buf.append(k);
+			}
+			else
+			{
+				buf.append(t, 0, 1);
+			}
+		}
+
+		return buf.toString();
+	}
+
+	public static List<Field> getAllField(Object obj, boolean getsuper)
+			throws ClassNotFoundException
+	{
+		return getAllField(obj.getClass(),getsuper);
+	}
+	
+	public static List<Field> getAllField(Class<?> c, boolean getsuper)
+	{
+		List<Field> list = new ArrayList<>();
+
+//		Class<?> c =  obj.getClass();
+		if (getsuper)
+		{
+			String supername = c.getSuperclass().getName();
+			// System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
+
+			if (supername != null
+					&& "java.lang.Object".equals(supername) == false)
+			{
+				list.addAll(getAllField(c.getSuperclass(), true));
+			}
+		}
+
+		// System.out.println("#########"+c.getName());
+		Field[] fs = c.getDeclaredFields();
+		for (Field f : fs)
+		{
+			// System.out.println(f+" "+f.getGenericType().getTypeName()+"
+			// "+f.getName());
+			// f.toString();
+			if (f.toString().indexOf(" transient ") < 0 && f.getGenericType()
+					.getTypeName().indexOf("java.lang.Class.") < 0)
+			{
+				list.add(f);
+			}
+		}
+
+		return list;
+	}
+
+	public static List<Field> getAllField(String classname, boolean getsuper)
+			throws ClassNotFoundException
+	{
+		Class<?> c = Class.forName(classname);
+
+		return getAllField(c,getsuper);
+	}
+
+	public static String beanToString(Object o)
+	{
+		return beanToString(o, false);
+	}
+
+	/**
+	 * 取得对象所有变量打印
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public static String beanToString(Object o, boolean getsuper)
+	{
+
+		// StringBuffer buf = new StringBuffer();
+		// Field[] fields = o.getClass().getDeclaredFields();
+		JsonConfig jsonconfig = new JsonConfig();
+		jsonconfig.setAllowNonStringKeys(true);
+
+		JSONObject json = JSONObject.fromObject("{}", jsonconfig);
+		try
+		{
+			List<Field> fields = getAllField(o, getsuper);
+
+			for (Field f : fields)
+			{
+				boolean accessFlag = f.isAccessible();
+				f.setAccessible(true);
+				try
+				{
+					Object po = f.get(o);
+					// System.out.println(f.getName()+"
+					// "+po.getClass().isArray()+" "+po);
+					if (po != null && (po.getClass().isArray()
+							|| po instanceof java.util.List))
+					{
+						JSONArray arr = JSONArray.fromObject("[]", jsonconfig);
+						// buf.append(f.getName());
+						// buf.append(":[");
+						if (po.getClass().isArray())
+						{
+							arr.add(po);
+						}
+						else if (po instanceof java.util.List)
+						{
+							// System.out.println("####"+f.getName());
+							for (Object ppo : (List<?>) po)
+							{
+								arr.add(ppo.toString());
+							}
+							// arr.add(po);
+						}
+
+						json.put(f.getName(), arr);
+						arr = null;
+					}
+					else
+					{
+						// System.out.println("#"+f.getName()+"#"+po);
+						json.put(f.getName(), po);
+						// buf.append(String.format("%s:[%s]\n", f.getName(),
+						// po));
+					}
+					po = null;
+				}
+				catch (IllegalArgumentException e)
+				{
+					// e.printStackTrace();
+				}
+				catch (IllegalAccessException e)
+				{
+					e.printStackTrace();
+				}
+				f.setAccessible(accessFlag);
+			}
+		}
+		catch (ClassNotFoundException e1)
+		{
+			Log.OutException(e1);
+		}
+		// System.out.println(toListString(fields));
+
+		String str = json.toString();
+
+		return str;
+	}
+	
+	public static String getRequestUrl(HttpServletRequest req) 
+	{
+		StringBuffer buf = new StringBuffer(req.getServerName());
+		buf.append("/");
+		buf.append(req.getServletPath());
+		
+		String q = req.getQueryString();
+		if (q != null)
+		{
+			buf.append("?").append(q);
+		}
+		
+		return buf.toString();
+	}
+
+	/**
+	 * 字符串相似值 Levenshtein Distance
+	 * 
+	 * @param str1
+	 * @param str2
+	 * @return
+	 */
+	public static int ld(String str1, String str2)
+	{
+		int[][] d; // 矩阵
+		int n = str1.length();
+		int m = str2.length();
+		int i; // 遍历str1的
+		int j; // 遍历str2的
+		char ch1; // str1的
+		char ch2; // str2的
+		int temp; // 记录相同字符,在某个矩阵位置值的增量,不是0就是1
+		if (n == 0)
+		{
+			return m;
+		}
+		if (m == 0)
+		{
+			return n;
+		}
+		d = new int[n + 1][m + 1];
+		for (i = 0; i <= n; i++)
+		{ // 初始化第一列
+			d[i][0] = i;
+		}
+		for (j = 0; j <= m; j++)
+		{ // 初始化第一行
+			d[0][j] = j;
+		}
+		for (i = 1; i <= n; i++)
+		{ // 遍历str1
+			ch1 = str1.charAt(i - 1);
+			// 去匹配str2
+			for (j = 1; j <= m; j++)
+			{
+				ch2 = str2.charAt(j - 1);
+				if (ch1 == ch2)
+				{
+					temp = 0;
+				}
+				else
+				{
+					temp = 1;
+				}
+				// 左边+1,上边+1, 左上角+temp取最小
+				d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1,
+						d[i - 1][j - 1] + temp);
+			}
+		}
+		return d[n][m];
+	}
+
+	/**
+	 * 返回字符串相似百分比
+	 * 
+	 * @param str1
+	 * @param str2
+	 * @return
+	 */
+	public static double sim(String str1, String str2)
+	{
+		int ld = ld(str1, str2);
+		return 1 - (double) ld / Math.max(str1.length(), str2.length());
+	}
+
+	private static int min(int one, int two, int three)
+	{
+		int min = one;
+		if (two < min)
+		{
+			min = two;
+		}
+		if (three < min)
+		{
+			min = three;
+		}
+		return min;
+	}
+
+	/**
+	 * ip地址转成整数.
+	 * 
+	 * @param ip
+	 * @return
+	 */
+	public static long ip2long(String ip)
+	{
+		long num = 0;
+
+		if (ip != null)
+		{
+			String[] ips = ip.split("[.]", 4);
+			try
+			{
+				for (int i = 0, len = ips.length; i < len; i++)
+				{
+					String s = ips[i].trim();
+					long l = 0;
+					try
+					{
+						l = Long.parseLong(s);
+					}
+					catch (Exception e)
+					{
+						// Log.OutException(e);
+					}
+
+					num += l << ((3l - i) * 8);
+				}
+
+				/*
+				 * num = 16777216L * Long.parseLong(ips[0]) + 65536L
+				 * Long.parseLong(ips[1]) + 256 * Long.parseLong(ips[2]) +
+				 * Long.parseLong(ips[3]);
+				 */
+			}
+			catch (Exception e)
+			{
+				Log.OutException(e, ip);
+			}
+
+			ips = null;
+		}
+
+		return num;
+	}
+
+	/**
+	 * 整数转成ip地址.
+	 * 
+	 * @param ipLong
+	 * @return
+	 */
+	public static String long2ip(long ipLong)
+	{
+		// long ipLong = 1037591503;
+		long[] mask = {0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000};
+		long num = 0;
+		StringBuffer ipInfo = new StringBuffer();
+		for (int i = 0; i < 4; i++)
+		{
+			num = (ipLong & mask[i]) >> (i * 8);
+			if (i > 0)
+				ipInfo.insert(0, ".");
+			ipInfo.insert(0, Long.toString(num, 10));
+		}
+		return ipInfo.toString();
+	}
+
+	/**
+	 * 返回随机字符串 只有小写字母与数字
+	 * 
+	 * @param num
+	 * @return
+	 */
+	public static String getRandStringNum(int num)
+	{
+		StringBuffer buf = new StringBuffer();
+		int len = NUMLOWSTRING.length();
+		// LOWSTRING
+		for (int i = 0; i < num; i++)
+		{
+			int pos = ThreadLocalRandom.current().nextInt(len);
+			buf.append(NUMLOWSTRING, pos, pos + 1);
+		}
+		return buf.toString();
+	}
+
+	public static String getRandHex(int num)
+	{
+		StringBuffer buf = new StringBuffer();
+		int len = HEXSTRING.length();
+		// LOWSTRING
+		for (int i = 0; i < num; i++)
+		{
+			int pos = (int) (Math.random() * len);
+			buf.append(HEXSTRING, pos, pos + 1);
+		}
+		return buf.toString();
+	}
+
+	/**
+	 * 返回随机字符串 只有小写字母
+	 * 
+	 * @param num
+	 *            生成字母数量
+	 * @return
+	 */
+	public static String getRandString(int num)
+	{
+		StringBuffer buf = new StringBuffer();
+		int len = LOWSTRING.length();
+		// LOWSTRING
+		for (int i = 0; i < num; i++)
+		{
+			int pos = ThreadLocalRandom.current().nextInt(len);
+			buf.append(LOWSTRING, pos, pos + 1);
+		}
+		return buf.toString();
+	}
+
+	/**
+	 * 返回随机字符串 大小写与数字
+	 * 
+	 * @param num
+	 *            生成字母数量
+	 * @return
+	 */
+	public static String getRandAllString(int num)
+	{
+		StringBuffer buf = new StringBuffer();
+		int len = ALLSTRING.length();
+		// LOWSTRING
+		for (int i = 0; i < num; i++)
+		{
+			int pos = ThreadLocalRandom.current().nextInt(len);
+			buf.append(ALLSTRING, pos, pos + 1);
+		}
+		return buf.toString();
+	}
+
+	/**
+	 * 获取URLEncoder.encode编码的原始字符串编码类型
+	 * 
+	 * @param str
+	 * @return 编码
+	 */
+	public static String getDecoderChartset(String str)
+	{
+		// utf8中汉字是 %E4%B8%80 到 %E9%BE%A5 gbk中汉字是 %D2%BB 到 %FD%9B
+		str = str.toUpperCase();
+		String charset = "UTF-8";
+
+		Pattern RESULTPAT = Pattern.compile("%[0-9A-F]{2}");
+		Matcher msc = RESULTPAT.matcher(str);
+		out: while (msc.find())
+		{
+			String r = msc.group(0);
+			String f = r.substring(1, 2);
+			if ("E".equals(f))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					if (msc.find() == false)
+					{
+						charset = "GBK";
+						break out;
+					}
+				}
+			}
+			else
+			{
+				if ("D".equals(f) || "F".equals(f))
+				{
+					charset = "GBK";
+					break;
+				}
+			}
+		}
+		return charset;
+	}
+
+	public static String Sha256(String str)
+	{
+		return MessageDigest("sha-256", str);
+	}
+
+	public static String Sha1(String str)
+	{
+		return MessageDigest("sha-1", str);
+	}
+
+	public static String Md2(String str)
+	{
+		return MessageDigest("md2", str);
+	}
+
+	public static byte[] HMACSha1(byte[] key, byte[] data)
+			throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
+		Mac mac = Mac.getInstance(HMAC_SHA1);
+		mac.init(signingKey);
+		byte[] rawHmac = mac.doFinal(data);
+
+		return rawHmac;
+	}
+
+	public static byte[] HMACSha1(String key, String data)
+			throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		return HMACSha1(key.getBytes(), data.getBytes());
+	}
+
+	public static byte[] HMACSha256(byte[] key, byte[] data)
+			throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256);
+		Mac mac = Mac.getInstance(HMAC_SHA256);
+		mac.init(signingKey);
+		byte[] rawHmac = mac.doFinal(data);
+
+		return rawHmac;
+	}
+
+	public static byte[] HMACSha256(String key, String data)
+			throws NoSuchAlgorithmException, InvalidKeyException
+	{
+		return HMACSha256(key.getBytes(), data.getBytes());
+	}
+
+	public static String fileMd5(final String inputFile) throws IOException
+	{
+		File file = new File(inputFile);
+		String value = null;
+		FileInputStream filein = new FileInputStream(file);
+		MappedByteBuffer byteBuffer = filein.getChannel()
+				.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+		MessageDigest md5;
+		try
+		{
+			md5 = MessageDigest.getInstance("MD5");
+			md5.update(byteBuffer);
+
+			BigInteger bi = new BigInteger(1, md5.digest());
+			value = bi.toString(16);
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			Log.OutException(e);
+		}
+
+		filein.close();
+
+		return value;
+
+	}
+
+	public static byte[] Md5(byte[] bytes)
+	{
+		return MessageDigest("md5", bytes);
+	}
+
+	public static String Md5(String str)
+	{
+		return MessageDigest("md5", str);
+	}
+
+	/**
+	 * 返回文件扩展名
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public static String getFileExtName(String filename)
+	{
+		int idx = filename.lastIndexOf(".") + 1;
+
+		return filename.substring(idx);
+	}
+
+	public static Long getNumber(String str)
+	{
+		String number = "0123456789";
+		StringBuffer buf = new StringBuffer("0");
+
+		for (char t : str.toCharArray())
+		{
+			for (int i = 0, len = number.length(); i < len; i++)
+			{
+				char nt = number.charAt(i);
+				if (nt == t)
+				{
+					buf.append(t);
+					break;
+				}
+			}
+		}
+
+		return Long.parseLong(buf.toString());
+	}
+
+	public static byte[] MessageDigest(String m, byte[] bytes)
+	{
+		byte[] mstr = null;
+		try
+		{
+			MessageDigest md = MessageDigest.getInstance(m);
+			mstr = md.digest(bytes);
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			Log.OutException(e);
+		}
+		return mstr;
+	}
+
+	public static String MessageDigest(String m, String str)
+	{
+		String mstr = null;
+		mstr = byte2hex(MessageDigest(m, str.getBytes()));
+
+		return mstr;
+	}
+
+	public static byte[] hex2byte(String s)
+	{
+		String s2;
+		byte[] b = new byte[s.length() / 2];
+		int i;
+		for (i = 0; i < s.length() / 2; i++)
+		{
+			s2 = s.substring(i * 2, i * 2 + 2);
+			b[i] = (byte) (Integer.parseInt(s2, 16) & 0xff);
+		}
+		return b;
+	}
+
+	public static String byte2hex(byte[] b) // 二行制转字符串
+	{
+		StringBuffer hexString = new StringBuffer();
+		for (int i = 0; i < b.length; i++)
+		{
+			String hex = Integer.toHexString(0xff & b[i]);
+			if (hex.length() == 1)
+				hexString.append('0');
+			hexString.append(hex);
+		}
+		return hexString.toString();
+	}
+
+	private static Base64.Encoder ENBASE64URL = Base64.getUrlEncoder();
+	private static Base64.Decoder DEBASE64URL = Base64.getUrlDecoder();
+
+	private static Base64.Encoder ENBASE64 = Base64.getEncoder();
+	private static Base64.Decoder DEBASE64 = Base64.getDecoder();
+
+	public static String encodeBase64Url(final byte[] buf) throws IOException
+	{
+		byte[] encoded = ENBASE64URL.encode(buf);
+
+		// BASE64Encoder en = new sun.misc.BASE64Encoder();
+		return new String(encoded);
+	}
+
+	public static byte[] decodeBase64Url(final String str) throws IOException
+	{
+		// BASE64Decoder decoder = new BASE64Decoder();
+		// return decoder.decodeBuffer(str);
+		return DEBASE64URL.decode(str);
+	}
+
+	public static String encodeBase64(final byte[] buf) throws IOException
+	{
+		byte[] encoded = ENBASE64.encode(buf);
+
+		// BASE64Encoder en = new sun.misc.BASE64Encoder();
+		return new String(encoded);
+	}
+
+	public static byte[] decodeBase64(final String str) throws IOException
+	{
+		// BASE64Decoder decoder = new BASE64Decoder();
+		// return decoder.decodeBuffer(str);
+		return DEBASE64.decode(str);
+	}
+
+	public static String encodeDes(String mykey, String encryptedString)
+			throws InvalidKeyException,
+			NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeySpecException
+	{
+		byte[] keyAsBytes = mykey.getBytes(StandardCharsets.UTF_8);
+		DESKeySpec myKeySpec = new DESKeySpec(keyAsBytes);
+		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
+				.getInstance("DES");
+		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
+
+		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
+
+		String encryptedText = null;
+		try
+		{
+			cipher.init(Cipher.ENCRYPT_MODE, key);
+			byte[] plainText = cipher.doFinal(encryptedString.getBytes());
+
+			encryptedText = Base64UrlSafe.encodeBase64(plainText);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return encryptedText;
+	}
+
+	public static String decodeDes(String mykey, String encryptedString)
+			throws InvalidKeyException,
+			NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeySpecException
+	{
+		byte[] keyAsBytes = mykey.getBytes(StandardCharsets.UTF_8);
+		KeySpec myKeySpec = new DESKeySpec(keyAsBytes);
+		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
+				.getInstance("DES");
+		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
+		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
+
+		String decryptedText = null;
+		try
+		{
+			cipher.init(Cipher.DECRYPT_MODE, key);
+			byte[] encryptedText = Base64UrlSafe.decodeBase64(encryptedString);
+			byte[] plainText = cipher.doFinal(encryptedText);
+			decryptedText = new String(plainText);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return decryptedText;
+	}
+
+	/**
+	 * 返回svm字符串
+	 * 
+	 * @param sql sql
+	 * @param type
+	 *            类别字段
+	 * @param fields
+	 *            特征字段（,分割）
+	 * @return
+	 */
+	public static String sqlToSvm(String sqlstr, String type, String fields)
+	{
+		StringBuilder buf = new StringBuilder();
+
+		String[] fs = fields.split(",");
+		for (int i = 0, len = fs.length; i < len; i++)
+		{
+			fs[i] = fs[i].trim();
+		}
+
+		CPSql sql = new CPSql();
+		try
+		{
+			DataSet ds = sql.executeQuery(sqlstr);
+			while (ds.next())
+			{
+				// buf.append(String.format("", arg1));
+				buf.append(ds.getFloat(type));
+				for (int i = 0, len = fs.length; i < len; i++)
+				{
+					buf.append(String.format(" %d:%f", i + 1,
+							ds.getDouble(fs[i])));
+				}
+				buf.append("\n");
+			}
+		}
+		catch (SQLException e)
+		{
+			Log.OutException(e);
+		}
+		sql.close();
+		fs = null;
+
+		return buf.toString();
+	}
+
+	public static List<String> getUrls(final String str)
+	{
+		// final Pattern URLPAT =
+		// Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+		final Pattern URLPAT = Pattern
+				.compile("((http(|s):)?//[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+
+		List<String> list = new LinkedList<String>();
+		Matcher matcher = URLPAT.matcher(str);
+		while (matcher.find())
+		{
+			String url = matcher.group();
+			if (url.indexOf("//") == 0)
+			{
+				url = "https:" + url;
+			}
+			list.add(url);
+		}
+		return list;
+	}
+
+	// public static void main(String[] args)
+	// {
+	// System.out.println(getUrls("<div id=\"4d703977f553755f624215ea80180c89\"
+	// style=\"width:300px;height:250px;\"><script type=\"text/javascript\"
+	// src=\"http://adx.haoad.org/p/4d703977f553755f624215ea80180c89.js\"></script></div>"));
+	// System.out.println(getUrls("<script type=\"text/javascript\"
+	// smua=\"d=p&s=b&u=u3501065&w=300&h=250\"
+	// src=\"//www.nkscdn.com/smu0/o.js\"></\"></script>"));
+	//
+	// }
+
+	public static List<String> getAts(final String str)
+	{
+		List<String> list = new LinkedList<>();
+
+		if (str != null)
+		{
+			final Pattern ATPAT = Pattern.compile(String.format(
+					"@[[^@\\s%s]0-9]{1,20}",
+					"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"));
+			Matcher matcher = ATPAT.matcher(str);
+			while (matcher.find())
+			{
+				list.add(matcher.group());
+			}
+		}
+
+		return list;
+	}
+
+	public static String getMapString(Map<?, ?> map)
+	{
+		StringBuffer buf = new StringBuffer();
+
+		for (Map.Entry<?, ?> entry : map.entrySet())
+		{
+			String key = entry.getKey().toString();
+			String val = entry.getValue().toString();
+
+			buf.append(String.format("[%s]:[%s]\n", key, val));
+		}
+
+		return buf.toString();
+	}
+
+	public static Map<String, String> getMyIpAll()
+	{
+		Map<String, String> all = new HashMap<>();
+
+		try
+		{
+			String content = JFile.loadHttpFile(
+					"http://iframe.ip138.com/ic.asp", null, null, "gbk",
+					"http://ip138.com/");
+			String ip = Format.getContent(content, "[", "]");
+			String area = Format.getContent(content, "来自：", "</center>");
+			all.put("ip", ip);
+			all.put("area", area);
+		}
+		catch (ConnectException e)
+		{
+			Log.OutException(e);
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}
+
+		return all;
+	}
+
+	public static String getMyIp()
+	{
+		return getMyIpAll().get("ip");
+	}
+
+	public static String getDomain(final String url)
+	{
+		String[] t = url.split("/");
+		String domain = "";
+
+		if (t.length >= 3)
+		{
+			domain = t[2];
+		}
+
+		t = null;
+
+		return domain;
+	}
+
+	public static String getChartset(byte[] bytes)
+	{
+		String code;
+
+		UniversalDetector detector = new UniversalDetector(null);
+		detector.handleData(bytes, 0, bytes.length);
+		detector.dataEnd();
+		code = detector.getDetectedCharset();
+		detector.reset();
+		if (code == null)
+		{
+			code = "utf-8";
+		}
+		/*
+		 * if (bytes == null || bytes.length < 2) { return code; }
+		 * 
+		 * int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
+		 * switch (p) { case 0xefbb: code = "UTF-8"; break; case 0xfffe: code =
+		 * "Unicode"; break; case 0xfeff: code = "UTF-16BE"; break; default:
+		 * code = "GBK"; }
+		 */
+		return code;
+
+	}
+
+	public static InputStream getStringStream(String sInputString)
+	{
+		if (sInputString != null)
+		{
+			ByteArrayInputStream tInputStringStream = new ByteArrayInputStream(
+					sInputString.getBytes());
+			return tInputStringStream;
+		}
+		return null;
+
+	}
+
+	public static String getStringLen(String str,int len)
+	{
+		if (str==null || str.length() <= len)
+		{
+			return str;
+		}
+		return str.substring(0,len);
+	}
+	/*
+	 * public static void main(String[] args) { long a =
+	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
+	 */
+	/*
+	 * public static void main(String[] args) { try { HashMap<String,Row> map =
+	 * new HashMap<String,Row>(); Row r = new Row(); r.putString("rrr", "rvrv");
+	 * map.put("aaa", r); System.out.println(Format.getMapString(map));
+	 * 
+	 * String key = "aa123456"; String str = encodeDes(key,
+	 * "http://s.click.taobao.com/t?e=m%3D2%26s%3DWXz%2BpQdcHYccQipKwQzePOeEDrYVVa64Qih%2F7PxfOKS5VBFTL4hn2dFYoGP7L3a4NGaA%2Fv7qa0ST6eDNmvF6jBLOI4%2FU6Dke38XymDefB1EyH37S5WIg5fE%2FJZ20M53%2Bcy7llBOuH5ssPuCO17knxsYOae24fhW0"
+	 * ); System.out.println(str); System.out.println(decodeDes(key,str));
+	 * 
+	 * //http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/
+	 * B0OvI3cIUDlFk /zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
+	 * System.out.println(decodeDes("UlTdTr8Y",
+	 * "tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk/zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p"
+	 * )); } catch (InvalidKeyException e) { Log.OutException(e); } catch
+	 * (UnsupportedEncodingException e) { Log.OutException(e); } catch
+	 * (NoSuchAlgorithmException e) { Log.OutException(e); } catch
+	 * (NoSuchPaddingException e) { Log.OutException(e); } catch
+	 * (InvalidKeySpecException e) { Log.OutException(e); } }
+	 */
+
+	// public static void main(String[] args) throws ClassNotFoundException,
+	// IOException
+	// {
+	// try
+	// {
+	// System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
+	// }
+	// catch (InvalidKeyException e)
+	// {
+	// Log.OutException(e);
+	// }
+	// catch (NoSuchAlgorithmException e)
+	// {
+	// Log.OutException(e);
+	// }
+	// }
+}
