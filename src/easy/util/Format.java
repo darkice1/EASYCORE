@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.net.ConnectException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
@@ -99,7 +98,7 @@ public class Format
 			url = String.format(GURLLIST.get(idx), "n",
 					java.net.URLEncoder.encode(u, "utf-8"));
 		}
-		catch (UnsupportedEncodingException e)
+		catch (UnsupportedEncodingException ignored)
 		{
 		}
 		return url;
@@ -198,7 +197,7 @@ public class Format
 		{
 			return source;
 		}
-		StringBuffer sb = new StringBuffer(length);
+		StringBuilder sb = new StringBuilder(length);
 		while (e != -1)
 		{
 			sb.append(source, s, e);
@@ -315,7 +314,7 @@ public class Format
 
 	public static String toXMLString(DataSet ds, PageInfo pi, long use_time)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		buf.append(String.format(
 				"<rs count=\"%s\" pageSize=\"%s\" pageCount=\"%s\" pageNum=\"%s\" use_time=\"%s\">",
@@ -347,7 +346,7 @@ public class Format
 
 	public static <E> String toListString(E[] array, String splitstr)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (E e : array)
 		{
 			buf.append(e);
@@ -364,11 +363,7 @@ public class Format
 
 	public static String toListString(String[] strs)
 	{
-		List<String> list = new ArrayList<>();
-		for (String t : strs)
-		{
-			list.add(t);
-		}
+		List<String> list = new ArrayList<>(Arrays.asList(strs));
 
 		return toListString(list, ",");
 	}
@@ -395,10 +390,10 @@ public class Format
 	 */
 	public static String toListString(List<?> list, String splitstr)
 	{
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0, len = list.size(); i < len; i++)
+		StringBuilder buf = new StringBuilder();
+		for (Object o : list)
 		{
-			buf.append(list.get(i).toString());
+			buf.append(o.toString());
 			buf.append(splitstr);
 		}
 		if (list.size() > 0)
@@ -475,7 +470,7 @@ public class Format
 	 */
 	public static String getPinyin(String str)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < str.length(); i++)
 		{
 			String k = str.substring(i, i + 1);
@@ -501,7 +496,7 @@ public class Format
 	 */
 	public static String getFirstPinyin(String str)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < str.length(); i++)
 		{
 			String k = str.substring(i, i + 1);
@@ -520,7 +515,6 @@ public class Format
 	}
 
 	public static List<Field> getAllField(Object obj, boolean getsuper)
-			throws ClassNotFoundException
 	{
 		return getAllField(obj.getClass(),getsuper);
 	}
@@ -549,8 +543,7 @@ public class Format
 			// System.out.println(f+" "+f.getGenericType().getTypeName()+"
 			// "+f.getName());
 			// f.toString();
-			if (f.toString().indexOf(" transient ") < 0 && f.getGenericType()
-					.getTypeName().indexOf("java.lang.Class.") < 0)
+			if (!f.toString().contains(" transient ") && !f.getGenericType().getTypeName().contains("java.lang.Class."))
 			{
 				list.add(f);
 			}
@@ -587,76 +580,65 @@ public class Format
 		jsonconfig.setAllowNonStringKeys(true);
 
 		JSONObject json = JSONObject.fromObject("{}", jsonconfig);
-		try
-		{
-			List<Field> fields = getAllField(o, getsuper);
+		List<Field> fields = getAllField(o, getsuper);
 
-			for (Field f : fields)
+		for (Field f : fields)
+		{
+			boolean accessFlag = f.isAccessible();
+			f.setAccessible(true);
+			try
 			{
-				boolean accessFlag = f.isAccessible();
-				f.setAccessible(true);
-				try
+				Object po = f.get(o);
+				// System.out.println(f.getName()+"
+				// "+po.getClass().isArray()+" "+po);
+				if (po != null && (po.getClass().isArray()
+						|| po instanceof List))
 				{
-					Object po = f.get(o);
-					// System.out.println(f.getName()+"
-					// "+po.getClass().isArray()+" "+po);
-					if (po != null && (po.getClass().isArray()
-							|| po instanceof java.util.List))
+					JSONArray arr = JSONArray.fromObject("[]", jsonconfig);
+					// buf.append(f.getName());
+					// buf.append(":[");
+					if (po.getClass().isArray())
 					{
-						JSONArray arr = JSONArray.fromObject("[]", jsonconfig);
-						// buf.append(f.getName());
-						// buf.append(":[");
-						if (po.getClass().isArray())
+						arr.add(po);
+					}
+					else if (po instanceof List)
+					{
+						// System.out.println("####"+f.getName());
+						for (Object ppo : (List<?>) po)
 						{
-							arr.add(po);
+							arr.add(ppo.toString());
 						}
-						else if (po instanceof java.util.List)
-						{
-							// System.out.println("####"+f.getName());
-							for (Object ppo : (List<?>) po)
-							{
-								arr.add(ppo.toString());
-							}
-							// arr.add(po);
-						}
+						// arr.add(po);
+					}
 
-						json.put(f.getName(), arr);
-						arr = null;
-					}
-					else
-					{
-						// System.out.println("#"+f.getName()+"#"+po);
-						json.put(f.getName(), po);
-						// buf.append(String.format("%s:[%s]\n", f.getName(),
-						// po));
-					}
-					po = null;
+					json.put(f.getName(), arr);
 				}
-				catch (IllegalArgumentException e)
+				else
 				{
-					// e.printStackTrace();
+					// System.out.println("#"+f.getName()+"#"+po);
+					json.put(f.getName(), po);
+					// buf.append(String.format("%s:[%s]\n", f.getName(),
+					// po));
 				}
-				catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-				f.setAccessible(accessFlag);
 			}
-		}
-		catch (ClassNotFoundException e1)
-		{
-			Log.OutException(e1);
+			catch (IllegalArgumentException e)
+			{
+				// e.printStackTrace();
+			}
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+			f.setAccessible(accessFlag);
 		}
 		// System.out.println(toListString(fields));
 
-		String str = json.toString();
-
-		return str;
+		return json.toString();
 	}
 	
 	public static String getRequestUrl(HttpServletRequest req) 
 	{
-		StringBuffer buf = new StringBuffer(req.getServerName());
+		StringBuilder buf = new StringBuilder(req.getServerName());
 		buf.append("/");
 		buf.append(req.getServletPath());
 		
@@ -781,7 +763,7 @@ public class Format
 						// Log.OutException(e);
 					}
 
-					num += l << ((3l - i) * 8);
+					num += l << ((3L - i) * 8);
 				}
 
 				/*
@@ -795,7 +777,6 @@ public class Format
 				Log.OutException(e, ip);
 			}
 
-			ips = null;
 		}
 
 		return num;
@@ -811,8 +792,8 @@ public class Format
 	{
 		// long ipLong = 1037591503;
 		long[] mask = {0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000};
-		long num = 0;
-		StringBuffer ipInfo = new StringBuffer();
+		long num;
+		StringBuilder ipInfo = new StringBuilder();
 		for (int i = 0; i < 4; i++)
 		{
 			num = (ipLong & mask[i]) >> (i * 8);
@@ -831,7 +812,7 @@ public class Format
 	 */
 	public static String getRandStringNum(int num)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int len = NUMLOWSTRING.length();
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
@@ -844,7 +825,7 @@ public class Format
 
 	public static String getRandHex(int num)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int len = HEXSTRING.length();
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
@@ -864,7 +845,7 @@ public class Format
 	 */
 	public static String getRandString(int num)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int len = LOWSTRING.length();
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
@@ -884,7 +865,7 @@ public class Format
 	 */
 	public static String getRandAllString(int num)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int len = ALLSTRING.length();
 		// LOWSTRING
 		for (int i = 0; i < num; i++)
@@ -957,9 +938,8 @@ public class Format
 		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 		Mac mac = Mac.getInstance(HMAC_SHA1);
 		mac.init(signingKey);
-		byte[] rawHmac = mac.doFinal(data);
 
-		return rawHmac;
+		return mac.doFinal(data);
 	}
 
 	public static byte[] HMACSha1(String key, String data)
@@ -974,9 +954,8 @@ public class Format
 		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256);
 		Mac mac = Mac.getInstance(HMAC_SHA256);
 		mac.init(signingKey);
-		byte[] rawHmac = mac.doFinal(data);
 
-		return rawHmac;
+		return mac.doFinal(data);
 	}
 
 	public static byte[] HMACSha256(String key, String data)
@@ -1038,7 +1017,7 @@ public class Format
 	public static Long getNumber(String str)
 	{
 		String number = "0123456789";
-		StringBuffer buf = new StringBuffer("0");
+		StringBuilder buf = new StringBuilder("0");
 
 		for (char t : str.toCharArray())
 		{
@@ -1073,7 +1052,7 @@ public class Format
 
 	public static String MessageDigest(String m, String str)
 	{
-		String mstr = null;
+		String mstr;
 		mstr = byte2hex(MessageDigest(m, str.getBytes()));
 
 		return mstr;
@@ -1094,12 +1073,14 @@ public class Format
 
 	public static String byte2hex(byte[] b) // 二行制转字符串
 	{
-		StringBuffer hexString = new StringBuffer();
-		for (int i = 0; i < b.length; i++)
+		StringBuilder hexString = new StringBuilder();
+		for (byte value : b)
 		{
-			String hex = Integer.toHexString(0xff & b[i]);
+			String hex = Integer.toHexString(0xff & value);
 			if (hex.length() == 1)
+			{
 				hexString.append('0');
+			}
 			hexString.append(hex);
 		}
 		return hexString.toString();
@@ -1111,7 +1092,7 @@ public class Format
 	private static Base64.Encoder ENBASE64 = Base64.getEncoder();
 	private static Base64.Decoder DEBASE64 = Base64.getDecoder();
 
-	public static String encodeBase64Url(final byte[] buf) throws IOException
+	public static String encodeBase64Url(final byte[] buf)
 	{
 		byte[] encoded = ENBASE64URL.encode(buf);
 
@@ -1119,14 +1100,14 @@ public class Format
 		return new String(encoded);
 	}
 
-	public static byte[] decodeBase64Url(final String str) throws IOException
+	public static byte[] decodeBase64Url(final String str)
 	{
 		// BASE64Decoder decoder = new BASE64Decoder();
 		// return decoder.decodeBuffer(str);
 		return DEBASE64URL.decode(str);
 	}
 
-	public static String encodeBase64(final byte[] buf) throws IOException
+	public static String encodeBase64(final byte[] buf)
 	{
 		byte[] encoded = ENBASE64.encode(buf);
 
@@ -1134,7 +1115,7 @@ public class Format
 		return new String(encoded);
 	}
 
-	public static byte[] decodeBase64(final String str) throws IOException
+	public static byte[] decodeBase64(final String str)
 	{
 		// BASE64Decoder decoder = new BASE64Decoder();
 		// return decoder.decodeBuffer(str);
@@ -1199,7 +1180,6 @@ public class Format
 	/**
 	 * 返回svm字符串
 	 * 
-	 * @param sql sql
 	 * @param type
 	 *            类别字段
 	 * @param fields
@@ -1237,7 +1217,6 @@ public class Format
 			Log.OutException(e);
 		}
 		sql.close();
-		fs = null;
 
 		return buf.toString();
 	}
@@ -1247,9 +1226,10 @@ public class Format
 		// final Pattern URLPAT =
 		// Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
 		final Pattern URLPAT = Pattern
-				.compile("((http(|s):)?//[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
+				.compile("((http(|s):)?//[-a-zA-Z0-9@:%_" +
+						"\\+.~,#?&//=]+)");
 
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 		Matcher matcher = URLPAT.matcher(str);
 		while (matcher.find())
 		{
@@ -1295,7 +1275,7 @@ public class Format
 
 	public static String getMapString(Map<?, ?> map)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		for (Map.Entry<?, ?> entry : map.entrySet())
 		{
@@ -1322,10 +1302,6 @@ public class Format
 			all.put("ip", ip);
 			all.put("area", area);
 		}
-		catch (ConnectException e)
-		{
-			Log.OutException(e);
-		}
 		catch (IOException e)
 		{
 			Log.OutException(e);
@@ -1348,8 +1324,6 @@ public class Format
 		{
 			domain = t[2];
 		}
-
-		t = null;
 
 		return domain;
 	}
@@ -1383,9 +1357,8 @@ public class Format
 	{
 		if (sInputString != null)
 		{
-			ByteArrayInputStream tInputStringStream = new ByteArrayInputStream(
+			return new ByteArrayInputStream(
 					sInputString.getBytes());
-			return tInputStringStream;
 		}
 		return null;
 
