@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.gae;
 
 import easy.io.JFile;
@@ -75,13 +72,13 @@ public class GaeUpdate
 							String buf = new String(cbuf);
 							System.out.print(buf);
 							
-							if (buf.indexOf("Email: ") >= 0)
+							if (buf.contains("Email: "))
 							{
 								System.out.println(user);
 								out.write(String.format("%s\n", user));
 								out.flush();
 							}					
-							if (buf.indexOf("Password for ") >= 0)
+							if (buf.contains("Password for "))
 							{
 								//System.out.println(pass);
 								System.out.println("*******");

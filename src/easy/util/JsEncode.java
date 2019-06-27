@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.util;
 
 import easy.io.EHttpClient;

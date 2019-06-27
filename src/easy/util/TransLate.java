@@ -86,10 +86,6 @@ public class TransLate
 			System.out.println(restr);
 			restr = Format.getContent(restr, "\"", "\"");
 		}
-		catch(ConnectException e)
-		{
-			e.printStackTrace();
-		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
@@ -97,7 +93,7 @@ public class TransLate
 		return restr;
 	}
 	
-	public static String baidutranslate(String str,String src,String tar) throws ConnectException, IOException
+	public static String baidutranslate(String str,String src,String tar) throws IOException
 	{
 		if (src == null)
 		{

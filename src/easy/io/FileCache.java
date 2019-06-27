@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.io;
 
 import easy.config.Config;
@@ -37,14 +34,10 @@ public class FileCache implements FileFilter
 	
 	public static void setTxt(String key,String value,long timeout)
 	{
-		
-		StringBuffer buf = new StringBuffer();
-		buf.append(System.currentTimeMillis()+timeout);
-		buf.append("\n");
-		buf.append(value);
-		
+
 		JFile file = new JFile(getFileName(key));
-		file.WriteText(buf.toString());
+		String buf = (System.currentTimeMillis() + timeout) + "\n" + value;
+		file.WriteText(buf);
 		file.close();
 	}
 	
@@ -61,7 +54,7 @@ public class FileCache implements FileFilter
 				txt = ts[1];
 			}
 		}
-		catch (IOException e)
+		catch (IOException ignored)
 		{
 		}
 		file.close();
@@ -72,14 +65,10 @@ public class FileCache implements FileFilter
 	@Override
 	public boolean accept(File file)
 	{
-		String filename = new String(file.getName());
+		String filename = file.getName();
 		String ext = Format.getFileExtName(filename);
-		if (EXT.equals(ext))
-		{
-			return true;
-		}
-		
-		return false;
+		return EXT.equals(ext);
+
 	}
 
 	/**

@@ -1,6 +1,8 @@
-//DataSet 查询
+/*
 
-//精确查询支持 = < >  
+DataSet 查询
+精确查询支持 = < >
+*/
 
 package easy.sql;
 
@@ -20,7 +22,7 @@ public class SelectDataSet
 
 	String info = "搜索完成";
 
-	ArrayList<String[]> Al = new ArrayList<String[]>();// 条件容器
+	ArrayList<String[]> Al = new ArrayList<>();// 条件容器
 
 	DataSet dataset = new DataSet();;// 最终返回的dataset
 
@@ -278,7 +280,7 @@ public class SelectDataSet
 			for (int i = 0; i < Al.size(); i++)// 条件
 			{
 
-				String SeletTemp[] = (String[]) Al.get(i); // 取出条件
+				String SeletTemp[] = Al.get(i); // 取出条件
 
 				if (SeletTemp[1].equals("=")) // 等于的判断
 				{

@@ -47,8 +47,7 @@ public class Row implements Comparable<Row>,Serializable
 	
 	public int compareTo(Row o)
 	{
-		Row r = o;
-		return get(sortfield).compareTo(r.get(sortfield));
+		return get(sortfield).compareTo(o.get(sortfield));
 	}
 	
 	public Object getObject(String key)
@@ -62,8 +61,7 @@ public class Row implements Comparable<Row>,Serializable
 	}
 	public String[] getColsNameList ()
 	{
-		String[] cols = row.keySet().toArray(new String[0]);
-		return cols;
+		return row.keySet().toArray(new String[0]);
 	}
 
 	public Integer getInt(String key)
@@ -356,7 +354,7 @@ public class Row implements Comparable<Row>,Serializable
 	
 	public String toString()
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		
 		Iterator<Entry<String, Col>> rs = row.entrySet().iterator();
 		Entry<String,Col> m;

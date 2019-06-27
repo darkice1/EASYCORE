@@ -13,9 +13,7 @@ import easy.sql.Row;
 import easy.util.Format;
 import easy.util.Log;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -135,7 +133,7 @@ public class JFile
 
 			if (p_in != null)
 			{
-				List<String> list = new ArrayList<String>();
+				List<String> list = new ArrayList<>();
 
 				String s = p_in.readLine();
 				while (s != null)
@@ -257,7 +255,6 @@ public class JFile
 		os.flush();
 
 		os.close();
-		os = null;
 	}
 
 	public static void writeGZipObject(String file, Object obj)
@@ -266,7 +263,6 @@ public class JFile
 		FileOutputStream fis = new FileOutputStream(file);
 		writeGZipObject(fis, obj);
 		fis.close();
-		fis = null;
 	}
 
 	public static void writeGZipObject(OutputStream out, Object obj)
@@ -461,12 +457,7 @@ public class JFile
 			URL u = new URL(url);
 
 			HttpsURLConnection uc = (HttpsURLConnection) u.openConnection();
-			uc.setHostnameVerifier(new HostnameVerifier() {
-				 @Override
-				 public boolean verify(String arg0, SSLSession arg1) {
-				 return true;
-				 }
-				 });
+			uc.setHostnameVerifier((arg0, arg1) -> true);
 			
 			uc.setDoOutput(true);// POST
 			if (useragent == null)
@@ -686,11 +677,8 @@ public class JFile
 			all.put("url", url);
 
 			Map<String, List<String>> heads = uc.getHeaderFields();
-			Iterator<Entry<String, List<String>>> headiter = heads.entrySet()
-							.iterator();
-			while (headiter.hasNext())
+			for (Entry<String, List<String>> entry : heads.entrySet())
 			{
-				Entry<String, List<String>> entry = headiter.next();
 				String key = entry.getKey();
 				List<String> hvlist = entry.getValue();
 				StringBuilder buf = new StringBuilder();

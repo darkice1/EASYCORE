@@ -1,16 +1,11 @@
-/**
- * 
- */
 package easy.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * <p><i>Copyright: youhow.net(c) 2005-2011</i></p>
  *
- * ³£ÓÃËã·¨
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ã·¨
  *
  * @version 1.0 (<i>2011-5-27 neo(starneo@gmail.com)</i>)
  */
@@ -18,7 +13,7 @@ import java.util.List;
 public class Algorithms
 {
 	/**
-	 * ¶þ·Ö·¨¡£Êý×éÐèÒªÅÅÐò»òÔò½á¹û
+	 * ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param <T>
 	 * @param list
 	 * @param o
@@ -69,25 +64,4 @@ public class Algorithms
 		
 		return null;
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
-		List<Integer> l = new ArrayList<Integer>();
-		l.add(3);
-		l.add(4);
-		l.add(5);
-		l.add(1);
-		l.add(2);
-
-		l.add(6);
-		l.add(10);
-
-		Collections.sort(l);
-		System.out.println(dichotomy(l,new Integer(5)));
-		
-	}
-
 }

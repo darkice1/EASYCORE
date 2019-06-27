@@ -1,13 +1,9 @@
-/**
- * 
- */
 package easy.util;
 
 import easy.io.JFile;
 import easy.net.Proxy;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -40,10 +36,6 @@ public class GetProxyList
 			String th = JFile.loadHttpFile("http://wosoproxy2.appspot.com/",null,null,null,null,30000,null);
 			System.out.println(th);
 		}
-		catch (ConnectException e)
-		{
-			Log.OutLog(e.toString());
-		}
 		catch (IOException e)
 		{
 			Log.OutLog(e.toString());
@@ -58,7 +50,7 @@ public class GetProxyList
 				
 				//String js = Format.getContent(html, "<SCRIPT type=\"text/javascript\">\n", "</SCRIPT>");
 				//System.out.println(js);
-				Map<String,String> jshash = new HashMap<String,String>(); 
+				Map<String,String> jshash = new HashMap<>();
 				Matcher jsms = JS_RESULTPAT.matcher(html);
 				while (jsms.find())
 				{
@@ -85,7 +77,7 @@ public class GetProxyList
 						//System.out.println(ms.group(1));
 						//System.out.println(ms.group(3));
 						String []jsl = ms.group(2).split("\\+");
-						StringBuffer buf = new StringBuffer();
+						StringBuilder buf = new StringBuilder();
 						for (String t : jsl)
 						{
 							buf.append(jshash.get(t));
@@ -106,10 +98,6 @@ public class GetProxyList
 								System.out.println(th);
 								isok = true;
 							}
-							catch (ConnectException e)
-							{
-								//Log.OutLog(e.toString());
-							}
 							catch (IOException e)
 							{
 								//Log.OutLog(e.toString());
@@ -126,10 +114,6 @@ public class GetProxyList
 						//ds.AddRow(r);
 					}
 				}
-			}
-			catch (ConnectException e)
-			{
-				e.printStackTrace();
 			}
 			catch (IOException e)
 			{

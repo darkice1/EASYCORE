@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.sql;
 
 import java.util.ArrayList;
@@ -20,8 +17,8 @@ public class BatchInsert
 	
 	private int size = Integer.MAX_VALUE;
 	
-	private ArrayList <StringBuffer> sqllist = new ArrayList <StringBuffer>();
-	private ArrayList <String> fieldlist = new ArrayList <String>();
+	private ArrayList <StringBuffer> sqllist = new ArrayList<>();
+	private ArrayList <String> fieldlist = new ArrayList<>();
 	
 	private int idx = 0;
 	
@@ -40,11 +37,9 @@ public class BatchInsert
 		String[] t = fields.split(",");
 		for (String f: t)
 		{
-			f = new String(f.trim());
+			f = f.trim();
 			fieldlist.add(f);
-			f = null;
 		}
-		t =null;
 	}
 	
 	
@@ -88,8 +83,6 @@ public class BatchInsert
 			{
 				sqlbuf.append(",");
 			}
-			v = null;
-			f = null;
 		}
 		sqlbuf.append(")");
 		
@@ -133,7 +126,6 @@ public class BatchInsert
 			sqlstr = sqlstr.replaceFirst("INSERT INTO", "INSERT IGNORE INTO");
 			
 			count += sql.executeUpdate(sqlstr);
-			r = null;
 		}
 		return count;
 	}
@@ -151,7 +143,6 @@ public class BatchInsert
 			{
 				count += sql.executeUpdate(String.format("%s ON DUPLICATE KEY UPDATE %s", r.toString(),updateString));
 			}
-			r = null;
 		}
 		return count;
 	}

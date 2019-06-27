@@ -35,13 +35,13 @@ public class Shell
 						process.getErrorStream()));
 		process.getOutputStream().close();
 
-		char charbuf[] = new char[bufsize];
+		char[] charbuf = new char[bufsize];
 		boolean isbreak = false;
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if (in != null)
 		{
-			int byteread = 0;
+			int byteread;
 
 			while ((byteread = in.read(charbuf)) != -1)
 			{

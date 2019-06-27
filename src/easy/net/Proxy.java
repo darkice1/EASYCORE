@@ -49,10 +49,6 @@ public class Proxy
 	
 	/**
 	 * 关闭代理
-	 * @param host
-	 * @param port
-	 * @param user
-	 * @param password
 	 */
 	public static void closeProxy()
 	{

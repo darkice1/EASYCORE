@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.sql;
 
 import easy.config.Config;
@@ -113,10 +110,10 @@ public class SqlExeCache implements Runnable,FileFilter
 		}
 		sql.close();
 		
-		List<ConcurrentLinkedQueue <String>> list = new ArrayList<ConcurrentLinkedQueue <String>>();
+		List<ConcurrentLinkedQueue <String>> list = new ArrayList<>();
 
 		//存表名与对应的所属数组
-		HashMap<String,Integer> tablemap = new HashMap<String,Integer>();
+		HashMap<String,Integer> tablemap = new HashMap<>();
 		File file = new File(DBEXECACHEPATH);
 		File[] fs =  file.listFiles(new SqlExeCache());
 		//按时间排序
@@ -151,7 +148,7 @@ public class SqlExeCache implements Runnable,FileFilter
 			String path = f.getAbsolutePath();
 			
 			String name = f.getName();
-			String t[] = name.split("_");
+			String[] t = name.split("_");
 			String tablename = t[0];
 			//System.out.println(tablename);
 			Integer idx = tablemap.get(tablename);
@@ -163,7 +160,7 @@ public class SqlExeCache implements Runnable,FileFilter
 				idx = tablemap.size() % DBEXECACHEMAXTHREAD;
 				if (list.size() <= idx)
 				{
-					ConcurrentLinkedQueue <String> tlist = new ConcurrentLinkedQueue <String>();
+					ConcurrentLinkedQueue <String> tlist = new ConcurrentLinkedQueue<>();
 					list.add(tlist);
 				}
 				tablemap.put(tablename, idx);
@@ -197,14 +194,7 @@ public class SqlExeCache implements Runnable,FileFilter
 	{
 		String filename = file.getName();
 
-		if (filename.endsWith(DBEXECACHEEXT))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return filename.endsWith(DBEXECACHEEXT);
 	}
 
 	@Override

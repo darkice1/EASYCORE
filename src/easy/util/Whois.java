@@ -26,11 +26,11 @@ public class Whois
 		
 		query += "\r\n";
 		os.write(query.getBytes("iso8859_1"));
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if (in != null)
 		{
-			int byteread = 0;
-			char charbuf[] = new char[bufsize];
+			int byteread;
+			char[] charbuf = new char[bufsize];
 
 			while ((byteread = in.read(charbuf)) != -1)
 			{

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.io;
 
 import easy.model.WebAgent;
@@ -94,15 +91,8 @@ public class EHttpClient
 
 	public void setBaseAuthorization(String name, String passwd)
 	{
-		try
-		{
-			baseAuthorization = String.format("Basic %s", Format.encodeBase64(
-					String.format("%s:%s", name, passwd).getBytes()));
-		}
-		catch (IOException e)
-		{
-			Log.OutException(e);
-		}
+		baseAuthorization = String.format("Basic %s", Format.encodeBase64(
+				String.format("%s:%s", name, passwd).getBytes()));
 	}
 
 	public void setProxyAuthorization(String name, String passwd)
@@ -256,11 +246,11 @@ public class EHttpClient
 
 	public void addCookie(final String cookie, final String domain)
 	{
-		String t[] = cookie.split(";");
+		String[] t = cookie.split(";");
 		for (String c : t)
 		{
 			c = c.trim();
-			String ts[] = c.split("=", 2);
+			String[] ts = c.split("=", 2);
 			if (ts.length >= 2)
 			{
 				// System.out.println(ts[0]+" "+ts[1]);
@@ -271,15 +261,11 @@ public class EHttpClient
 
 				cookieStore.addCookie(pc);
 
-				pc = null;
 			}
 
 			// Log.OutLog("%s=%s; ",ts[0], ts[1]);
 
-			ts = null;
-			c = null;
 		}
-		t = null;
 	}
 
 	public void setConnectionTimeout(final int time)
@@ -321,7 +307,7 @@ public class EHttpClient
 					Header ct = entity.getContentType();
 					if (ct != null)
 					{
-						HeaderElement values[] = ct.getElements();
+						HeaderElement[] values = ct.getElements();
 						// for (int i=0; i<values.length ;i++)
 						// {
 						// System.out.println(values[i]);
@@ -376,7 +362,7 @@ public class EHttpClient
 	}
 
 	public HttpResponse execute(HttpPost post)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		post.setConfig(requestconfig);
 		return client.execute(post);
@@ -391,7 +377,7 @@ public class EHttpClient
 	{
 		if (header == null)
 		{
-			header = new HashMap<String, String>();
+			header = new HashMap<>();
 			header.put("User-Agent", agent);
 		}
 
@@ -467,11 +453,8 @@ public class EHttpClient
 		post.setConfig(requestconfig);
 
 		header = procHead(header);
-		Iterator<Entry<String, String>> headfields = header.entrySet()
-				.iterator();
-		while (headfields.hasNext())
+		for (Entry<String, String> e : header.entrySet())
 		{
-			Entry<String, String> e = headfields.next();
 			post.setHeader(e.getKey(), e.getValue());
 		}
 
@@ -515,11 +498,8 @@ public class EHttpClient
 
 			if (request != null)
 			{
-				Iterator<Entry<String, String>> paramsfields = request
-						.entrySet().iterator();
-				while (paramsfields.hasNext())
+				for (Entry<String, String> e : request.entrySet())
 				{
-					Entry<String, String> e = paramsfields.next();
 					builder.addTextBody(e.getKey(), e.getValue());
 					// StringBody par = new StringBody(e.getValue());
 					// builder.addPart(e.getKey(),par);
@@ -549,14 +529,11 @@ public class EHttpClient
 
 			if (estr == null)
 			{
-				List<NameValuePair> plist = new ArrayList<NameValuePair>();
+				List<NameValuePair> plist = new ArrayList<>();
 				if (request != null)
 				{
-					Iterator<Entry<String, String>> paramsfields = request
-							.entrySet().iterator();
-					while (paramsfields.hasNext())
+					for (Entry<String, String> e : request.entrySet())
 					{
-						Entry<String, String> e = paramsfields.next();
 						String v = e.getValue();
 						String[] vs = v.split(POSTSPLIT);
 						for (String nv : vs)
@@ -598,7 +575,7 @@ public class EHttpClient
 			File storeFile = new File(localpath);
 			FileOutputStream output = new FileOutputStream(storeFile);
 			InputStream input = entity.getContent();
-			byte b[] = new byte[1024];
+			byte[] b = new byte[1024];
 			int j = 0;
 			while ((j = input.read(b)) != -1)
 			{
@@ -689,10 +666,8 @@ public class EHttpClient
 		get.setConfig(requestconfig);
 
 		head = procHead(head);
-		Iterator<Entry<String, String>> headfields = head.entrySet().iterator();
-		while (headfields.hasNext())
+		for (Entry<String, String> e : head.entrySet())
 		{
-			Entry<String, String> e = headfields.next();
 			get.setHeader(e.getKey(), e.getValue());
 		}
 		// get.setHeader("Cookie", getCookieString());
@@ -719,7 +694,7 @@ public class EHttpClient
             //得到网络资源并写入文件  
             InputStream input = entity.getContent();  
             byte b[] = new byte[1024];  
-            int j = 0;  
+            int j;
             while( (j = input.read(b))!=-1){  
                 output.write(b,0,j);  
             }  
@@ -771,7 +746,6 @@ public class EHttpClient
 				}
 			}
 		}
-		clist = null;
 
 		return buf.toString();
 	}
@@ -783,13 +757,12 @@ public class EHttpClient
 
 	public String getCookieString()
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		List<Cookie> clist = cookieStore.getCookies();
 		for (Cookie cc : clist)
 		{
 			buf.append(String.format("%s=%s; ", cc.getName(), cc.getValue()));
 		}
-		clist = null;
 
 		return buf.toString();
 	}

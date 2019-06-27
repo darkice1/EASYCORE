@@ -21,7 +21,7 @@ import java.util.Map;
 
 public abstract class CommitAction extends Action
 {
-	protected Map<String, BaseTable> tablemap = new HashMap<String, BaseTable>();
+	protected Map<String, BaseTable> tablemap = new HashMap<>();
 
 	protected final static String CMT_HEAD = "cmt";
 
@@ -74,7 +74,7 @@ public abstract class CommitAction extends Action
 			{
 				String name = (String) e.nextElement();
 
-				if (name.equals(ISUPDATE) && request.getParameter(name).toString().equals("true"))
+				if (name.equals(ISUPDATE) && request.getParameter(name).equals("true"))
 				{
 					isupdate = true;
 				}
@@ -83,33 +83,39 @@ public abstract class CommitAction extends Action
 					String[] s = name.split("_", 3);
 					if (s.length == 3)
 					{
-						if (s[0].equals(CMT_HEAD))
+						switch (s[0])
 						{
-							BaseTable b = tablemap.get(s[1]);
-							if (b != null)
+							case CMT_HEAD:
 							{
-								b.Add(s[2], request.getParameter(name));
-							}
-						}
-						else if (s[0].equals(CMTW_HEAD))
-						{
-							BaseTable b = tablemap.get(s[1]);
-							b.setWhere(b.getWhere() + String.format(" AND %s='%s'", s[2], request.getParameter(name)));
-						}
-						else if (s[0].equals(CMTS_HEAD))
-						{
-							BaseTable b = tablemap.get(s[1]);
-							if (b != null)
-							{
-								String[] params = request.getParameterValues(name);
-								StringBuffer buf = new StringBuffer();
-								for (String p : params)
+								BaseTable b = tablemap.get(s[1]);
+								if (b != null)
 								{
-									buf.append(p);
-									buf.append(",");
+									b.Add(s[2], request.getParameter(name));
 								}
-								buf.setLength(buf.length() - 1);
-								b.Add(s[2], buf.toString());
+								break;
+							}
+							case CMTW_HEAD:
+							{
+								BaseTable b = tablemap.get(s[1]);
+								b.setWhere(b.getWhere() + String.format(" AND %s='%s'", s[2], request.getParameter(name)));
+								break;
+							}
+							case CMTS_HEAD:
+							{
+								BaseTable b = tablemap.get(s[1]);
+								if (b != null)
+								{
+									String[] params = request.getParameterValues(name);
+									StringBuilder buf = new StringBuilder();
+									for (String p : params)
+									{
+										buf.append(p);
+										buf.append(",");
+									}
+									buf.setLength(buf.length() - 1);
+									b.Add(s[2], buf.toString());
+								}
+								break;
 							}
 						}
 					}

@@ -32,10 +32,10 @@ public class FileManager
     	if ( file.isFile()) return file.delete();
     
     	File[] files = file.listFiles();
-    	for (int i=0,len=files.length;i<len;i++)
-    	{
-    		delete(files[i]);
-    	}
+		for (File value : files)
+		{
+			delete(value);
+		}
     	return file.delete();
     }
     
@@ -81,14 +81,14 @@ public class FileManager
     public static List<File> getFiles(File file) throws FileNotFoundException
     {
     	File[] files = listFiles(file);
-    	List<File> list = new ArrayList<File>();
-    	for (int i=0,len=files.length;i<len;i++)
-    	{
-    		if (files[i].isFile())
-    		{
-    			list.add(files[i]);
-    		}
-    	}
+    	List<File> list = new ArrayList<>();
+		for (File value : files)
+		{
+			if (value.isFile())
+			{
+				list.add(value);
+			}
+		}
     	
     	return list;
     }
@@ -101,14 +101,14 @@ public class FileManager
     public static List<File> getDirs(File file) throws FileNotFoundException
     {
     	File[] files = listFiles(file);
-    	List<File> list = new ArrayList<File>();
-    	for (int i=0,len=files.length;i<len;i++)
-    	{
-    		if (files[i].isDirectory())
-    		{
-    			list.add(files[i]);
-    		}
-    	}
+    	List<File> list = new ArrayList<>();
+		for (File value : files)
+		{
+			if (value.isDirectory())
+			{
+				list.add(value);
+			}
+		}
     	
     	return list;
     }
@@ -120,7 +120,7 @@ public class FileManager
     
     public static List<File> getAllDirs(File file) throws FileNotFoundException
     {
-    	List<File> list = new ArrayList<File>();
+    	List<File> list = new ArrayList<>();
     	if (!file.exists())
     	{
     		throw new FileNotFoundException("not found the path/file[" + file.getPath() + "]");
@@ -135,11 +135,11 @@ public class FileManager
     private static List<File> getAllDirs(List<File> list,File file) throws FileNotFoundException
     {
     	List<File> dirs = getDirs(file);
-    	for (int i=0,len=dirs.size();i<len;i++)
-    	{
-    		list.add(dirs.get(i));
-    		getAllDirs(list,(File)dirs.get(i));
-    	}
+		for (File dir : dirs)
+		{
+			list.add(dir);
+			getAllDirs(list, dir);
+		}
     	return list;
     }
     /**
@@ -164,7 +164,7 @@ public class FileManager
     	return true;
     }
     
-    public static boolean moveAsStream(String srcFile,String objFile) throws FileNotFoundException,IOException
+    public static boolean moveAsStream(String srcFile,String objFile) throws IOException
     {
     	FileInputStream		fis = new FileInputStream(srcFile);
     	FileOutputStream 	fos = new FileOutputStream(objFile);
