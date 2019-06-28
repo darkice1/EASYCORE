@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 path=$(cd `dirname $0`; pwd)
 
+git commit -m "$1"
+git push
+
 lib="/Users/Neo/Documents/git/EASYLIB"
 rlib="$lib/repository"
 
