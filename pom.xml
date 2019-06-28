@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.easy</groupId>
   <artifactId>core</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
 
         <properties>
@@ -161,7 +161,7 @@
 			</plugin>
 
 
-			<!--<plugin>
+<!--			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
@@ -174,7 +174,7 @@
 						<configuration>
 							<outputDirectory>${basedir}/web/WEB-INF/lib</outputDirectory>
 							<excludeTransitive>false</excludeTransitive>
-							<stripVersion>true</stripVersion>
+							<stripVersion>false</stripVersion>
 						</configuration>
 					</execution>
 				</executions>
