@@ -5,14 +5,13 @@ import easy.util.Log;
 import net.sf.json.JSONObject;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class Xiaoi extends ChatRobot
 {
 	@Override
-	public String chat(String msg) throws ConnectException, IOException
+	public String chat(String msg) throws IOException
 	{
 		//{"sessionId":"22678bc1d8e94f148932093f9eb073d6","robotId":"webbot",
 		//"userId":"bdd5a9a8117b4ae685c43408c44942f3","body":{"content":"test"},"type":"txt"}

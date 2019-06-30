@@ -58,14 +58,9 @@ public class ClearDbCache implements FileFilter
 	@Override
 	public boolean accept(File file)
 	{
-		String filename = new String(file.getName());
+		String filename = file.getName();
 		String ext = Format.getFileExtName(filename);
-		if ("db".equals(ext))
-		{
-			return true;
-		}
-		
-		return false;
+		return "db".equals(ext);
 	}
 
 	/**

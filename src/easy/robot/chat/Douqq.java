@@ -7,7 +7,6 @@ import easy.io.JFile;
 import easy.util.Log;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URLEncoder;
 
 /**
@@ -20,7 +19,7 @@ public class Douqq extends ChatRobot
 	 * @see easy.robot.chat.ChatRobot#chat(java.lang.String)
 	 */
 	@Override
-	public String chat(String msg) throws ConnectException, IOException
+	public String chat(String msg) throws IOException
 	{
 		//http://xiao.douqq.com/api.php?msg=
 		msg = msg.replace("#", "");

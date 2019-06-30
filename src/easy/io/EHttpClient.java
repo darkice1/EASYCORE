@@ -8,7 +8,6 @@ import net.sf.json.JSONObject;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -412,7 +411,7 @@ public class EHttpClient
 
 	public HashMap<String, String> post(final String url,
 			final HashMap<String, String> requst)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return post(url, requst, null);
 	}
@@ -420,7 +419,7 @@ public class EHttpClient
 	public HashMap<String, String> post(final String url,
 			final HashMap<String, String> request,
 			final HashMap<String, String> header)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return post(url, request, header, null, null);
 	}
@@ -429,7 +428,7 @@ public class EHttpClient
 			final HashMap<String, String> request,
 			final HashMap<String, String> header,
 			final HashMap<String, String> files)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return post(url, request, header, files, null);
 	}
@@ -438,7 +437,7 @@ public class EHttpClient
 			final HashMap<String, String> request,
 			final HashMap<String, String> header,
 			final HashMap<String, String> files, final String localpath)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return post(url, request, header, files, localpath, null);
 	}
@@ -446,7 +445,7 @@ public class EHttpClient
 	public HashMap<String, String> post(final String url,
 			final Map<String, String> request, Map<String, String> header,
 			final Map<String, String> files, final String localpath,
-			String postchartset) throws ClientProtocolException, IOException
+			String postchartset) throws IOException
 	{
 		// List<NameValuePair> qparams
 		HttpPost post = new HttpPost(url);
@@ -597,14 +596,14 @@ public class EHttpClient
 
 	public String postToString(final String url,
 			final Map<String, String> request)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return postToString(url, request, null, null);
 	}
 
 	public String postToString(final String url,
 			final Map<String, String> request, final Map<String, String> header)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return postToString(url, request, header, null);
 	}
@@ -612,7 +611,7 @@ public class EHttpClient
 	public String postToString(final String url,
 			final Map<String, String> request, final Map<String, String> header,
 			final Map<String, String> files, String postcharset)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		HashMap<String, String> info = post(url, request, header, files, null,
 				postcharset);
@@ -622,7 +621,7 @@ public class EHttpClient
 	public String postToString(final String url,
 			final Map<String, String> request, final Map<String, String> header,
 			final Map<String, String> files)
-			throws ClientProtocolException, IOException
+			throws IOException
 	{
 		return postToString(url, request, header, files, null);
 	}
@@ -692,8 +691,8 @@ public class EHttpClient
 			File storeFile = new File(localpath);    
             FileOutputStream output = new FileOutputStream(storeFile);  
             //得到网络资源并写入文件  
-            InputStream input = entity.getContent();  
-            byte b[] = new byte[1024];  
+            InputStream input = entity.getContent();
+			byte[] b = new byte[1024];
             int j;
             while( (j = input.read(b))!=-1){  
                 output.write(b,0,j);  

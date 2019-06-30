@@ -7,6 +7,7 @@ import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>
@@ -111,7 +112,7 @@ public class EFileItem implements FileItem
 		{
 			try
 			{
-				value = new String(value.getBytes(ISO_8859_1),request_charactencoding);
+				value = new String(value.getBytes(StandardCharsets.ISO_8859_1),request_charactencoding);
 			}
 			catch (UnsupportedEncodingException e)
 			{

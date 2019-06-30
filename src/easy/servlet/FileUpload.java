@@ -49,12 +49,12 @@ public class FileUpload
 		if (contentType == null	|| !contentType.startsWith("multipart/form-data"))
 		{
 			err = "Ilegal ENCTYPE : must be multipart/form-data\n";
-			err = String.valueOf(err)+ String.valueOf("ENCTYPE set = ".concat(String.valueOf(String.valueOf(contentType))));
+			err = err + "ENCTYPE set = ".concat(String.valueOf(String.valueOf(contentType)));
 		}
 		else
 		{
 			boundary = contentType.substring(contentType.indexOf("boundary=") + BOUNDARY_WORD_SIZE);
-			boundary = "--".concat(String.valueOf(String.valueOf(boundary)));
+			boundary = "--".concat(String.valueOf(boundary));
 			parseBody(boundary);
 		}
 	}
@@ -85,7 +85,7 @@ public class FileUpload
 		try
 		{
 			ServletInputStream sis = request.getInputStream();
-			byte b[] = new byte[BUFSIZE];
+			byte[] b = new byte[BUFSIZE];
 			int x = 0;
 			int state = 0;
 			String name = null;

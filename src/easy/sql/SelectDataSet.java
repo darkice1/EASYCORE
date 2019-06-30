@@ -24,12 +24,12 @@ public class SelectDataSet
 
 	ArrayList<String[]> Al = new ArrayList<>();// 条件容器
 
-	DataSet dataset = new DataSet();;// 最终返回的dataset
+	DataSet dataset = new DataSet();// 最终返回的dataset
 
 	// ADD条件
 	public void AddWhere(String listname, String mark, String where, String type)
 	{
-		String temp[] = new String[4];
+		String[] temp = new String[4];
 
 		temp[0] = listname;
 
@@ -53,7 +53,7 @@ public class SelectDataSet
 			for (int i = 0; i < Al.size(); i++)// 条件
 			{
 
-				String SeletTemp[] = (String[]) Al.get(i); // 取出条件
+				String[] SeletTemp = Al.get(i); // 取出条件
 
 				if (SeletTemp[1].equals("=")) // 等于的判断
 				{
@@ -280,7 +280,7 @@ public class SelectDataSet
 			for (int i = 0; i < Al.size(); i++)// 条件
 			{
 
-				String SeletTemp[] = Al.get(i); // 取出条件
+				String[] SeletTemp = Al.get(i); // 取出条件
 
 				if (SeletTemp[1].equals("=")) // 等于的判断
 				{

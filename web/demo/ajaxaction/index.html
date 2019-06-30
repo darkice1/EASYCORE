@@ -53,7 +53,7 @@ function loadXML(url, handler,args)
 			}
 		};
 		req.open('POST', url,true);
-		var c = "test="+parent.document.getElementById("test").value+"中文测试&test2=中文测试######################################################################"
+		var c = "test="+parent.document.getElementById("test").value+"中文测试&test2=中文测试######################################################################";
 		req.setRequestHeader("Content-Length",c.length);
   		req.setRequestHeader("CONTENT-TYPE","application/x-www-form-urlencoded");
 		

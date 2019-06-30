@@ -38,7 +38,7 @@ public class Images
 		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpg");
 		if (iter.hasNext())
 		{
-			writer = (ImageWriter) iter.next();
+			writer = iter.next();
 		}
 
 		// 准备输出文件
@@ -205,7 +205,7 @@ public class Images
 		Iterator<ImageReader> itr = ImageIO.getImageReaders(mcis);
 		while (itr.hasNext())
 		{
-			ImageReader reader = (ImageReader) itr.next();
+			ImageReader reader = itr.next();
 			if (reader instanceof GIFImageReader)
 			{
 				type = "gif";

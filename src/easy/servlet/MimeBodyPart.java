@@ -155,15 +155,15 @@ public class MimeBodyPart
 					saveDir = tempDir;
 				try
 				{
-					File f = new File(String.valueOf(saveDir)
-							+ String.valueOf(fileName));
+					File f = new File(saveDir
+							+ fileName);
 					if (f.exists() && overwrite || !f.exists())
 					{
 						/*
 						 * try { //f.renameTo(file); //System.out.println("move:"+file.renameTo(f)); rename(tmpfilename,String.valueOf(saveDir)+ String.valueOf(fileName)); } catch (Exception ex) { ex.printStackTrace(); }
 						 */
-						rename(tmpfilename, String.valueOf(saveDir)
-								+ String.valueOf(fileName));
+						rename(tmpfilename, saveDir
+								+ fileName);
 
 						/*
 						 * OutputStream os = new FileOutputStream(f); out.writeTo(os); out.flush(); out.close();
@@ -175,7 +175,7 @@ public class MimeBodyPart
 					{
 						fileName = GeneralUtilities.generateFileName(saveDir,
 								fileName);
-						rename(tmpfilename, String.valueOf(saveDir) + String.valueOf(fileName));
+						rename(tmpfilename, saveDir + fileName);
 						// f = new File(String.valueOf(saveDir)+ String.valueOf(fileName));
 
 						// f = new File("d:\\aaa");

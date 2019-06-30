@@ -24,14 +24,14 @@
 		}
 	</script>
 </head>
-ÐÕÃû£º
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 <input name='srw_l_name'>
-ÐÔ±ð£º
+ï¿½Ô±ï¿½
 <select name='srw_sex'>
-	<option value='m'>ÄÐ
+	<option value='m'>ï¿½ï¿½
 	<option value='f'>Å®
 </select>
-<input name='' type='button' value='²éÑ¯' onclick="javascript:load();">
+<input name='' type='button' value='ï¿½ï¿½Ñ¯' onclick="load();">
 <span id="content"></span>
 <script>
 var tt = new Etable();

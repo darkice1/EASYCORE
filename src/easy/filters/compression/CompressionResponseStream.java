@@ -171,7 +171,7 @@ public class CompressionResponseStream extends ServletOutputStream
 	 * @exception IOException
 	 *                if an input/output error occurs
 	 */
-	public void write(byte b[]) throws IOException
+	public void write(byte[] b) throws IOException
 	{
 
 		write(b, 0, b.length);
@@ -191,7 +191,7 @@ public class CompressionResponseStream extends ServletOutputStream
 	 * @exception IOException
 	 *                if an input/output error occurs
 	 */
-	public void write(byte b[], int off, int len) throws IOException
+	public void write(byte[] b, int off, int len) throws IOException
 	{
 		if (closed)
 			throw new IOException("Cannot write to a closed output stream");
@@ -222,7 +222,7 @@ public class CompressionResponseStream extends ServletOutputStream
 		writeToGZip(b, off, len);
 	}
 
-	public void writeToGZip(byte b[], int off, int len) throws IOException
+	public void writeToGZip(byte[] b, int off, int len) throws IOException
 	{
 		if (gzipstream == null)
 		{

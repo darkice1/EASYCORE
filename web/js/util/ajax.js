@@ -78,7 +78,7 @@ function AjaxRequest(arg_method,arg_url,arg_synchronized,arg_filer,arg_onReadyMe
 			xmlhttprequest.open(this.method,this.url + escape(query),this.synchronized);
 			xmlhttprequest.send(null);
 		}
-	}
+	};
 	//以文本模式获取响应内容
 	this.getResponseText = function() {
 		try {

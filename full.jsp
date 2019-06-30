@@ -47,7 +47,7 @@
 		// This is where you insert your custom filebrowser logic
 		//alert("Example of filebrowser callback: field_name: " + field_name + ", url: " + url + ", type: " + type);
 		var style = "dialogWidth:400px;dialogHeight:200px;help:0;status:0;scroll:0;resizable:0;";
-		var path
+		var path;
 		
 		path = win.showModalDialog("/command?action=upload.Upload","",style);
 		

@@ -155,14 +155,7 @@ public class Base64UrlSafe
      */
     private static boolean isBase64(byte octect)
     {
-        if (octect < 0 || base64Alphabet[octect] == -1)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return octect >= 0 && base64Alphabet[octect] != -1;
     }
 
     /**
@@ -212,7 +205,7 @@ public class Base64UrlSafe
         {
             throw new IllegalArgumentException("Parameter supplied to Base64 decode is not a byte[]");
         }
-        return decode((byte[]) pObject);
+        return decode(pObject);
     }
 
     /**
@@ -238,7 +231,7 @@ public class Base64UrlSafe
         int lengthDataBits = binaryData.length * EIGHTBIT;
         int fewerThan24bits = lengthDataBits % TWENTYFOURBITGROUP;
         int numberTriplets = lengthDataBits / TWENTYFOURBITGROUP;
-        byte encodedData[] = null;
+        byte[] encodedData = null;
         int encodedDataLength = 0;
 
         if (fewerThan24bits != 0)
@@ -356,7 +349,7 @@ public class Base64UrlSafe
         }
 
         int numberQuadruple = (base64Data.length + 3) / FOURBYTE;
-        byte decodedData[] = new byte[base64Data.length - numberQuadruple];
+        byte[] decodedData = new byte[base64Data.length - numberQuadruple];
         byte b1 = 0, b2 = 0, b3 = 0, b4 = 0;
 
         // Throw away anything not in base64Data
@@ -409,7 +402,7 @@ public class Base64UrlSafe
      */
     static byte[] discardWhitespace(byte[] data)
     {
-        byte groomedData[] = new byte[data.length];
+        byte[] groomedData = new byte[data.length];
         int bytesCopied = 0;
 
         for (int i = 0; i < data.length; i++)
@@ -426,7 +419,7 @@ public class Base64UrlSafe
             }
         }
 
-        byte packedData[] = new byte[bytesCopied];
+        byte[] packedData = new byte[bytesCopied];
 
         System.arraycopy(groomedData, 0, packedData, 0, bytesCopied);
 
@@ -444,7 +437,7 @@ public class Base64UrlSafe
      */
     static byte[] discardNonBase64(byte[] data)
     {
-        byte groomedData[] = new byte[data.length];
+        byte[] groomedData = new byte[data.length];
         int bytesCopied = 0;
 
         for (int i = 0; i < data.length; i++)
@@ -455,7 +448,7 @@ public class Base64UrlSafe
             }
         }
 
-        byte packedData[] = new byte[bytesCopied];
+        byte[] packedData = new byte[bytesCopied];
 
         System.arraycopy(groomedData, 0, packedData, 0, bytesCopied);
 

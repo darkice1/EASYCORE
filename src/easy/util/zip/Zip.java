@@ -45,7 +45,7 @@ public class Zip
 		
 	}
 	
-	public static List<File> unzip(String srcFile,String objFile) throws FileNotFoundException,IOException
+	public static List<File> unzip(String srcFile,String objFile) throws IOException
 	{
 	    List<File> fileList = new ArrayList<File>();
 	    

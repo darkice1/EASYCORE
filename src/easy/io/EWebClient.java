@@ -11,7 +11,6 @@ import net.sf.json.JSONObject;
 import org.apache.http.conn.ConnectTimeoutException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 
@@ -156,12 +155,12 @@ public class EWebClient implements  AutoCloseable
 		client.close();
 	}
 	
-	public <P extends Page> P getPage(String url) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	public <P extends Page> P getPage(String url) throws FailingHttpStatusCodeException, IOException
 	{	
 		return getPage(url,null);
 	}
 	
-	public <P extends Page> P getPage(String url,String ref) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	public <P extends Page> P getPage(String url,String ref) throws FailingHttpStatusCodeException, IOException
 	{
 //		if (proxyAuthorization != null)
 //		{

@@ -66,7 +66,7 @@ public class Request
 				
 				for (int i=0; i < items.size(); i++)
 				{
-					EFileItem t= new EFileItem((FileItem) items.get(i));
+					EFileItem t= new EFileItem(items.get(i));
 					dataMap.put(t.getFieldName(),t);
 				}
 			}

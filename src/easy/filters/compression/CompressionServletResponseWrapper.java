@@ -120,7 +120,7 @@ public class CompressionServletResponseWrapper extends HttpServletResponseWrappe
 	 */
 	public void flushBuffer() throws IOException
 	{
-		((CompressionResponseStream) stream).flush();
+		stream.flush();
 
 	}
 

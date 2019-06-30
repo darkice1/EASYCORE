@@ -25,7 +25,7 @@ function Erow(id,cols,classes,mover,mout)
 	this.id = id;
 	if (this.cols == null)
 	{
-		this.cols = new Array();
+		this.cols = [];
 	}
 	else
 	{
@@ -44,12 +44,12 @@ Erow.prototype.addcol = function(col)
 Erow.prototype.over = function (row)
 {
 	row.className = "listrowhover";
-}
+};
 
 Erow.prototype.out = function (row)
 {
 	row.className = row.getAttribute("oc");
-}
+};
 
 Erow.prototype.toString = function()
 {
@@ -107,7 +107,7 @@ function Etable(id,outid,classes,head,rows,dispartPages,url)
 	this.head = head;
 	if (this.rows == null)
 	{
-		this.rows = new Array();
+		this.rows = [];
 	}
 	else
 	{
@@ -127,10 +127,8 @@ function Etable(id,outid,classes,head,rows,dispartPages,url)
 		//this = null;
 	}
 	this.where = null;
-};
-
-
-Etable.prototype.addhead = function(head) 
+}
+Etable.prototype.addhead = function(head)
 {
 	this.head = head;
 };
@@ -144,7 +142,7 @@ Etable.prototype.initDispartPages = function(){
 	var buf = "";
 	//添加分页显示工具条
 	buf += "<tr class='PageToolbar'><td align='center' nowrap colspan='"+ this.head.cols.length+"'>";
-	buf += "<font style='font-size:10pt;'>共"
+	buf += "<font style='font-size:10pt;'>共";
 	buf += this.count==null?0:this.count;
 	buf += "条记录 分";
 	buf += this.pageCount==null?0:this.pageCount;
@@ -178,7 +176,7 @@ Etable.prototype.initDispartPages = function(){
 	buf += "</font></td></tr></table>";
 	
 	this.dispartPages = buf;
-}
+};
 
 Etable.prototype.toString = function()
 {
@@ -257,7 +255,7 @@ Etable.prototype.initXML = function(xmldoc,et)
 			for (var j=0; j<et.head.cols.length; j++)
 			{
 				//alert (et.head.cols[j].field)
-				var c = new Ecol(list[i].getAttribute(et.head.cols[j].field),null,null,et.head.cols[j].handly,list[i])
+				var c = new Ecol(list[i].getAttribute(et.head.cols[j].field),null,null,et.head.cols[j].handly,list[i]);
 				r.addcol(c);
 			}
 			et.addrow(r);
@@ -270,7 +268,7 @@ Etable.prototype.initXML = function(xmldoc,et)
 Etable.prototype.loadXML = function(url)
 {
 	var t = this;
-	t.rows = new Array();
+	t.rows = [];
 	loadXML(url,this.initXML,this)
 	//this.writeListTable();
 };
@@ -288,8 +286,8 @@ Etable.prototype.initXML2 = function(xmldoc)
 			var r = new Erow();
 			for (var j=0; j<et.head.cols.length; j++)
 			{
-				alert (et.head.cols[j].field)
-				var c = new Ecol(list[i].getAttribute(et.head.cols[j].field),null,null,et.head.cols[j].handly)
+				alert (et.head.cols[j].field);
+				var c = new Ecol(list[i].getAttribute(et.head.cols[j].field),null,null,et.head.cols[j].handly);
 				r.addcol(c);
 			}
 			et.addrow(r);
@@ -301,7 +299,7 @@ Etable.prototype.initXML2 = function(xmldoc)
 Etable.prototype.loadXML2 = function(url)
 {
 	var t = this;
-	t.rows = new Array();
+	t.rows = [];
 	loadXML(url,this.initXML,this)
 	//this.writeListTable();
 };
@@ -331,7 +329,7 @@ Etable.prototype.gotoPage = function(url){
 	buf += "\")";
 	//alert(buf);
 	return buf;
-}
+};
 
 
 Etable.prototype.checkObjNumber = function(obj,errorStr)
@@ -367,7 +365,7 @@ Etable.prototype.checkObjNumber = function(obj,errorStr)
 		return false;
 	}
 	return true;
-}
+};
 
 Etable.prototype.turnPage = function(){
 	var o = document.getElementById('pageToTurn');
@@ -380,12 +378,12 @@ Etable.prototype.turnPage = function(){
 	}
 	eval ("ccc=etable_"+this.id);
 	ccc.loadXML(this.url + "&pageNum=" + o.value);
-}
+};
 
 Etable.prototype.toSearch = function(form,tid){
 	var inputs = form.elements;
 	if(inputs != null){
-		var objs = new Array();
+		var objs = [];
 		for(var i = inputs.length - 1; i 
 			
 			>= 0; i--){
@@ -402,7 +400,7 @@ Etable.prototype.toSearch = function(form,tid){
 	}else{
 		alert("没有查询条件");	
 	}
-}
+};
 
 Etable.prototype.addWhere = function(objs){
 	this.where = "";
@@ -413,9 +411,9 @@ Etable.prototype.addWhere = function(objs){
 	}
 	//alert(this.url + this.where);
 	this.loadXML(this.url + this.where);
-}
+};
 
 Etable.prototype.addSearchInfo = function(objs,obj){
 	var i = objs.length;
 	objs[i] = obj;
-}
+};

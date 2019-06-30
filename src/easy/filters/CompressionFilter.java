@@ -100,7 +100,7 @@ public class CompressionFilter implements Filter
 		if (request instanceof HttpServletRequest)
 		{
 			// Are we allowed to compress ?
-			String s = (String) ((HttpServletRequest) request).getParameter("gzip");
+			String s = request.getParameter("gzip");
 			if ("false".equals(s))
 			{
 				//不支持gzip就不压缩

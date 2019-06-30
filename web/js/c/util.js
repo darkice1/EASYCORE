@@ -9,21 +9,21 @@ String.prototype.replaceAll = function(src,desc)
 	var re=new RegExp(src,"g");
 	tmp = tmp.replace(re,desc);
 	return tmp;
-}
+};
 String.prototype.trim = function()
 {
 	return this.replace(/(^\s*)|(\s*$)/g, "");
-}
+};
 
 String.prototype.ltrim = function()
 {
 	return this.replace(/(^\s*)/g, "");
-}
+};
 
 String.prototype.rtrim = function()
 {
 	return this.replace(/(\s*$)/g, "");
-}
+};
 
 function isNumber(anum1) 
 {
@@ -126,7 +126,7 @@ Date.prototype.setDateStr = function(str)
 		//alert (ex);
 		return false;
 	}
-}
+};
 
 Date.prototype.getDateStr = function()
 {
@@ -156,7 +156,7 @@ Date.prototype.getDateStr = function()
 	}
 	str += this.getMinutes();
 	return str;
-}
+};
 
 function setCookie(cookieName,cookievalue,path,domainstr,expires)
 {
@@ -266,7 +266,7 @@ function initRowList(xmldoc,arg)
 
 function getRowList(url)
 {
-	var r = new Array();
+	var r = [];
 	loadXML(url, initRowList,r,null,null,false);
 	return r[0];
 }
@@ -286,7 +286,7 @@ function startload()
 		var msgw,msgh,bordercolor;
 		msgw=400;//提示窗口的宽度
 		msgh=100;//提示窗口的高度
-		titleheight=25 //提示窗口标题高度
+		titleheight=25; //提示窗口标题高度
 		bordercolor="#336699";//提示窗口的边框颜色
 		titlecolor="#99CCFF";//提示窗口的标题颜色
 		
@@ -311,7 +311,7 @@ function startload()
 		bgObj.style.zIndex = "10000";
 		document.body.appendChild(bgObj);
 				
-		var msgObj=document.createElement("div")
+		var msgObj=document.createElement("div");
 		msgObj.setAttribute("id","msgDiv");
 		msgObj.setAttribute("align","center");
 		msgObj.style.background="white";
@@ -345,7 +345,7 @@ function startload()
 		document.body.appendChild(msgObj);
 		document.getElementById("msgDiv").appendChild(title);
 		var txt=document.createElement("p");
-		txt.style.margin="1em 0"
+		txt.style.margin="1em 0";
 		txt.setAttribute("id","msgTxt");
 		txt.innerHTML=str;
 		document.getElementById("msgDiv").appendChild(txt);

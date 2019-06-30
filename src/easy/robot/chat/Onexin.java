@@ -5,13 +5,12 @@ import easy.util.Log;
 import net.sf.json.JSONObject;
 
 import java.io.IOException;
-import java.net.ConnectException;
 
 
 public class Onexin extends ChatRobot
 {
 	@Override
-	public String chat(String msg) throws ConnectException, IOException
+	public String chat(String msg) throws IOException
 	{
 		msg = msg.replace("#", "");
 

@@ -39,7 +39,7 @@ public class Log
 	
 	protected final static boolean WRITELOG = Config.getProperty("WRITELOG", "false").equals("true");
 	protected final static boolean WRITEERROR = Config.getProperty("WRITEERROR", "false").equals("true");
-	protected final static boolean WRITESQL = Config.getProperty("WRITESQL","false").equals("true")?true:false;
+	protected final static boolean WRITESQL = Config.getProperty("WRITESQL", "false").equals("true");
 	
 	private static boolean isTrue(String key)
 	{

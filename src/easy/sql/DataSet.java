@@ -245,7 +245,7 @@ public class DataSet implements Serializable
 	
 	public boolean next()
 	{
-		return (++cursor) >= rowList.size()?false:true;
+		return (++cursor) < rowList.size();
 	}
 	
 	public void previous()

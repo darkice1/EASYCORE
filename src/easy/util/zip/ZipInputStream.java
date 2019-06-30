@@ -290,15 +290,15 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
 		break;
 	    case 12: case 13:
 		// 110xxxxx 10xxxxxx
-		if ((int)(b[i++] & 0xc0) != 0x80) {
+		if ((b[i++] & 0xc0) != 0x80) {
 		    throw new IllegalArgumentException();
 		}
 		count++;
 		break;
 	    case 14:
 		// 1110xxxx 10xxxxxx 10xxxxxx
-		if (((int)(b[i++] & 0xc0) != 0x80) ||
-		    ((int)(b[i++] & 0xc0) != 0x80)) {
+		if (((b[i++] & 0xc0) != 0x80) ||
+		    ((b[i++] & 0xc0) != 0x80)) {
 		    throw new IllegalArgumentException();
 		}
 		count++;
@@ -408,7 +408,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
      * Fetches unsigned 16-bit value from byte array at specified offset.
      * The bytes are assumed to be in Intel (little-endian) byte order.
      */
-    private static final int get16(byte b[], int off) {
+    private static final int get16(byte[] b, int off) {
 	return (b[off] & 0xff) | ((b[off+1] & 0xff) << 8);
     }
 
@@ -416,7 +416,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
      * Fetches unsigned 32-bit value from byte array at specified offset.
      * The bytes are assumed to be in Intel (little-endian) byte order.
      */
-    private static final long get32(byte b[], int off) {
+    private static final long get32(byte[] b, int off) {
 	return get16(b, off) | ((long)get16(b, off+2) << 16);
     }
 }
