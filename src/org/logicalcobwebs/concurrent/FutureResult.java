@@ -113,7 +113,7 @@ public class FutureResult {
      * producing the value encountered an exception.
      **/
     public synchronized Object timedGet(long msecs)
-            throws TimeoutException, InterruptedException, InvocationTargetException {
+            throws InterruptedException, InvocationTargetException {
         long startTime = (msecs <= 0) ? 0 : System.currentTimeMillis();
         long waitTime = msecs;
         if (ready_)

@@ -241,7 +241,7 @@ public interface Channel extends Puttable, Takable {
      * to be inserted. Otherwise, on normal return, the element is guaranteed
      * to have been inserted.
      **/
-    public void put(Object item) throws InterruptedException;
+	void put(Object item) throws InterruptedException;
 
     /**
      * Place item in channel only if it can be accepted within
@@ -259,7 +259,7 @@ public interface Channel extends Puttable, Takable {
      * is detected, in which case the element is guaranteed not
      * to be inserted (i.e., is equivalent to a false return).
      **/
-    public boolean offer(Object item, long msecs) throws InterruptedException;
+	boolean offer(Object item, long msecs) throws InterruptedException;
 
     /**
      * Return and remove an item from channel,
@@ -272,7 +272,7 @@ public interface Channel extends Puttable, Takable {
      * is detected, in which case state of the channel is unchanged.
      *
      **/
-    public Object take() throws InterruptedException;
+	Object take() throws InterruptedException;
 
 
     /**
@@ -291,14 +291,14 @@ public interface Channel extends Puttable, Takable {
      * (i.e., equivalent to a null return).
      **/
 
-    public Object poll(long msecs) throws InterruptedException;
+	Object poll(long msecs) throws InterruptedException;
 
     /**
      * Return, but do not remove object at head of Channel,
      * or null if it is empty.
      **/
 
-    public Object peek();
+	Object peek();
 
 }
 

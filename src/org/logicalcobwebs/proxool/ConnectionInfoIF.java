@@ -32,37 +32,37 @@ public interface ConnectionInfoIF extends Comparable {
      * Default - treat as normal
      * @see #getMark
      */
-    static final int MARK_FOR_USE = 0;
+	int MARK_FOR_USE = 0;
 
     /**
      * The next time this connection is made available we should expire it.
      * @see #getMark
      */
-    static final int MARK_FOR_EXPIRY = 1;
+	int MARK_FOR_EXPIRY = 1;
 
     /**
      * This is the start and end state of every connection
      * @see #getStatus
      */
-    static final int STATUS_NULL = 0;
+	int STATUS_NULL = 0;
 
     /**
      * The connection is available for use
      * @see #getStatus
      */
-    static final int STATUS_AVAILABLE = 1;
+	int STATUS_AVAILABLE = 1;
 
     /**
      * The connection is in use
      * @see #getStatus
      */
-    static final int STATUS_ACTIVE = 2;
+	int STATUS_ACTIVE = 2;
 
     /**
      * The connection is in use by the house keeping thread
      * @see #getStatus
      */
-    static final int STATUS_OFFLINE = 3;
+	int STATUS_OFFLINE = 3;
 
     /**
      * The time that this connection was created.

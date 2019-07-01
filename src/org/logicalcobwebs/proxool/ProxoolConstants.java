@@ -14,251 +14,251 @@ package org.logicalcobwebs.proxool;
  */
 public interface ProxoolConstants {
 
-    public final String PROXOOL = "proxool";
+    String PROXOOL = "proxool";
 
     /**
      * The namespace uri associated with namepace aware Proxool xml configurations.<br>
      * Value: The latest version is available at http://proxool.sourceforge.net/xml-namespace
      */
-    public final String PROXOOL_XML_NAMESPACE_URI = "The latest version is available at http://proxool.sourceforge.net/xml-namespace";
+	String PROXOOL_XML_NAMESPACE_URI = "The latest version is available at http://proxool.sourceforge.net/xml-namespace";
 
-    public final String ALIAS_DELIMITER = ".";
+    String ALIAS_DELIMITER = ".";
 
-    public final String PROPERTY_PREFIX = PROXOOL + ".";
+    String PROPERTY_PREFIX = PROXOOL + ".";
 
-    public final String URL_DELIMITER = ":";
-
-    /** Standard JDBC property */
-    public final String USER_PROPERTY = "user";
+    String URL_DELIMITER = ":";
 
     /** Standard JDBC property */
-    public final String PASSWORD_PROPERTY = "password";
+	String USER_PROPERTY = "user";
+
+    /** Standard JDBC property */
+	String PASSWORD_PROPERTY = "password";
 
     /** Used to build up URL */
-    public final String ALIAS_PROPERTY = PROPERTY_PREFIX + "alias";
+	String ALIAS_PROPERTY = PROPERTY_PREFIX + "alias";
 
     /** Instead of defining the driver in the url you can also use this property */
-    public final String DELEGATE_DRIVER = "driver";
+	String DELEGATE_DRIVER = "driver";
 
     /** @see ProxoolDriver#getPropertyInfo */
-     public final String DELEGATE_DRIVER_PROPERTY = PROPERTY_PREFIX + DELEGATE_DRIVER;
+	String DELEGATE_DRIVER_PROPERTY = PROPERTY_PREFIX + DELEGATE_DRIVER;
 
     /** @see #HOUSE_KEEPING_SLEEP_TIME_PROPERTY */
-    public final String DELEGATE_URL = "url";
+	String DELEGATE_URL = "url";
 
     /** @see ProxoolDriver#getPropertyInfo */
-     public final String DELEGATE_URL_PROPERTY = PROPERTY_PREFIX + DELEGATE_URL;
+	String DELEGATE_URL_PROPERTY = PROPERTY_PREFIX + DELEGATE_URL;
 
     /** @see #HOUSE_KEEPING_SLEEP_TIME_PROPERTY */
-    public final String HOUSE_KEEPING_SLEEP_TIME = "house-keeping-sleep-time";
+	String HOUSE_KEEPING_SLEEP_TIME = "house-keeping-sleep-time";
 
     /** @see ProxoolDriver#getPropertyInfo */
-     public final String HOUSE_KEEPING_SLEEP_TIME_PROPERTY = PROPERTY_PREFIX + HOUSE_KEEPING_SLEEP_TIME;
+	String HOUSE_KEEPING_SLEEP_TIME_PROPERTY = PROPERTY_PREFIX + HOUSE_KEEPING_SLEEP_TIME;
 
     /** @see #HOUSE_KEEPING_TEST_SQL_PROPERTY */
-    public final String HOUSE_KEEPING_TEST_SQL = "house-keeping-test-sql";
+	String HOUSE_KEEPING_TEST_SQL = "house-keeping-test-sql";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String HOUSE_KEEPING_TEST_SQL_PROPERTY = PROPERTY_PREFIX + HOUSE_KEEPING_TEST_SQL;
+	String HOUSE_KEEPING_TEST_SQL_PROPERTY = PROPERTY_PREFIX + HOUSE_KEEPING_TEST_SQL;
 
     /** @see #TEST_BEFORE_USE_PROPERTY */
-    public final String TEST_BEFORE_USE = "test-before-use";
+	String TEST_BEFORE_USE = "test-before-use";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String TEST_BEFORE_USE_PROPERTY = PROPERTY_PREFIX + TEST_BEFORE_USE;
+	String TEST_BEFORE_USE_PROPERTY = PROPERTY_PREFIX + TEST_BEFORE_USE;
 
     /** @see #TEST_AFTER_USE_PROPERTY */
-    public final String TEST_AFTER_USE = "test-after-use";
+	String TEST_AFTER_USE = "test-after-use";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String TEST_AFTER_USE_PROPERTY = PROPERTY_PREFIX + TEST_AFTER_USE;
+	String TEST_AFTER_USE_PROPERTY = PROPERTY_PREFIX + TEST_AFTER_USE;
 
     /** @see #MAXIMUM_CONNECTION_COUNT_PROPERTY */
-    public final String MAXIMUM_CONNECTION_COUNT = "maximum-connection-count";
+	String MAXIMUM_CONNECTION_COUNT = "maximum-connection-count";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String MAXIMUM_CONNECTION_COUNT_PROPERTY = PROPERTY_PREFIX + MAXIMUM_CONNECTION_COUNT;
+	String MAXIMUM_CONNECTION_COUNT_PROPERTY = PROPERTY_PREFIX + MAXIMUM_CONNECTION_COUNT;
 
     /** @see #MAXIMUM_CONNECTION_LIFETIME_PROPERTY */
-    public final String MAXIMUM_CONNECTION_LIFETIME = "maximum-connection-lifetime";
+	String MAXIMUM_CONNECTION_LIFETIME = "maximum-connection-lifetime";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String MAXIMUM_CONNECTION_LIFETIME_PROPERTY = PROPERTY_PREFIX + MAXIMUM_CONNECTION_LIFETIME;
+	String MAXIMUM_CONNECTION_LIFETIME_PROPERTY = PROPERTY_PREFIX + MAXIMUM_CONNECTION_LIFETIME;
 
     /**
      * @deprecated use {@link #SIMULTANEOUS_BUILD_THROTTLE} instead
      */
-    public final String MAXIMUM_NEW_CONNECTIONS = "maximum-new-connections";
+	String MAXIMUM_NEW_CONNECTIONS = "maximum-new-connections";
 
     /**
      * @deprecated use {@link #SIMULTANEOUS_BUILD_THROTTLE_PROPERTY} instead
      */
-    public final String MAXIMUM_NEW_CONNECTIONS_PROPERTY = PROPERTY_PREFIX + MAXIMUM_NEW_CONNECTIONS;
+	String MAXIMUM_NEW_CONNECTIONS_PROPERTY = PROPERTY_PREFIX + MAXIMUM_NEW_CONNECTIONS;
 
     /** @see #SIMULTANEOUS_BUILD_THROTTLE_PROPERTY*/
-    public final String SIMULTANEOUS_BUILD_THROTTLE = "simultaneous-build-throttle";
+	String SIMULTANEOUS_BUILD_THROTTLE = "simultaneous-build-throttle";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String SIMULTANEOUS_BUILD_THROTTLE_PROPERTY = PROPERTY_PREFIX + SIMULTANEOUS_BUILD_THROTTLE;
+	String SIMULTANEOUS_BUILD_THROTTLE_PROPERTY = PROPERTY_PREFIX + SIMULTANEOUS_BUILD_THROTTLE;
 
     /** @see #MINIMUM_CONNECTION_COUNT_PROPERTY */
-    public final String MINIMUM_CONNECTION_COUNT = "minimum-connection-count";
+	String MINIMUM_CONNECTION_COUNT = "minimum-connection-count";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String MINIMUM_CONNECTION_COUNT_PROPERTY = PROPERTY_PREFIX + MINIMUM_CONNECTION_COUNT;
+	String MINIMUM_CONNECTION_COUNT_PROPERTY = PROPERTY_PREFIX + MINIMUM_CONNECTION_COUNT;
 
     /** @see #PROTOTYPE_COUNT_PROPERTY */
-    public final String PROTOTYPE_COUNT = "prototype-count";
+	String PROTOTYPE_COUNT = "prototype-count";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String PROTOTYPE_COUNT_PROPERTY = PROPERTY_PREFIX + PROTOTYPE_COUNT;
+	String PROTOTYPE_COUNT_PROPERTY = PROPERTY_PREFIX + PROTOTYPE_COUNT;
 
     /** @see #RECENTLY_STARTED_THRESHOLD_PROPERTY */
-    public final String RECENTLY_STARTED_THRESHOLD = "recently-started-threshold";
+	String RECENTLY_STARTED_THRESHOLD = "recently-started-threshold";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String RECENTLY_STARTED_THRESHOLD_PROPERTY = PROPERTY_PREFIX + RECENTLY_STARTED_THRESHOLD;
+	String RECENTLY_STARTED_THRESHOLD_PROPERTY = PROPERTY_PREFIX + RECENTLY_STARTED_THRESHOLD;
 
     /** @see #OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY */
-    public final String OVERLOAD_WITHOUT_REFUSAL_LIFETIME = "overload-without-refusal-lifetime";
+	String OVERLOAD_WITHOUT_REFUSAL_LIFETIME = "overload-without-refusal-lifetime";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY = PROPERTY_PREFIX + OVERLOAD_WITHOUT_REFUSAL_LIFETIME;
+	String OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY = PROPERTY_PREFIX + OVERLOAD_WITHOUT_REFUSAL_LIFETIME;
 
     /** @see #MAXIMUM_ACTIVE_TIME_PROPERTY */
-    public final String MAXIMUM_ACTIVE_TIME = "maximum-active-time";
+	String MAXIMUM_ACTIVE_TIME = "maximum-active-time";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String MAXIMUM_ACTIVE_TIME_PROPERTY = PROPERTY_PREFIX + MAXIMUM_ACTIVE_TIME;
+	String MAXIMUM_ACTIVE_TIME_PROPERTY = PROPERTY_PREFIX + MAXIMUM_ACTIVE_TIME;
 
     /** @see #INJECTABLE_CONNECTION_INTERFACE_NAME_PROPERTY */
-    public final String INJECTABLE_CONNECTION_INTERFACE_NAME = "injectable-connection-interface";
+	String INJECTABLE_CONNECTION_INTERFACE_NAME = "injectable-connection-interface";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String INJECTABLE_CONNECTION_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_CONNECTION_INTERFACE_NAME;
+	String INJECTABLE_CONNECTION_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_CONNECTION_INTERFACE_NAME;
 
     /** @see #INJECTABLE_STATEMENT_INTERFACE_NAME_PROPERTY */
-    public final String INJECTABLE_STATEMENT_INTERFACE_NAME = "injectable-statement-interface";
+	String INJECTABLE_STATEMENT_INTERFACE_NAME = "injectable-statement-interface";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String INJECTABLE_STATEMENT_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_STATEMENT_INTERFACE_NAME;
+	String INJECTABLE_STATEMENT_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_STATEMENT_INTERFACE_NAME;
 
     /** @see #INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME_PROPERTY */
-    public final String INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME = "injectable-prepared-statement-interface";
+	String INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME = "injectable-prepared-statement-interface";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME;
+	String INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME;
 
     /** @see #INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME_PROPERTY */
-    public final String INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME = "injectable-callable-statement-interface";
+	String INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME = "injectable-callable-statement-interface";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME;
+	String INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME_PROPERTY = PROPERTY_PREFIX + INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME;
 
     /**
      * @deprecated use {@link #VERBOSE_PROPERTY verbose} instead.
      */
-    public final String DEBUG_LEVEL_PROPERTY = PROPERTY_PREFIX + "debug-level";
+	String DEBUG_LEVEL_PROPERTY = PROPERTY_PREFIX + "debug-level";
 
     /** @see #VERBOSE_PROPERTY */
-    public final String VERBOSE = "verbose";
+	String VERBOSE = "verbose";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String VERBOSE_PROPERTY = PROPERTY_PREFIX + VERBOSE;
+	String VERBOSE_PROPERTY = PROPERTY_PREFIX + VERBOSE;
 
     /** @see #TRACE_PROPERTY */
-    public final String TRACE = "trace";
+	String TRACE = "trace";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String TRACE_PROPERTY = PROPERTY_PREFIX + TRACE;
+	String TRACE_PROPERTY = PROPERTY_PREFIX + TRACE;
 
     /** @see #FATAL_SQL_EXCEPTION_PROPERTY **/
-    public final String FATAL_SQL_EXCEPTION = "fatal-sql-exception";
+	String FATAL_SQL_EXCEPTION = "fatal-sql-exception";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String FATAL_SQL_EXCEPTION_PROPERTY = PROPERTY_PREFIX + FATAL_SQL_EXCEPTION;
+	String FATAL_SQL_EXCEPTION_PROPERTY = PROPERTY_PREFIX + FATAL_SQL_EXCEPTION;
 
     /** @see #FATAL_SQL_EXCEPTION_WRAPPER_CLASS_PROPERTY**/
-    public final String FATAL_SQL_EXCEPTION_WRAPPER_CLASS = "fatal-sql-exception-wrapper-class";
+	String FATAL_SQL_EXCEPTION_WRAPPER_CLASS = "fatal-sql-exception-wrapper-class";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String FATAL_SQL_EXCEPTION_WRAPPER_CLASS_PROPERTY = PROPERTY_PREFIX + FATAL_SQL_EXCEPTION_WRAPPER_CLASS;
+	String FATAL_SQL_EXCEPTION_WRAPPER_CLASS_PROPERTY = PROPERTY_PREFIX + FATAL_SQL_EXCEPTION_WRAPPER_CLASS;
 
-    public static final String STATISTICS = "statistics";
-
-    /** @see ProxoolDriver#getPropertyInfo */
-    public final String STATISTICS_PROPERTY = PROPERTY_PREFIX + STATISTICS;
-
-    public static final String STATISTICS_LOG_LEVEL = "statistics-log-level";
+    String STATISTICS = "statistics";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String STATISTICS_LOG_LEVEL_PROPERTY = PROPERTY_PREFIX + STATISTICS_LOG_LEVEL;
+	String STATISTICS_PROPERTY = PROPERTY_PREFIX + STATISTICS;
 
-    public static final String JNDI_NAME = "jndi-name";
+    String STATISTICS_LOG_LEVEL = "statistics-log-level";
+
+    /** @see ProxoolDriver#getPropertyInfo */
+	String STATISTICS_LOG_LEVEL_PROPERTY = PROPERTY_PREFIX + STATISTICS_LOG_LEVEL;
+
+    String JNDI_NAME = "jndi-name";
     
     /** Prefix for generic JNDI properties. */
-    public static final String JNDI_PROPERTY_PREFIX = "jndi-";
+	String JNDI_PROPERTY_PREFIX = "jndi-";
 
     /** @see ProxoolDriver#getPropertyInfo */
-    public final String JNDI_NAME_PROPERTY = PROPERTY_PREFIX + JNDI_NAME;
+	String JNDI_NAME_PROPERTY = PROPERTY_PREFIX + JNDI_NAME;
 
 // End JNDI
 
-    public static final String STATISTICS_LOG_LEVEL_TRACE = "TRACE";
+    String STATISTICS_LOG_LEVEL_TRACE = "TRACE";
 
-    public static final String STATISTICS_LOG_LEVEL_DEBUG = "DEBUG";
+    String STATISTICS_LOG_LEVEL_DEBUG = "DEBUG";
 
-    public static final String STATISTICS_LOG_LEVEL_INFO = "INFO";
+    String STATISTICS_LOG_LEVEL_INFO = "INFO";
 
     /**
      * Element name for the container of properties passed directlry to the delegate driver.
      */
-    public static final String DRIVER_PROPERTIES = "driver-properties";
+	String DRIVER_PROPERTIES = "driver-properties";
 
 
     /**
      * Configuration attribute used to indicate that a pool should be registered with JMX.
      */
-    public static final String JMX = "jmx";
+	String JMX = "jmx";
 
     /**
      * "proxool." prefixed version of {@link #JMX}.
      */
-    public final String JMX_PROPERTY = PROPERTY_PREFIX + JMX;
+	String JMX_PROPERTY = PROPERTY_PREFIX + JMX;
 
     /**
      * Configuration attribute for a list of jmx agent ids to register a
      * {@link org.logicalcobwebs.proxool.admin.jmx.ConnectionPoolMBean} to.
      * The list is comma separated.
      */
-    public static final String JMX_AGENT_ID = "jmx-agent-id";
+	String JMX_AGENT_ID = "jmx-agent-id";
 
     /**
      * "proxool." prefixed version of {@link #JMX_AGENT_ID}.
      */
-    public final String JMX_AGENT_PROPERTY = PROPERTY_PREFIX + JMX_AGENT_ID;
+	String JMX_AGENT_PROPERTY = PROPERTY_PREFIX + JMX_AGENT_ID;
 
     /**
      *  Un-prefixed propety name for the Proxool alias configuration property. Value: alias
      */
-    public final String ALIAS = "alias";
+	String ALIAS = "alias";
 
     /**
      *  Un-prefixed propety name for the Proxool driver class  configuration property. Value: driver-class
      */
-    public final String DRIVER_CLASS = "driver-class";
+	String DRIVER_CLASS = "driver-class";
     /**
      *  Prefixed propety name for the Proxool driver class  configuration property. Value: proxool.driver-class
      */
-    public final String DRIVER_CLASS_PROPERTY = PROPERTY_PREFIX + DRIVER_CLASS;;
-    /**
+	String DRIVER_CLASS_PROPERTY = PROPERTY_PREFIX + DRIVER_CLASS;
+	/**
      *  Un-prefixed propety name for the Proxool driver url configuration property. Value: driver-url
      */
-    public final String DRIVER_URL = "driver-url";
+	String DRIVER_URL = "driver-url";
     /**
      *  Prefixed propety name for the Proxool driver url configuration property. Value: proxool.driver-url
      */
-    public final String DRIVER_URL_PROPERTY = PROPERTY_PREFIX + DRIVER_URL;
+	String DRIVER_URL_PROPERTY = PROPERTY_PREFIX + DRIVER_URL;
 }
 
 /*

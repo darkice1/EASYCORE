@@ -754,8 +754,8 @@ public class ProxoolFacade {
         boolean success = false;
         try {
             Class jmxHelperClass = Class.forName("org.logicalcobwebs.proxool.admin.jmx.ProxoolJMXHelper");
-            Method registerMethod = jmxHelperClass.getDeclaredMethod("registerPool", new Class[]{String.class, Properties.class});
-            registerMethod.invoke(null, new Object[]{alias, properties});
+            Method registerMethod = jmxHelperClass.getDeclaredMethod("registerPool", String.class, Properties.class);
+            registerMethod.invoke(null, alias, properties);
             success = true;
         } catch (Exception e) {
             LOG.error("JMX registration of " + alias + " pool failed.", e);
@@ -769,9 +769,8 @@ public class ProxoolFacade {
         boolean success = false;
         try {
             Class jndiHelperClass = Class.forName("org.logicalcobwebs.proxool.admin.jndi.ProxoolJNDIHelper");
-            Method registerMethod = jndiHelperClass.getDeclaredMethod("registerDatasource", new Class[]{String.class,
-                Properties.class});
-            registerMethod.invoke(null, new Object[]{alias, jndiProperties});
+            Method registerMethod = jndiHelperClass.getDeclaredMethod("registerDatasource", String.class, Properties.class);
+            registerMethod.invoke(null, alias, jndiProperties);
             success = true;
         } catch (Exception e) {
             LOG.error("JNDI DataSource binding of " + alias + " pool failed.", e);
@@ -808,8 +807,7 @@ public class ProxoolFacade {
             for (int i = 0; i < propertyNamesList.size(); i++) {
                 propertyName = (String) propertyNamesList.get(i);
                 if (propertyName.startsWith(ProxoolConstants.JNDI_PROPERTY_PREFIX)) {
-                    jndiProperties.setProperty(propertyName.substring(ProxoolConstants.JNDI_PROPERTY_PREFIX.length()),
-                        (String) delegateProperties.getProperty(propertyName));
+                    jndiProperties.setProperty(propertyName.substring(ProxoolConstants.JNDI_PROPERTY_PREFIX.length()), delegateProperties.getProperty(propertyName));
                     delegateProperties.remove(propertyName);
                 }
             }
@@ -824,11 +822,7 @@ public class ProxoolFacade {
      */
     private static boolean isConfiguredForJMX(Properties poolProperties) {
         final String jmxProperty = poolProperties.getProperty(ProxoolConstants.JMX_PROPERTY);
-        if (jmxProperty != null && jmxProperty.equalsIgnoreCase("true")) {
-            return true;
-        } else {
-            return false;
-        }
+        return jmxProperty != null && jmxProperty.equalsIgnoreCase("true");
     }
 
     /**

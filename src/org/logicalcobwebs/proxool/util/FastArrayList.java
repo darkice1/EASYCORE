@@ -808,7 +808,7 @@ public class FastArrayList extends ArrayList {
      * @exception ArrayStoreException if the runtime type of <code>array</code>
      *  is not a supertype of the runtime type of every element in this list
      */
-    public Object[] toArray(Object array[]) {
+    public Object[] toArray(Object[] array) {
 
         if (fast) {
             return (list.toArray(array));

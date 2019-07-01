@@ -16,12 +16,12 @@ public interface ResourceNamesIF {
     /**
      * Name of the attributeDescriptions resource.
      */
-    static final String ATTRIBUTE_DESCRIPTIONS = "org.logicalcobwebs.proxool.resources.attributeDescriptions";
+	String ATTRIBUTE_DESCRIPTIONS = "org.logicalcobwebs.proxool.resources.attributeDescriptions";
 
     /**
      * Name of the jmx resource.
      */
-    static final String JMX = "org.logicalcobwebs.proxool.resources.jmx";
+	String JMX = "org.logicalcobwebs.proxool.resources.jmx";
 }
 /*
  $Log: ResourceNamesIF.java,v $

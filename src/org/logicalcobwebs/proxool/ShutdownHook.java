@@ -35,8 +35,8 @@ class ShutdownHook implements Runnable {
     protected static void remove(Thread t) {
         Runtime runtime = Runtime.getRuntime();
         try {
-            final Method removeShutdownHookMethod = Runtime.class.getMethod("removeShutdownHook", new Class[] {Thread.class});
-            removeShutdownHookMethod.invoke(runtime, new Object[] {t});
+            final Method removeShutdownHookMethod = Runtime.class.getMethod("removeShutdownHook", Thread.class);
+            removeShutdownHookMethod.invoke(runtime, t);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Removed shutdownHook");
             }
@@ -48,7 +48,7 @@ class ShutdownHook implements Runnable {
             LOG.error("Problem removing shutdownHook", e);
         } catch (InvocationTargetException e) {
             // Use getTargetException() because getCause() is only supported in JDK 1.4 and later
-            Throwable cause = ((InvocationTargetException) e).getTargetException();
+            Throwable cause = e.getTargetException();
             if (cause instanceof IllegalStateException) {
                 // This is probably because a shutdown is in progress. We can
                 // safely ignore that.
@@ -66,8 +66,8 @@ class ShutdownHook implements Runnable {
         t.setName("ShutdownHook");
         Runtime runtime = Runtime.getRuntime();
         try {
-            Method addShutdownHookMethod = Runtime.class.getMethod("addShutdownHook", new Class[] {Thread.class});
-            addShutdownHookMethod.invoke(runtime, new Object[] {t});
+            Method addShutdownHookMethod = Runtime.class.getMethod("addShutdownHook", Thread.class);
+            addShutdownHookMethod.invoke(runtime, t);
             ProxoolFacade.setShutdownHook(t);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Registered shutdownHook");

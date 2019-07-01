@@ -54,7 +54,7 @@ public class FileUpload
 		else
 		{
 			boundary = contentType.substring(contentType.indexOf("boundary=") + BOUNDARY_WORD_SIZE);
-			boundary = "--".concat(String.valueOf(boundary));
+			boundary = "--".concat(boundary);
 			parseBody(boundary);
 		}
 	}

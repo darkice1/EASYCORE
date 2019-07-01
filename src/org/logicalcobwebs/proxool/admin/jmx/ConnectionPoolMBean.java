@@ -385,7 +385,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
     /**
      * @see DynamicMBean#invoke(String, Object[], String[])
      */
-    public Object invoke(String operationName, Object params[], String signature[]) throws MBeanException, ReflectionException {
+    public Object invoke(String operationName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
         if (operationName == null) {
             throw new RuntimeOperationsException(new IllegalArgumentException("Operation name cannot be null"), "Cannot invoke a null operation in " + CLASS_NAME);
         } else if (operationName.equals(OPERATION_NAME_SHUTDOWN)) {
@@ -442,8 +442,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
                     new MBeanParameterInfo[]{}, "void", MBeanOperationInfo.ACTION)
         };
 
-        return new MBeanInfo(CLASS_NAME, MessageFormat.format(getJMXText(RECOURCE_NAME_MBEAN_POOL_DESCRIPTION),
-                new Object[]{alias}), attributeInfos, constructorInfos, operationInfos, new MBeanNotificationInfo[0]);
+        return new MBeanInfo(CLASS_NAME, MessageFormat.format(getJMXText(RECOURCE_NAME_MBEAN_POOL_DESCRIPTION), alias), attributeInfos, constructorInfos, operationInfos, new MBeanNotificationInfo[0]);
     }
 
     private static String getAttributeDescription(String attributeName) {

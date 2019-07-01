@@ -21,13 +21,13 @@ package org.logicalcobwebs.proxool;
  */
 public interface StateListenerIF {
 
-    public final int STATE_QUIET = 0;
+    int STATE_QUIET = 0;
 
-    public final int STATE_BUSY = 1;
+    int STATE_BUSY = 1;
 
-    public final int STATE_OVERLOADED = 2;
+    int STATE_OVERLOADED = 2;
 
-    public final int STATE_DOWN = 3;
+    int STATE_DOWN = 3;
 
     void upStateChanged(int upState);
 }

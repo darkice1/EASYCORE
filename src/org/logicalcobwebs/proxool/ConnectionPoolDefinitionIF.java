@@ -29,49 +29,49 @@ import java.util.Set;
 public interface ConnectionPoolDefinitionIF {
 
     /** 4 * 60 * 60 * 1000 (4 hours) */
-    public static final int DEFAULT_MAXIMUM_CONNECTION_LIFETIME = 4 * 60 * 60 * 1000; // 4 hours
+	int DEFAULT_MAXIMUM_CONNECTION_LIFETIME = 4 * 60 * 60 * 1000; // 4 hours
 
     /** 300000 (5 minutes) */
-    public static final int DEFAULT_MAXIMUM_ACTIVE_TIME = 300000; // 5 minutes
+	int DEFAULT_MAXIMUM_ACTIVE_TIME = 300000; // 5 minutes
 
     /** 0 */
-    public static final int DEFAULT_PROTOTYPE_COUNT = 0;
+	int DEFAULT_PROTOTYPE_COUNT = 0;
 
     /** 0 */
-    public static final int DEFAULT_MINIMUM_CONNECTION_COUNT = 0;
+	int DEFAULT_MINIMUM_CONNECTION_COUNT = 0;
 
     /** 15 */
-    public static final int DEFAULT_MAXIMUM_CONNECTION_COUNT = 15;
+	int DEFAULT_MAXIMUM_CONNECTION_COUNT = 15;
 
     /** 30000 (30 Seconds) */
-    public static final int DEFAULT_HOUSE_KEEPING_SLEEP_TIME = 30000;
+	int DEFAULT_HOUSE_KEEPING_SLEEP_TIME = 30000;
 
     /** 10
      * @deprecated use {@link #DEFAULT_SIMULTANEOUS_BUILD_THROTTLE} instead
      */
-    public static final int DEFAULT_MAXIMUM_NEW_CONNECTIONS = 10;
+	int DEFAULT_MAXIMUM_NEW_CONNECTIONS = 10;
 
     /** 10 */
-    public static final int DEFAULT_SIMULTANEOUS_BUILD_THROTTLE = 10;
+	int DEFAULT_SIMULTANEOUS_BUILD_THROTTLE = 10;
 
     /** 60000 */
-    public static final int DEFAULT_OVERLOAD_WITHOUT_REFUSAL_THRESHOLD = 60000;
+	int DEFAULT_OVERLOAD_WITHOUT_REFUSAL_THRESHOLD = 60000;
 
     /** 60000 */
-    public static final int DEFAULT_RECENTLY_STARTED_THRESHOLD = 60000;
+	int DEFAULT_RECENTLY_STARTED_THRESHOLD = 60000;
 
-    public static final int DEBUG_LEVEL_QUIET = 0;
+    int DEBUG_LEVEL_QUIET = 0;
 
-    public static final int DEBUG_LEVEL_LOUD = 1;
+    int DEBUG_LEVEL_LOUD = 1;
 
-    public static final String USER_PROPERTY = "user";
+    String USER_PROPERTY = "user";
 
-    public static final String PASSWORD_PROPERTY = "password";
+    String PASSWORD_PROPERTY = "password";
 
     /**
      * @see #getFatalSqlExceptions
      */
-    public static final String FATAL_SQL_EXCEPTIONS_DELIMITER = ",";
+	String FATAL_SQL_EXCEPTIONS_DELIMITER = ",";
 
     /** This is the time the house keeping thread sleeps for between checks. (milliseconds) */
     long getHouseKeepingSleepTime();

@@ -268,7 +268,7 @@ public interface Sync {
      *  a normal return guarantees that the acquire was successful.
      **/
 
-    public void acquire() throws InterruptedException;
+	void acquire() throws InterruptedException;
 
     /**
      * Wait at most msecs to pass; report whether passed.
@@ -294,7 +294,7 @@ public interface Sync {
      * @return true if acquired
      **/
 
-    public boolean attempt(long msecs) throws InterruptedException;
+	boolean attempt(long msecs) throws InterruptedException;
 
     /**
      * Potentially enable others to pass.
@@ -308,31 +308,31 @@ public interface Sync {
      * only be caught by higher-level error handlers.
      **/
 
-    public void release();
+	void release();
 
     /**  One second, in milliseconds; convenient as a time-out value **/
-    public static final long ONE_SECOND = 1000;
+	long ONE_SECOND = 1000;
 
     /**  One minute, in milliseconds; convenient as a time-out value **/
-    public static final long ONE_MINUTE = 60 * ONE_SECOND;
+	long ONE_MINUTE = 60 * ONE_SECOND;
 
     /**  One hour, in milliseconds; convenient as a time-out value **/
-    public static final long ONE_HOUR = 60 * ONE_MINUTE;
+	long ONE_HOUR = 60 * ONE_MINUTE;
 
     /**  One day, in milliseconds; convenient as a time-out value **/
-    public static final long ONE_DAY = 24 * ONE_HOUR;
+	long ONE_DAY = 24 * ONE_HOUR;
 
     /**  One week, in milliseconds; convenient as a time-out value **/
-    public static final long ONE_WEEK = 7 * ONE_DAY;
+	long ONE_WEEK = 7 * ONE_DAY;
 
     /**  One year in milliseconds; convenient as a time-out value  **/
     // Not that it matters, but there is some variation across
     // standard sources about value at msec precision.
     // The value used is the same as in java.util.GregorianCalendar
-    public static final long ONE_YEAR = (long) (365.2425 * ONE_DAY);
+	long ONE_YEAR = (long) (365.2425 * ONE_DAY);
 
     /**  One century in milliseconds; convenient as a time-out value **/
-    public static final long ONE_CENTURY = 100 * ONE_YEAR;
+	long ONE_CENTURY = 100 * ONE_YEAR;
 
 
 }

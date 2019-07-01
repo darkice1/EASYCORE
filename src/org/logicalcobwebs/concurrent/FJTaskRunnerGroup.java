@@ -182,7 +182,7 @@ public class FJTaskRunnerGroup implements Executor {
 
     public void execute(Runnable r) throws InterruptedException {
         if (r instanceof FJTask) {
-            entryQueue.put((FJTask) r);
+            entryQueue.put(r);
         } else {
             entryQueue.put(new FJTask.Wrap(r));
         }

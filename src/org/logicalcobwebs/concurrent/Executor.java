@@ -61,6 +61,6 @@ public interface Executor {
      * suppress, or abort execution if interruption is detected
      * in any controllable context surrounding execution.
      **/
-    public void execute(Runnable command) throws InterruptedException;
+	void execute(Runnable command) throws InterruptedException;
 
 }

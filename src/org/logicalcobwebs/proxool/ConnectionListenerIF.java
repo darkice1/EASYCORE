@@ -34,54 +34,54 @@ public interface ConnectionListenerIF {
      * has been exceeded.
      * @see #onDeath(Connection, int)
      */
-    static final int MAXIMUM_ACTIVE_TIME_EXPIRED = 1;
+	int MAXIMUM_ACTIVE_TIME_EXPIRED = 1;
 
     /**
      * We are killing a connection because it's manually been expired (by something external to
      * Proxool)
      * @see #onDeath(Connection, int)
      */
-    static final int MANUAL_EXPIRY = 2;
+	int MANUAL_EXPIRY = 2;
 
     /**
      * We are killing a connection because it has not been
      * {@link org.logicalcobwebs.proxool.ConnectionValidatorIF#validate(ConnectionPoolDefinitionIF, Connection) validated}.
      * @see #onDeath(Connection, int)
      */
-    static final int VALIDATION_FAIL = 3;
+	int VALIDATION_FAIL = 3;
 
     /**
      * We are killing a connection because Proxool is shutting down
      * @see #onDeath(Connection, int)
      */
-    static final int SHUTDOWN = 4;
+	int SHUTDOWN = 4;
 
     /**
      * We are killing a connection because it couldn't be {@link org.logicalcobwebs.proxool.ConnectionResetter#reset(Connection, String) reset}
      * after it was returned to the pool and we don't want to give it out again in an unknown state.
      * @see #onDeath(Connection, int)
      */
-    static final int RESET_FAIL = 5;
+	int RESET_FAIL = 5;
 
     /**
      * We are killing a connection because the routine house keeper test failed
      * @see #onDeath(Connection, int)
      */
-    static final int HOUSE_KEEPER_TEST_FAIL = 6;
+	int HOUSE_KEEPER_TEST_FAIL = 6;
 
     /**
      * We are killing a connection because it's {@link org.logicalcobwebs.proxool.ProxoolConstants#MAXIMUM_CONNECTION_LIFETIME MAXIMUM_CONNECTION_LIFETIME}
      * has been exceeded.
      * @see #onDeath(Connection, int)
      */
-    static final int MAXIMUM_CONNECTION_LIFETIME_EXCEEDED = 7;
+	int MAXIMUM_CONNECTION_LIFETIME_EXCEEDED = 7;
 
     /**
      * We are killing a connection because a {@link org.logicalcobwebs.proxool.ProxoolConstants#FATAL_SQL_EXCEPTION FATAL_SQL_EXCEPTION}
      * has been detected.
      * @see #onDeath(Connection, int)
      */
-    static final int FATAL_SQL_EXCEPTION_DETECTED = 8;
+	int FATAL_SQL_EXCEPTION_DETECTED = 8;
 
     /**
      * Happens everytime we create a new connection. You can use this

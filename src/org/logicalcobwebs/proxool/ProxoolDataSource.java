@@ -48,8 +48,8 @@ public class ProxoolDataSource implements DataSource, ObjectFactory {
     private String houseKeepingTestSql;
     private long maximumActiveTime;
     private int maximumConnectionCount;
-    private long maximumConnectionLifetime;;
-    private int minimumConnectionCount;
+    private long maximumConnectionLifetime;
+	private int minimumConnectionCount;
     private long overloadWithoutRefusalLifetime;
     private String password;
     private int prototypeCount;

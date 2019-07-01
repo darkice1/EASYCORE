@@ -28,8 +28,8 @@ public class MethodMapper {
     private Class concreteClass;
 
     private Map cachedConcreteMethods = new HashMap();
-    ;
-    /**
+
+	/**
      * @param concreteClass the class that we want to invoke methods on. It should either implement all methods on
      *                      the injectable interface, or provide methods with an identical signature.
      */

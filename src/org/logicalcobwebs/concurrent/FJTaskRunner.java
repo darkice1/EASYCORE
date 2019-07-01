@@ -765,7 +765,7 @@ public class FJTaskRunner extends Thread {
                 } else {
                     ++iters;
                     //  Check here for yield vs sleep to avoid entering group synch lock
-                    if (iters >= group.SCANS_PER_SLEEP) {
+                    if (iters >= FJTaskRunnerGroup.SCANS_PER_SLEEP) {
                         group.checkActive(this, iters);
                         if (isInterrupted())
                             return;

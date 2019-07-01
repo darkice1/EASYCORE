@@ -30,7 +30,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
     /**
      * This log has a category based on the alias
      */
-    private Log poolLog = LOG;;
+    private Log poolLog = LOG;
 
     private String alias;
 
@@ -67,7 +67,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
 
     private String driver;
 
-    private long maximumConnectionLifetime;;
+    private long maximumConnectionLifetime;
 
     private int prototypeCount;
 
