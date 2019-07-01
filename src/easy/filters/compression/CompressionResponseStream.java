@@ -247,7 +247,7 @@ public class CompressionResponseStream extends ServletOutputStream
 	/* (non-Javadoc)
 	 * @see javax.servlet.ServletOutputStream#isReady()
 	 */
-	@Override
+
 	public boolean isReady()
 	{
 		// TODO Auto-generated method stub
@@ -257,7 +257,7 @@ public class CompressionResponseStream extends ServletOutputStream
 	/* (non-Javadoc)
 	 * @see javax.servlet.ServletOutputStream#setWriteListener(javax.servlet.WriteListener)
 	 */
-	@Override
+
 	public void setWriteListener(WriteListener arg0)
 	{
 		
