@@ -8,6 +8,7 @@ import easy.sql.Row;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+import org.apache.commons.io.IOUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import javax.crypto.*;
@@ -30,6 +31,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * <p>
@@ -1371,6 +1374,49 @@ public class Format
 			return str;
 		}
 		return str.substring(0,len);
+	}
+
+
+	public static String decompressStr(String str)
+	{
+		String dstr = null;
+
+		try
+		{
+			byte[] bytes =  Format.decodeBase64Url(str);
+
+			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+			GZIPInputStream gis = new GZIPInputStream(bis);
+			dstr = new String(IOUtils.toByteArray(gis), StandardCharsets.UTF_8);
+		}
+		catch (Exception e)
+		{
+			Log.OutException(e);
+		}
+
+
+		return dstr;
+	}
+
+	public static String compressStr(String str)
+	{
+		String cstr = null;
+		try
+		{
+			if (str != null && str.length() > 0)
+			{
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				GZIPOutputStream gzip = new GZIPOutputStream(out);
+				gzip.write(str.getBytes());
+				gzip.close();
+				cstr = Format.encodeBase64Url(out.toByteArray());
+			}
+		}
+		catch (Exception e)
+		{
+			Log.OutException(e);
+		}
+		return cstr;
 	}
 	/*
 	 * public static void main(String[] args) { long a =
