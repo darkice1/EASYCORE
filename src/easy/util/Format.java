@@ -1379,15 +1379,18 @@ public class Format
 
 	public static String decompressStr(String str)
 	{
-		String dstr = null;
+		String dstr = "";
 
 		try
 		{
-			byte[] bytes =  Format.decodeBase64Url(str);
+			if (str != null && str.length() > 0)
+			{
+				byte[] bytes =  Format.decodeBase64Url(str);
 
-			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-			GZIPInputStream gis = new GZIPInputStream(bis);
-			dstr = new String(IOUtils.toByteArray(gis), StandardCharsets.UTF_8);
+				ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+				GZIPInputStream gis = new GZIPInputStream(bis);
+				dstr = new String(IOUtils.toByteArray(gis), StandardCharsets.UTF_8);
+			}
 		}
 		catch (Exception e)
 		{
@@ -1400,7 +1403,7 @@ public class Format
 
 	public static String compressStr(String str)
 	{
-		String cstr = null;
+		String cstr = "";
 		try
 		{
 			if (str != null && str.length() > 0)
