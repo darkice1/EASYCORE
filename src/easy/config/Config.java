@@ -1,6 +1,7 @@
 package easy.config;
 
 import easy.io.JFile;
+import easy.util.Format;
 import easy.util.Log;
 
 import java.io.*;
@@ -101,6 +102,7 @@ public class Config
 		{
 			cpath = cpath.substring(5);
 		}
+		cpath = Format.replaceAll(cpath,"%20"," ");
 
 //		System.out.println(String.format("载入配置文件错误[%s]",cpath));
 
