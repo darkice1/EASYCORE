@@ -97,6 +97,12 @@ public class Config
 	{
 		CFG = new Config();
 		String cpath = CFG.getClass().getResource("/").getPath();
+		if (cpath.indexOf("file:") == 0)
+		{
+			cpath = cpath.substring(5);
+		}
+
+//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
 
 		String fpath = getConfigPath(cpath);
 
