@@ -4,12 +4,25 @@
   <artifactId>easy</artifactId>
   <version>1.0.14</version>
   <packaging>jar</packaging>
-
         <properties>
             <maven.compiler.source>1.8</maven.compiler.source>
             <maven.compiler.target>1.8</maven.compiler.target>
             <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         </properties>
+
+	<distributionManagement>
+		<repository>
+			<id>neogithub</id>
+			<name>neogithub</name>
+			<url>https://github.com/darkice1/EASYLIB</url>
+		</repository>
+<!--		<site>
+			<id>neogithub</id>
+			<name>GitHub Project Pages</name>
+			<url>gitsite:git@github.com/darkice1/EASYLIB.git</url>
+		</site>-->
+	</distributionManagement>
+
 
   <name>easy</name>
   
@@ -191,8 +204,6 @@
 
 				</configuration>
 			</plugin>
-
-
 <!--			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
