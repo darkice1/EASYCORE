@@ -100,16 +100,14 @@ public class Config
 
 		String fpath = getConfigPath(cpath);
 
-		System.out.println(String.format("载入配置文件[%s]->[%s]",cpath,fpath));
-
 		try
 		{
 			load(fpath);
 		}
 		catch (Exception ex)
 		{
+			System.out.println(String.format("载入配置文件错误[%s]->[%s]",cpath,fpath));
 			ex.printStackTrace();
-
 		}
 	}
 
