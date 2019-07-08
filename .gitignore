@@ -3,3 +3,4 @@ web/WEB-INF/classes/*
 /target/
 .idea
 .settings
+web/WEB-INF/classes/

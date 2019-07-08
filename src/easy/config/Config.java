@@ -1,5 +1,6 @@
 package easy.config;
 
+import easy.io.JFile;
 import easy.util.Log;
 
 import java.io.*;
@@ -40,17 +41,15 @@ public class Config
 	
 	public static void load(String filepath) throws FileNotFoundException
 	{
+//		System.out.println(filepath);
 		CFG = Config.getInstance();
 
 		InputStream is = new FileInputStream(new File(filepath));
 
 		try
 		{
-			if (is != null)
-			{
-				CFG.PPS.load(is);
-				is.close();
-			}
+			CFG.PPS.load(is);
+			is.close();
 		}
 		catch (IOException ex)
 		{
@@ -58,39 +57,59 @@ public class Config
 		}
 	}
 
+	private static String getConfigPath(String startpath)
+	{
+		final String CONFIGNAME = "/config.txt";
+
+		String fpath = null;
+		File cf = new File(startpath);
+
+		while(true)
+		{
+			//			System.out.println(cf.getPath());
+			String tpath = cf.getPath();
+			if (JFile.exists(tpath+CONFIGNAME))
+			{
+				fpath = tpath+CONFIGNAME;
+				break;
+			}
+			if (JFile.exists(tpath+"/WEB-INF"+CONFIGNAME))
+			{
+				fpath = tpath+CONFIGNAME;
+				break;
+			}
+
+
+			if (tpath.equals("/"))
+			{
+				break;
+			}
+			else
+			{
+				cf = new File(cf.getParent());
+			}
+		}
+
+		return fpath;
+	}
+
 	public static void load()
 	{
 		CFG = new Config();
-		File f = new File(CFG.getClass().getResource("Config.class").toString());
+		String cpath = CFG.getClass().getResource("/").getPath();
 
-		String path = f.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getPath();
-		path = path.replaceAll("jar:", "");
-		path = path.replaceAll("file\\:", "");
-		path = path.replaceAll("file/:", "");
-		path = path.replaceAll("%20", " ");
-		path = String.format("%s/config.txt", path);
+		String fpath = getConfigPath(cpath);
 
-		String path1 = f.getParentFile().getParentFile().getParentFile().getParentFile().getPath();
-		path1 = path1.replaceAll("jar:", "");
-		path1 = path1.replaceAll("file\\:", "");
-		path1 = path1.replaceAll("file/:", "");
-		path1 = path1.replaceAll("%20", " ");
-		path1 = String.format("%s/config.txt", path1);
-
+		System.out.println(String.format("载入配置文件[%s]->[%s]",cpath,fpath));
 
 		try
 		{
-			load(path);
+			load(fpath);
 		}
 		catch (Exception ex)
 		{
-			try
-			{
-				load(path1);
-			}
-			catch (Exception ignored)
-			{
-			}
+			ex.printStackTrace();
+
 		}
 	}
 
