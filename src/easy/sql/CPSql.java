@@ -97,7 +97,7 @@ public class CPSql extends Sql
 	    		
 				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
 
-				if (Format.isEmpty(userwrite) == false || Format.isEmpty(passwordwrite) == false || Format.isEmpty(jdbcurlwrite) == false || Format.isEmpty(dbclasswrite) == false )
+				if (!Format.isEmpty(userwrite) || !Format.isEmpty(passwordwrite) || !Format.isEmpty(jdbcurlwrite) || !Format.isEmpty(dbclasswrite))
 				{
 					Properties writeinfo = getProperties();
 					//info.setProperty("proxool.statistics-log-level", "ERROR");
@@ -117,7 +117,7 @@ public class CPSql extends Sql
 	        	Class.forName(dbclass);
 				conn = DriverManager.getConnection(jdbcurl,user,password);
 
-				if (Format.isEmpty(userwrite) == false || Format.isEmpty(passwordwrite) == false || Format.isEmpty(jdbcurlwrite) == false || Format.isEmpty(dbclasswrite) == false )
+				if (!Format.isEmpty(userwrite) || !Format.isEmpty(passwordwrite) || !Format.isEmpty(jdbcurlwrite) || !Format.isEmpty(dbclasswrite))
 				{
 					Class.forName(dbclasswrite);
 					connwrite = DriverManager.getConnection(jdbcurlwrite,userwrite,passwordwrite);

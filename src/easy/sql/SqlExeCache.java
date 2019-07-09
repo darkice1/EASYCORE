@@ -204,7 +204,7 @@ public class SqlExeCache implements Runnable,FileFilter
 		int total = filelist.size();
 		int c = 0;
 		Log.OutLog("线程[%d]开始,共[%d]条",idx,total);
-		while (filelist.isEmpty() == false)
+		while (!filelist.isEmpty())
 		{
 			c++;
 			

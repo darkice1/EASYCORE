@@ -152,80 +152,107 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
         }
 
         // build the result attribute list
-        for (int i = 0; i < attributeNames.length; i++) {
-            try {
-                if (equalsProperty(attributeNames[i], ProxoolConstants.ALIAS)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            this.poolDefinition.getAlias()));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.DRIVER_PROPERTIES)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            getDelegatePropertiesAsString(this.poolProperties)));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.DRIVER_URL)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            this.poolDefinition.getUrl()));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.FATAL_SQL_EXCEPTION)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            getValueOrEmpty(this.poolProperties.getProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY))));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Long(this.poolDefinition.getHouseKeepingSleepTime())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.HOUSE_KEEPING_TEST_SQL)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            getValueOrEmpty(poolDefinition.getHouseKeepingTestSql())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.TEST_BEFORE_USE)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Boolean(this.poolDefinition.isTestBeforeUse())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.TEST_AFTER_USE)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Boolean(this.poolDefinition.isTestAfterUse())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.MAXIMUM_ACTIVE_TIME)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Long(this.poolDefinition.getMaximumActiveTime())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.MAXIMUM_CONNECTION_COUNT)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Integer(this.poolDefinition.getMaximumConnectionCount())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Long(this.poolDefinition.getMaximumConnectionLifetime())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.MAXIMUM_NEW_CONNECTIONS)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Integer(this.poolDefinition.getMaximumNewConnections())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Integer(this.poolDefinition.getSimultaneousBuildThrottle())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.MINIMUM_CONNECTION_COUNT)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Integer(this.poolDefinition.getMinimumConnectionCount())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Long(this.poolDefinition.getOverloadWithoutRefusalLifetime())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.PROTOTYPE_COUNT)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Integer(this.poolDefinition.getPrototypeCount())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.RECENTLY_STARTED_THRESHOLD)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Long(this.poolDefinition.getRecentlyStartedThreshold())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.STATISTICS)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            getValueOrEmpty(this.poolDefinition.getStatistics())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.STATISTICS_LOG_LEVEL)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            getValueOrEmpty(this.poolDefinition.getStatisticsLogLevel())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.TRACE)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Boolean(this.poolDefinition.isTrace())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.VERBOSE)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            new Boolean(this.poolDefinition.isVerbose())));
-                } else if (equalsProperty(attributeNames[i], ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS)) {
-                    resultList.add(new Attribute(attributeNames[i],
-                            getValueOrEmpty(this.poolDefinition.getFatalSqlExceptionWrapper())));
-                } else {
-                    final String message = "Unknown attribute: " + attributeNames[i];
+        for (String attributeName : attributeNames)
+        {
+            try
+            {
+                if (equalsProperty(attributeName, ProxoolConstants.ALIAS))
+                {
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getAlias()));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.DRIVER_PROPERTIES))
+                {
+                    resultList.add(new Attribute(attributeName, getDelegatePropertiesAsString(this.poolProperties)));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.DRIVER_URL))
+                {
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getUrl()));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.FATAL_SQL_EXCEPTION))
+                {
+                    resultList.add(new Attribute(attributeName, getValueOrEmpty(this.poolProperties.getProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY))));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME))
+                {
+                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getHouseKeepingSleepTime())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.HOUSE_KEEPING_TEST_SQL))
+                {
+                    resultList.add(new Attribute(attributeName, getValueOrEmpty(poolDefinition.getHouseKeepingTestSql())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.TEST_BEFORE_USE))
+                {
+                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isTestBeforeUse())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.TEST_AFTER_USE))
+                {
+                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isTestAfterUse())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_ACTIVE_TIME))
+                {
+                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getMaximumActiveTime())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_CONNECTION_COUNT))
+                {
+                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getMaximumConnectionCount())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME))
+                {
+                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getMaximumConnectionLifetime())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_NEW_CONNECTIONS))
+                {
+                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getMaximumNewConnections())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE))
+                {
+                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getSimultaneousBuildThrottle())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.MINIMUM_CONNECTION_COUNT))
+                {
+                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getMinimumConnectionCount())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME))
+                {
+                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getOverloadWithoutRefusalLifetime())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.PROTOTYPE_COUNT))
+                {
+                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getPrototypeCount())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.RECENTLY_STARTED_THRESHOLD))
+                {
+                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getRecentlyStartedThreshold())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.STATISTICS))
+                {
+                    resultList.add(new Attribute(attributeName, getValueOrEmpty(this.poolDefinition.getStatistics())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.STATISTICS_LOG_LEVEL))
+                {
+                    resultList.add(new Attribute(attributeName, getValueOrEmpty(this.poolDefinition.getStatisticsLogLevel())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.TRACE))
+                {
+                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isTrace())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.VERBOSE))
+                {
+                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isVerbose())));
+                }
+                else if (equalsProperty(attributeName, ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS))
+                {
+                    resultList.add(new Attribute(attributeName, getValueOrEmpty(this.poolDefinition.getFatalSqlExceptionWrapper())));
+                }
+                else
+                {
+                    final String message = "Unknown attribute: " + attributeName;
                     LOG.error(message);
                     throw new AttributeNotFoundException(message);
                 }
-            } catch (AttributeNotFoundException e) {
+            }
+            catch (AttributeNotFoundException e)
+            {
                 throw new RuntimeOperationsException(new IllegalArgumentException(e.getMessage()));
             }
         }
@@ -253,123 +280,180 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
         Object value = null;
         final Properties newProperties = new Properties();
         Attribute attribute = null;
-        for (Iterator i = attributes.iterator(); i.hasNext();) {
-            attribute = (Attribute) i.next();
-            try {
+        for (Object o : attributes)
+        {
+            attribute = (Attribute) o;
+            try
+            {
                 name = attribute.getName();
                 value = attribute.getValue();
 
-                if (equalsProperty(name, ProxoolConstants.DRIVER_PROPERTIES)) {
-                    if (!isEqualProperties(value.toString(), getDelegatePropertiesAsString(this.poolProperties))) {
+                if (equalsProperty(name, ProxoolConstants.DRIVER_PROPERTIES))
+                {
+                    if (!isEqualProperties(value.toString(), getDelegatePropertiesAsString(this.poolProperties)))
+                    {
                         checkAssignable(name, String.class, value);
                         setDelegateProperties(newProperties, value.toString());
                         resultList.add(new Attribute(name, value));
                     }
-                } else if (equalsProperty(name, ProxoolConstants.DRIVER_URL)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.DRIVER_URL))
+                {
                     checkAssignable(name, String.class, value);
-                    if (notEmpty(value)) {
+                    if (notEmpty(value))
+                    {
                         newProperties.setProperty(ProxoolConstants.DRIVER_URL_PROPERTY, value.toString());
-                    } else {
+                    }
+                    else
+                    {
                         newProperties.setProperty(ProxoolConstants.DRIVER_URL_PROPERTY, "");
                     }
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.FATAL_SQL_EXCEPTION)) {
-                    if (!isEqualProperties(value.toString(),
-                            this.poolProperties.getProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY))) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.FATAL_SQL_EXCEPTION))
+                {
+                    if (!isEqualProperties(value.toString(), this.poolProperties.getProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY)))
+                    {
                         checkAssignable(name, String.class, value);
-                        if (notEmpty(value)) {
+                        if (notEmpty(value))
+                        {
                             newProperties.setProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY, value.toString());
-                        } else {
+                        }
+                        else
+                        {
                             newProperties.setProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY, "");
                         }
                         resultList.add(new Attribute(name, value));
                     }
-                } else if (equalsProperty(name, ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME)) {
-                    setIntegerAttribute(name, ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_HOUSE_KEEPING_SLEEP_TIME, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.HOUSE_KEEPING_TEST_SQL)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_HOUSE_KEEPING_SLEEP_TIME, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.HOUSE_KEEPING_TEST_SQL))
+                {
                     checkAssignable(name, String.class, value);
-                    if (notEmpty(value)) {
+                    if (notEmpty(value))
+                    {
                         newProperties.setProperty(ProxoolConstants.HOUSE_KEEPING_TEST_SQL_PROPERTY, value.toString());
-                    } else {
+                    }
+                    else
+                    {
                         newProperties.setProperty(ProxoolConstants.HOUSE_KEEPING_TEST_SQL_PROPERTY, "");
                     }
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.TEST_BEFORE_USE)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.TEST_BEFORE_USE))
+                {
                     checkAssignable(name, Boolean.class, value);
                     newProperties.setProperty(ProxoolConstants.TEST_BEFORE_USE_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.TEST_AFTER_USE)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.TEST_AFTER_USE))
+                {
                     checkAssignable(name, Boolean.class, value);
                     newProperties.setProperty(ProxoolConstants.TEST_AFTER_USE_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.MAXIMUM_ACTIVE_TIME)) {
-                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_ACTIVE_TIME_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_ACTIVE_TIME, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.MAXIMUM_CONNECTION_COUNT)) {
-                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_CONNECTION_COUNT_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_CONNECTION_COUNT, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME)) {
-                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_CONNECTION_LIFETIME, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.MAXIMUM_NEW_CONNECTIONS)) {
-                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_NEW_CONNECTIONS_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_NEW_CONNECTIONS, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE)) {
-                    setIntegerAttribute(name, ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_SIMULTANEOUS_BUILD_THROTTLE, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.MINIMUM_CONNECTION_COUNT)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.MAXIMUM_ACTIVE_TIME))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_ACTIVE_TIME_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_ACTIVE_TIME, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.MAXIMUM_CONNECTION_COUNT))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_CONNECTION_COUNT_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_CONNECTION_COUNT, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_CONNECTION_LIFETIME, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.MAXIMUM_NEW_CONNECTIONS))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.MAXIMUM_NEW_CONNECTIONS_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_MAXIMUM_NEW_CONNECTIONS, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_SIMULTANEOUS_BUILD_THROTTLE, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.MINIMUM_CONNECTION_COUNT))
+                {
                     checkAssignable(name, Integer.class, value);
                     newProperties.setProperty(ProxoolConstants.MINIMUM_CONNECTION_COUNT_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME)) {
-                    setIntegerAttribute(name, ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_OVERLOAD_WITHOUT_REFUSAL_THRESHOLD, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.PROTOTYPE_COUNT)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_OVERLOAD_WITHOUT_REFUSAL_THRESHOLD, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.PROTOTYPE_COUNT))
+                {
                     checkAssignable(name, Integer.class, value);
                     newProperties.setProperty(ProxoolConstants.PROTOTYPE_COUNT_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.RECENTLY_STARTED_THRESHOLD)) {
-                    setIntegerAttribute(name, ProxoolConstants.RECENTLY_STARTED_THRESHOLD_PROPERTY, value,
-                            ConnectionPoolDefinitionIF.DEFAULT_RECENTLY_STARTED_THRESHOLD, newProperties, resultList);
-                } else if (equalsProperty(name, ProxoolConstants.STATISTICS)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.RECENTLY_STARTED_THRESHOLD))
+                {
+                    setIntegerAttribute(name, ProxoolConstants.RECENTLY_STARTED_THRESHOLD_PROPERTY, value, ConnectionPoolDefinitionIF.DEFAULT_RECENTLY_STARTED_THRESHOLD, newProperties, resultList);
+                }
+                else if (equalsProperty(name, ProxoolConstants.STATISTICS))
+                {
                     checkAssignable(name, String.class, value);
-                    if (notEmpty(value)) {
+                    if (notEmpty(value))
+                    {
                         newProperties.setProperty(ProxoolConstants.STATISTICS_PROPERTY, value.toString());
-                    } else {
+                    }
+                    else
+                    {
                         newProperties.setProperty(ProxoolConstants.STATISTICS_PROPERTY, "");
                     }
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.STATISTICS_LOG_LEVEL)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.STATISTICS_LOG_LEVEL))
+                {
                     checkAssignable(name, String.class, value);
-                    if (notEmpty(value)) {
+                    if (notEmpty(value))
+                    {
                         newProperties.setProperty(ProxoolConstants.STATISTICS_LOG_LEVEL_PROPERTY, value.toString());
-                    } else {
+                    }
+                    else
+                    {
                         newProperties.setProperty(ProxoolConstants.STATISTICS_LOG_LEVEL_PROPERTY, "");
                     }
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.TRACE)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.TRACE))
+                {
                     checkAssignable(name, Boolean.class, value);
                     newProperties.setProperty(ProxoolConstants.TRACE_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.VERBOSE)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.VERBOSE))
+                {
                     checkAssignable(name, Boolean.class, value);
                     newProperties.setProperty(ProxoolConstants.VERBOSE_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else if (equalsProperty(name, ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS)) {
+                }
+                else if (equalsProperty(name, ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS))
+                {
                     checkAssignable(name, Boolean.class, value);
                     newProperties.setProperty(ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS_PROPERTY, value.toString());
                     resultList.add(new Attribute(name, value));
-                } else {
+                }
+                else
+                {
                     final String message = "Unknown attribute: " + name;
                     LOG.error(message);
                     throw new AttributeNotFoundException(message);
                 }
-            } catch (InvalidAttributeValueException e) {
+            }
+            catch (InvalidAttributeValueException e)
+            {
                 final String message = "Attribute value was illegal: " + e.getMessage();
                 LOG.error(message);
                 throw new RuntimeOperationsException(new RuntimeException(message));
-            } catch (AttributeNotFoundException e) {
+            }
+            catch (AttributeNotFoundException e)
+            {
                 throw new RuntimeOperationsException(new IllegalArgumentException(e.getMessage()));
             }
         }
@@ -537,7 +621,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
     }
 
     private String getDelegatePropertiesAsString(Properties properties) {
-        final StringBuffer result = new StringBuffer();
+        final StringBuilder result = new StringBuilder();
         Iterator keyIterator = properties.keySet().iterator();
         String key = null;
         boolean first = true;
@@ -670,7 +754,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
      * @see MBeanRegistration#postRegister(Boolean)
      */
     public void postRegister(Boolean success) {
-        if (success.booleanValue() == true) {
+        if (success.booleanValue()) {
             this.active = true;
         }
     }

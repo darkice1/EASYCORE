@@ -134,7 +134,7 @@ public class Images
 			}
 		}
 
-		if (isjpg == false)
+		if (!isjpg)
 		{
 			BufferedImage bi = ImageIO.read(new File(srcFileName));
 

@@ -642,10 +642,8 @@ public class JFile
 				uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
 			}
 
-			Iterator<Entry<String, String>> iter = head.entrySet().iterator();
-			while (iter.hasNext())
+			for (Entry<String, String> entry : head.entrySet())
 			{
-				Entry<String, String> entry = iter.next();
 				String key = entry.getKey();
 				String val = entry.getValue();
 				uc.setRequestProperty(key, val);
@@ -792,12 +790,12 @@ public class JFile
 
 		HttpURLConnection uc = (HttpURLConnection) u.openConnection();
 		uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
-		if (ref!= null && "".equals(ref) == false)
+		if (ref!= null && !"".equals(ref))
 		{
 			uc.setRequestProperty(REFERER, ref);
 		}
 
-		if (cookie!= null && "".equals(cookie) == false)
+		if (cookie!= null && !"".equals(cookie))
 		{
 			uc.setRequestProperty(COOKIE, cookie);
 		}
@@ -959,7 +957,7 @@ public class JFile
 					String t = dir.toAbsolutePath().toString().replace(sourcepath, targetpath);
 
 					Path pt = Paths.get(t);
-					if (Files.isExecutable(pt) == false)
+					if (!Files.isExecutable(pt))
 					{
 						Files.createDirectories(pt);
 					}

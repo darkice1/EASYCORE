@@ -148,13 +148,13 @@ public abstract class Sql implements  AutoCloseable
 		{
 			File file = new File(getDBCachePath());
 			boolean pathok;
-			if (file.exists() == false)
+			if (!file.exists())
 			{
 				pathok = file.mkdir();
 			}
 			else
 			{
-				if (file.isDirectory() == false)
+				if (!file.isDirectory())
 				{
 					file.delete();
 					pathok = file.mkdirs();
@@ -165,7 +165,7 @@ public abstract class Sql implements  AutoCloseable
 				}
 			}
 			
-			if (pathok==false)
+			if (!pathok)
 			{
 				throw new IOException(String.format("%s not find.", getDBCachePath()));
 			}
@@ -308,11 +308,11 @@ public abstract class Sql implements  AutoCloseable
 
 		try
 		{
-			if (conn != null && conn.isClosed()==false)
+			if (conn != null && !conn.isClosed())
 			{
 				conn.close();
 			}
-			if (connwrite != null && connwrite != conn && connwrite.isClosed()==false)
+			if (connwrite != null && connwrite != conn && !connwrite.isClosed())
 			{
 				connwrite.close();
 			}
@@ -380,7 +380,7 @@ public abstract class Sql implements  AutoCloseable
 	
 	private Statement getStmt()
 	{
-		if (isinit == false)
+		if (!isinit)
 		{
 			instance();
 		}
@@ -393,7 +393,7 @@ public abstract class Sql implements  AutoCloseable
 
 	private Statement getStmtWrite()
 	{
-		if (isinit == false)
+		if (!isinit)
 		{
 			instance();
 			isinit = true;
@@ -489,7 +489,7 @@ public abstract class Sql implements  AutoCloseable
 
 	public Connection getConnection()
 	{
-		if (isinit == false)
+		if (!isinit)
 		{
 			instance();
 		}
@@ -498,7 +498,7 @@ public abstract class Sql implements  AutoCloseable
 
 	public Connection getWriteConnection()
 	{
-		if (isinit == false)
+		if (!isinit)
 		{
 			instance();
 		}

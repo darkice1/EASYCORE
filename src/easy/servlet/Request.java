@@ -1,12 +1,5 @@
 package easy.servlet;
 
-/**
- * <p><i>Copyright: Easy (c) 2005-2005<br>
- * Company: Easy</i></p>
- *
- * @version 1.0 (<i>2005-7-18 Gawen</i>)
- */
-
 import easy.config.Config;
 import easy.io.EFileItem;
 import easy.util.Log;
@@ -30,7 +23,7 @@ public class Request
 	
 	private static final String SYS_TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
-	private Map<String,EFileItem> dataMap	= new HashMap<String,EFileItem>();
+	private Map<String,EFileItem> dataMap	= new HashMap<>();
 	
 	private boolean isMultipartContent = false;
 	private static final String UPLOAD = "multipart/form-data"; 
@@ -63,11 +56,11 @@ public class Request
 			try
 			{
 				items = upload.parseRequest(httpServletRequest);
-				
-				for (int i=0; i < items.size(); i++)
+
+				for (FileItem item : items)
 				{
-					EFileItem t= new EFileItem(items.get(i));
-					dataMap.put(t.getFieldName(),t);
+					EFileItem t = new EFileItem(item);
+					dataMap.put(t.getFieldName(), t);
 				}
 			}
 			catch (FileUploadException e1)
@@ -150,7 +143,7 @@ public class Request
 					File f = new File (path);
 					try
 					{
-						if (isover == false)
+						if (!isover)
 						{
 							while (f.exists())
 							{

@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.logicalcobwebs.proxool.util.FastArrayList;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -101,12 +100,12 @@ public class HouseKeeperController {
      */
     protected static void shutdown() {
         synchronized(LOCK) {
-            Iterator i = houseKeeperThreads.iterator();
-            while (i.hasNext()) {
-                HouseKeeperThread hkt = (HouseKeeperThread) i.next();
-                LOG.info("Stopping " + hkt.getName() + " thread");
-                hkt.cancel();
-            }
+			for (Object houseKeeperThread : houseKeeperThreads)
+			{
+				HouseKeeperThread hkt = (HouseKeeperThread) houseKeeperThread;
+				LOG.info("Stopping " + hkt.getName() + " thread");
+				hkt.cancel();
+			}
             houseKeeperThreads.clear();
         }
     }

@@ -38,7 +38,7 @@ public class StatisticsLogger implements StatisticsListenerIF {
 
         if (statistics != null && logLevel != null) {
 
-                StringBuffer out = new StringBuffer();
+                StringBuilder out = new StringBuilder();
 
                 out.append(TIME_FORMAT.format(statistics.getStartDate()));
                 out.append(" - ");
@@ -58,13 +58,18 @@ public class StatisticsLogger implements StatisticsListenerIF {
                 out.append("ms/");
                 out.append(DECIMAL_FORMAT.format(statistics.getAverageActiveCount()));
 
-                if (logLevel.equals(ProxoolConstants.STATISTICS_LOG_LEVEL_TRACE)) {
+            switch (logLevel)
+            {
+                case ProxoolConstants.STATISTICS_LOG_LEVEL_TRACE:
                     log.trace(out.toString());
-                } else if (logLevel.equals(ProxoolConstants.STATISTICS_LOG_LEVEL_DEBUG)) {
+                    break;
+                case ProxoolConstants.STATISTICS_LOG_LEVEL_DEBUG:
                     log.debug(out.toString());
-                } else if (logLevel.equals(ProxoolConstants.STATISTICS_LOG_LEVEL_INFO)) {
+                    break;
+                case ProxoolConstants.STATISTICS_LOG_LEVEL_INFO:
                     log.info(out.toString());
-                }
+                    break;
+            }
 
             }
 

@@ -378,8 +378,8 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
     }
 
     /** This means that there's something wrong the connection and it's probably best if no one uses it again. */
-    protected void throwConnection(ProxyConnectionIF proxyConnection, int reasonCode, String reason) {
-        expireConnectionAsSoonAsPossible(proxyConnection, reasonCode, reason, true);
+    protected void throwConnection(ProxyConnectionIF proxyConnection) {
+        expireConnectionAsSoonAsPossible(proxyConnection, ConnectionListenerIF.FATAL_SQL_EXCEPTION_DETECTED, "Fatal SQL Exception has been detected", true);
     }
 
     /** Get a ProxyConnection by index */
@@ -618,7 +618,7 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
             loggedLegend = true;
         }
 
-        StringBuffer statistics = new StringBuffer();
+        StringBuilder statistics = new StringBuilder();
         statistics.append(FormatHelper.formatBigNumber(getConnectionsServedCount()));
 
         if (getConnectionsRefusedCount() > 0) {
@@ -647,7 +647,7 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
         return statistics.toString();
     }
 
-    protected void expireAllConnections(int reasonCode, String reason, boolean merciful) {
+    protected void expireAllConnections(String reason, boolean merciful) {
 
         // Do this in two stages because expiring a connection will trigger
         // the prototyper to make more. And that might mean we end up
@@ -657,10 +657,10 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
             pcs.add(proxyConnections.get(i));
         }
 
-        Iterator i = pcs.iterator();
-        while (i.hasNext()) {
-            ProxyConnectionIF pc = (ProxyConnectionIF) i.next();
-            expireConnectionAsSoonAsPossible(pc, reasonCode, reason, merciful);
+        for (Object o : pcs)
+        {
+            ProxyConnectionIF pc = (ProxyConnectionIF) o;
+            expireConnectionAsSoonAsPossible(pc, ConnectionListenerIF.MANUAL_EXPIRY, reason, merciful);
         }
     }
 
@@ -824,9 +824,9 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
     protected Collection getConnectionInfos() {
         Collection cis = null;
         cis = new TreeSet();
-        Iterator i = proxyConnections.iterator();
-        while (i.hasNext()) {
-            ConnectionInfoIF connectionInfo = (ConnectionInfoIF) i.next();
+        for (Object proxyConnection : proxyConnections)
+        {
+            ConnectionInfoIF connectionInfo = (ConnectionInfoIF) proxyConnection;
             ConnectionInfo ci = new ConnectionInfo();
             ci.setAge(connectionInfo.getAge());
             ci.setBirthDate(connectionInfo.getBirthDate());
@@ -840,8 +840,9 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
             ci.setProxyHashcode(connectionInfo.getProxyHashcode());
             ci.setDelegateHashcode(connectionInfo.getDelegateHashcode());
             String[] sqlCalls = connectionInfo.getSqlCalls();
-            for (int j = 0; j < sqlCalls.length; j++) {
-                ci.addSqlCall(sqlCalls[j]);
+            for (String sqlCall : sqlCalls)
+            {
+                ci.addSqlCall(sqlCall);
             }
             cis.add(ci);
         }
@@ -1091,9 +1092,9 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
         }
     }
 
-    protected boolean attemptConnectionStatusReadLock(long msecs) {
+    protected boolean attemptConnectionStatusReadLock() {
         try {
-            return connectionStatusReadWriteLock.readLock().attempt(msecs);
+            return connectionStatusReadWriteLock.readLock().attempt((long) 10000);
         } catch (InterruptedException e) {
             log.error("Couldn't acquire connectionStatus read lock", e);
             return false;

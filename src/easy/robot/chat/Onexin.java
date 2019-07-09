@@ -19,11 +19,10 @@ public class Onexin extends ChatRobot
 		String html = JFile.loadHttpFile(url);
 		//System.out.println(html);
 		JSONObject json = JSONObject.fromObject(html);
-		String recontent = json.getString("message");
 		//System.out.println(json.get("message"));
 		//System.out.println(json.get("msgbox"));
 
-		return recontent;
+		return json.getString("message");
 	}
 
 	/**

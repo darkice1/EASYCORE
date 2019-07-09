@@ -282,9 +282,9 @@ public class FJTaskRunner extends Thread {
          * Make an array of given capacity and fill it with
          * VolatileTaskRefs.
          **/
-        protected static VolatileTaskRef[] newArray(int cap) {
-            VolatileTaskRef[] a = new VolatileTaskRef[cap];
-            for (int k = 0; k < cap; k++) a[k] = new VolatileTaskRef();
+        protected static VolatileTaskRef[] newArray() {
+            VolatileTaskRef[] a = new VolatileTaskRef[FJTaskRunner.INITIAL_CAPACITY];
+            for (int k = 0; k < FJTaskRunner.INITIAL_CAPACITY; k++) a[k] = new VolatileTaskRef();
             return a;
         }
 
@@ -294,7 +294,7 @@ public class FJTaskRunner extends Thread {
      * The DEQ array.
      **/
 
-    protected VolatileTaskRef[] deq = VolatileTaskRef.newArray(INITIAL_CAPACITY);
+    protected VolatileTaskRef[] deq = VolatileTaskRef.newArray();
 
     /** Current size of the task DEQ **/
     protected int deqSize() {
@@ -961,8 +961,10 @@ public class FJTaskRunner extends Thread {
      **/
 
     protected void slowCoInvoke(FJTask[] tasks) {
-        for (int i = 0; i < tasks.length; ++i) push(tasks[i]);
-        for (int i = 0; i < tasks.length; ++i) taskJoin(tasks[i]);
+        for (FJTask fjTask : tasks)
+            push(fjTask);
+        for (FJTask task : tasks)
+            taskJoin(task);
     }
 
 }

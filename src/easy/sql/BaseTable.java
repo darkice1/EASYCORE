@@ -321,15 +321,12 @@ public class BaseTable
 
 	public String getdeleteString(String where) throws SQLException
 	{
-		StringBuffer sqlbuf = new StringBuffer("delete from ");
-		sqlbuf.append(tablename);
-		sqlbuf.append(" where ");
-		sqlbuf.append(where);
-		
+
 		//String sql = sqlbuf.toString();
 		//sqlbuf = null;
 
-		return sqlbuf.toString();
+		String sqlbuf = "delete from " + tablename + " where " + where;
+		return sqlbuf;
 	}
 
 	/**
@@ -364,7 +361,7 @@ public class BaseTable
 		Iterator<Entry<String, String>> paramsfields = params.entrySet().iterator();
 		Iterator<Entry<String, String>> profields = proparams.entrySet().iterator();
 
-		StringBuffer sqlbuf = new StringBuffer("UPDATE ");
+		StringBuilder sqlbuf = new StringBuilder("UPDATE ");
 		sqlbuf.append(tablename);
 		sqlbuf.append(" SET ");
 
@@ -428,7 +425,7 @@ public class BaseTable
 	 */
 	public String getInsertUpdateOnDuplFields(String[] fields)
 	{
-		StringBuffer sqlbuf = new StringBuffer();
+		StringBuilder sqlbuf = new StringBuilder();
 		for (String f : fields)
 		{
 			String v = params.get(f);
@@ -471,7 +468,7 @@ public class BaseTable
 		Iterator<Entry<String, String>> paramsfields = params.entrySet().iterator();
 		Iterator<Entry<String, String>> profields = proparams.entrySet().iterator();
 
-		StringBuffer sqlbuf = new StringBuffer();
+		StringBuilder sqlbuf = new StringBuilder();
 
 		// 一般属性
 		while (paramsfields.hasNext())
@@ -519,7 +516,7 @@ public class BaseTable
 	}
 	public String getInsertUpdateOnDuplPro(String[] fs,String[] os,boolean isdelayed)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		
 		int olen = os.length-1;
 		for (int i=0,len=fs.length; i<len; i++)
@@ -605,7 +602,7 @@ public class BaseTable
 		}
 		else
 		{
-			if (viewname.indexOf(" ") == -1)
+			if (!viewname.contains(" "))
 			{
 				sqlbuf.append(String.format("%s", viewname));
 				cbuf.append(String.format("%s", viewname));
@@ -617,7 +614,7 @@ public class BaseTable
 			}
 		}
 
-		if (where != null && where.equals("") == false)
+		if (where != null && !where.equals(""))
 		{
 			sqlbuf.append(" WHERE ");
 			sqlbuf.append(where);
@@ -626,7 +623,7 @@ public class BaseTable
 			cbuf.append(where);
 		}
 
-		if (order != null && order.equals("") == false)
+		if (order != null && !order.equals(""))
 		{
 			sqlbuf.append(" ORDER BY ");
 			sqlbuf.append(order);
@@ -740,7 +737,7 @@ public class BaseTable
 	 */
 	public boolean hasinfo()
 	{
-		return params.isEmpty()==false || proparams.isEmpty()==false;
+		return !params.isEmpty() || !proparams.isEmpty();
 	}
 /*
 	public static void main(String[] args)

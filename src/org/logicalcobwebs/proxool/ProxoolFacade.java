@@ -220,8 +220,9 @@ public class ProxoolFacade {
     protected static void shutdown(String finalizer, int delay) {
 
         ConnectionPool[] cps = ConnectionPoolManager.getInstance().getConnectionPools();
-        for (int i = 0; i < cps.length; i++) {
-            removeConnectionPool(finalizer, cps[i], delay);
+        for (ConnectionPool cp : cps)
+        {
+            removeConnectionPool(finalizer, cp, delay);
         }
 
         // If a shutdown hook was registered then remove it
@@ -344,7 +345,7 @@ public class ProxoolFacade {
      * @throws ProxoolException if we couldn't find the pool
      */
     public static void killAllConnections(String alias, String reason, boolean merciful) throws ProxoolException {
-        ConnectionPoolManager.getInstance().getConnectionPool(alias).expireAllConnections(ConnectionListenerIF.MANUAL_EXPIRY, reason, merciful);
+        ConnectionPoolManager.getInstance().getConnectionPool(alias).expireAllConnections(reason, merciful);
     }
 
     /**
@@ -723,7 +724,7 @@ public class ProxoolFacade {
             try {
                 // Only try for 10 seconds!
                 long start = System.currentTimeMillis();
-                if (cp.attemptConnectionStatusReadLock(10000)) {
+                if (cp.attemptConnectionStatusReadLock()) {
                     snapshot = Admin.getSnapshot(cp, cp.getDefinition(), cp.getConnectionInfos());
                 } else {
                     LOG.warn("Give up waiting for detailed snapshot after " + (System.currentTimeMillis() - start) + " milliseconds. Serving standard snapshot instead.");
@@ -797,16 +798,19 @@ public class ProxoolFacade {
             // the given properties to avoid ConcurrentModificationException
             String propertyName = null;
             List propertyNamesList = new ArrayList(10);
-            Iterator keySetIterator = delegateProperties.keySet().iterator();
-            while (keySetIterator.hasNext()) {
-                propertyName = (String) keySetIterator.next();
-                if (propertyName.startsWith(ProxoolConstants.JNDI_PROPERTY_PREFIX)) {
+            for (Object value : delegateProperties.keySet())
+            {
+                propertyName = (String) value;
+                if (propertyName.startsWith(ProxoolConstants.JNDI_PROPERTY_PREFIX))
+                {
                     propertyNamesList.add(propertyName);
                 }
             }
-            for (int i = 0; i < propertyNamesList.size(); i++) {
-                propertyName = (String) propertyNamesList.get(i);
-                if (propertyName.startsWith(ProxoolConstants.JNDI_PROPERTY_PREFIX)) {
+            for (Object o : propertyNamesList)
+            {
+                propertyName = (String) o;
+                if (propertyName.startsWith(ProxoolConstants.JNDI_PROPERTY_PREFIX))
+                {
                     jndiProperties.setProperty(propertyName.substring(ProxoolConstants.JNDI_PROPERTY_PREFIX.length()), delegateProperties.getProperty(propertyName));
                     delegateProperties.remove(propertyName);
                 }

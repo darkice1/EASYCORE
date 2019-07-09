@@ -15,20 +15,19 @@ public class Xiaoi extends ChatRobot
 	{
 		//{"sessionId":"22678bc1d8e94f148932093f9eb073d6","robotId":"webbot",
 		//"userId":"bdd5a9a8117b4ae685c43408c44942f3","body":{"content":"test"},"type":"txt"}
-		HashMap<String,String> dmap = new HashMap<String,String>();
+		HashMap<String,String> dmap = new HashMap<>();
 		dmap.put("sessionId", "22678bc1d8e94f148932093f9eb073d6");
 		dmap.put("robotId", "webbot");
 		dmap.put("userId", "bdd5a9a8117b4ae685c43408c44942f3");
 		dmap.put("type", "txt");
-		dmap.put("sessionId", "22678bc1d8e94f148932093f9eb073d6");
-		
+
 		JSONObject json = JSONObject.fromObject(dmap);
 		
-		HashMap<String,String> cmap = new HashMap<String,String>();
+		HashMap<String,String> cmap = new HashMap<>();
 		cmap.put("content", msg);
 		json.put("body", cmap);
 		
-		String data = json.toString();
+		String data;
 		data = "{\"sessionId\":\"22678bc1d8e94f148932093f9eb073d6\",\"robotId\":\"webbot\",\"userId\":\"bdd5a9a8117b4ae685c43408c44942f3\",\"body\":{\"content\":\"test\"},\"type\":\"txt\"}";
 		data = URLEncoder.encode(data,"utf-8");
 

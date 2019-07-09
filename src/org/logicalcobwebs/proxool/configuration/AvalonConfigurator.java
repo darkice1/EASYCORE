@@ -76,12 +76,13 @@ public class AvalonConfigurator implements Component, Configurable, ThreadSafe, 
         final XMLConfigurator xmlConfigurator = new XMLConfigurator();
         this.closeOnDispose = configuration.getAttributeAsBoolean(CLOSE_ON_DISPOSE_ATTRIBUTE, true);
         final Configuration[] children = configuration.getChildren();
-        for (int i = 0; i < children.length; ++i) {
-            if (!children[i].getName().equals(ProxoolConstants.PROXOOL)) {
-                throw new ConfigurationException("Found element named " + children[i].getName() + ". Only "
-                        + ProxoolConstants.PROXOOL + " top level elements are alowed.");
-            }
-        }
+		for (Configuration child : children)
+		{
+			if (!child.getName().equals(ProxoolConstants.PROXOOL))
+			{
+				throw new ConfigurationException("Found element named " + child.getName() + ". Only " + ProxoolConstants.PROXOOL + " top level elements are alowed.");
+			}
+		}
         try {
             xmlConfigurator.startDocument();
             reportProperties(xmlConfigurator, configuration.getChildren());
@@ -121,43 +122,54 @@ public class AvalonConfigurator implements Component, Configurable, ThreadSafe, 
         Configuration[] children = null;
         String value = null;
         String namespace = null;
-        for (int i = 0; i < properties.length; ++i) {
-            Configuration configuration = properties[i];
-            namespace = configuration.getNamespace();
-            if (namespace == null) {
-                namespace = "";
-            }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Reporting element start for " + configuration.getName());
-            }
-            final String lName = namespace.length() == 0 ? "" : configuration.getName();
-            final String qName = namespace.length() == 0 ? configuration.getName() : "";
+		for (Configuration configuration : properties)
+		{
+			namespace = configuration.getNamespace();
+			if (namespace == null)
+			{
+				namespace = "";
+			}
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("Reporting element start for " + configuration.getName());
+			}
+			final String lName = namespace.length() == 0 ? "" : configuration.getName();
+			final String qName = namespace.length() == 0 ? configuration.getName() : "";
 
-            xmlConfigurator.startElement(namespace, lName, qName, getAttributes(configuration));
-            children = configuration.getChildren();
-            // If this is a leaf node, report the value,
-            // else recurse.
-            if (children == null || children.length < 1) {
-                value = configuration.getValue(null);
-                if (value != null) {
-                    xmlConfigurator.characters(value.toCharArray(), 0, value.length());
-                }
-            } else {
-                reportProperties(xmlConfigurator, children);
-            }
-            xmlConfigurator.endElement(namespace, lName, qName);
-            if (lName.equals(ProxoolConstants.PROXOOL) || qName.equals(ProxoolConstants.PROXOOL)) {
-                Configuration conf = configuration.getChild(ProxoolConstants.ALIAS, false);
-                if (conf != null) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Adding to configured pools: " + conf.getValue());
-                    }
-                    this.configuredPools.add(conf.getValue());
-                } else {
-                    LOG.error("proxool element was missing required element 'alias'");
-                }
-            }
-        }
+			xmlConfigurator.startElement(namespace, lName, qName, getAttributes(configuration));
+			children = configuration.getChildren();
+			// If this is a leaf node, report the value,
+			// else recurse.
+			if (children == null || children.length < 1)
+			{
+				value = configuration.getValue(null);
+				if (value != null)
+				{
+					xmlConfigurator.characters(value.toCharArray(), 0, value.length());
+				}
+			}
+			else
+			{
+				reportProperties(xmlConfigurator, children);
+			}
+			xmlConfigurator.endElement(namespace, lName, qName);
+			if (lName.equals(ProxoolConstants.PROXOOL) || qName.equals(ProxoolConstants.PROXOOL))
+			{
+				Configuration conf = configuration.getChild(ProxoolConstants.ALIAS, false);
+				if (conf != null)
+				{
+					if (LOG.isDebugEnabled())
+					{
+						LOG.debug("Adding to configured pools: " + conf.getValue());
+					}
+					this.configuredPools.add(conf.getValue());
+				}
+				else
+				{
+					LOG.error("proxool element was missing required element 'alias'");
+				}
+			}
+		}
     }
 
     // create a SAX attributes instance from
@@ -166,16 +178,15 @@ public class AvalonConfigurator implements Component, Configurable, ThreadSafe, 
         final AttributesImpl attributes = new AttributesImpl();
         final String[] avalonAttributeNames = configuration.getAttributeNames();
         if (avalonAttributeNames != null && avalonAttributeNames.length > 0) {
-            for (int i = 0; i < avalonAttributeNames.length; ++i) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Adding attribute " + avalonAttributeNames[i] + " with value "
-                        + configuration.getAttribute(avalonAttributeNames[i]));
-                }
-                attributes.addAttribute("", avalonAttributeNames[i], avalonAttributeNames[i], "CDATA",
-                        configuration.getAttribute(avalonAttributeNames[i]));
-                    LOG.debug("In attributes: " + avalonAttributeNames[i] + " with value "
-                        + attributes.getValue(avalonAttributeNames[i]));
-                }
+			for (String avalonAttributeName : avalonAttributeNames)
+			{
+				if (LOG.isDebugEnabled())
+				{
+					LOG.debug("Adding attribute " + avalonAttributeName + " with value " + configuration.getAttribute(avalonAttributeName));
+				}
+				attributes.addAttribute("", avalonAttributeName, avalonAttributeName, "CDATA", configuration.getAttribute(avalonAttributeName));
+				LOG.debug("In attributes: " + avalonAttributeName + " with value " + attributes.getValue(avalonAttributeName));
+			}
             }
         return attributes;
     }

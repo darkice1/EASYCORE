@@ -47,7 +47,7 @@ public class Zip
 	
 	public static List<File> unzip(String srcFile,String objFile) throws IOException
 	{
-	    List<File> fileList = new ArrayList<File>();
+	    List<File> fileList = new ArrayList<>();
 	    
 //		ZipInputStream zin = new ZipInputStream(new FileInputStream(srcFile));	
 //		ZipEntry entry = null;

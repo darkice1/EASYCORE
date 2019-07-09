@@ -31,16 +31,19 @@ public class CompositeStateListener extends AbstractListenerContainer implements
     public void upStateChanged(int upState) 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                StateListenerIF stateListener = (StateListenerIF) listeners[i];
-                stateListener.upStateChanged(upState);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching upStateChanged event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				StateListenerIF stateListener = (StateListenerIF) listener;
+				stateListener.upStateChanged(upState);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching upStateChanged event", re);
+			}
+		}
     }
 }
 

@@ -66,7 +66,7 @@ public class Proxy
 		String user = Config.getProperty("PROXYUSER");
 		String password = Config.getProperty("PROXYPASSWORD");
 		
-		if (host != null && "".equals(host) == false)
+		if (host != null && !"".equals(host))
 		{
 			openProxy(host,port,user,password);
 		}
@@ -76,7 +76,7 @@ public class Proxy
 		String suser = Config.getProperty("SOCKSPROXYUSER");
 		String spassword = Config.getProperty("SOCKSPROXYPASSWORD");
 		
-		if (shost != null && "".equals(shost) == false)
+		if (shost != null && !"".equals(shost))
 		{
 			openSocksProxy(shost,sport,suser,spassword);
 		}

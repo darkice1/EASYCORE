@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy;
 
 import easy.sql.Row;

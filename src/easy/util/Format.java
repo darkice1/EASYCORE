@@ -227,7 +227,7 @@ public class Format
 		}
 		String tmp = src;
 		tmp = Format.replaceAll(tmp,"&", "&amp;");
-		if (isnoquotes == true)
+		if (isnoquotes)
 		{
 			tmp = Format.replaceAll(tmp,"\"", "&quot;");
 			tmp = Format.replaceAll(tmp,"'", "&#039;");
@@ -533,7 +533,7 @@ public class Format
 			// System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
 
 			if (supername != null
-					&& "java.lang.Object".equals(supername) == false)
+					&& !"java.lang.Object".equals(supername))
 			{
 				list.addAll(getAllField(c.getSuperclass(), true));
 			}
@@ -901,7 +901,7 @@ public class Format
 			{
 				for (int i = 0; i < 2; i++)
 				{
-					if (msc.find() == false)
+					if (!msc.find())
 					{
 						charset = "GBK";
 						break out;

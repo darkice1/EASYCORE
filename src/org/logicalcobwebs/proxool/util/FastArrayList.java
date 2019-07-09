@@ -434,7 +434,7 @@ public class FastArrayList extends ArrayList {
             while (li1.hasNext() && li2.hasNext()) {
                 Object o1 = li1.next();
                 Object o2 = li2.next();
-                if (!(o1 == null ? o2 == null : o1.equals(o2))) {
+                if (!(Objects.equals(o1, o2))) {
                     return (false);
                 }
             }
@@ -446,7 +446,7 @@ public class FastArrayList extends ArrayList {
                 while (li1.hasNext() && li2.hasNext()) {
                     Object o1 = li1.next();
                     Object o2 = li2.next();
-                    if (!(o1 == null ? o2 == null : o1.equals(o2))) {
+                    if (!(Objects.equals(o1, o2))) {
                         return (false);
                     }
                 }
@@ -486,18 +486,16 @@ public class FastArrayList extends ArrayList {
 
         if (fast) {
             int hashCode = 1;
-            Iterator i = list.iterator();
-            while (i.hasNext()) {
-                Object o = i.next();
+            for (Object o : list)
+            {
                 hashCode = 31 * hashCode + (o == null ? 0 : o.hashCode());
             }
             return (hashCode);
         } else {
             synchronized (list) {
                 int hashCode = 1;
-                Iterator i = list.iterator();
-                while (i.hasNext()) {
-                    Object o = i.next();
+                for (Object o : list)
+                {
                     hashCode = 31 * hashCode + (o == null ? 0 : o.hashCode());
                 }
                 return (hashCode);
@@ -826,10 +824,8 @@ public class FastArrayList extends ArrayList {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("FastArrayList[");
-        sb.append(list.toString());
-        sb.append("]");
-        return (sb.toString());
+		String sb = "FastArrayList[" + list.toString() + "]";
+		return (sb);
 
     }
 

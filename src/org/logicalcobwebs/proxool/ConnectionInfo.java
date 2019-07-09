@@ -154,7 +154,7 @@ class ConnectionInfo implements ConnectionInfoIF {
      * @see Comparable#compareTo(Object)
      */
     public int compareTo(Object o) {
-        return new Long(((ConnectionInfoIF) o).getId()).compareTo(new Long(getId()));
+        return Long.compare(((ConnectionInfoIF) o).getId(), getId());
     }
 
     public String[] getSqlCalls() {

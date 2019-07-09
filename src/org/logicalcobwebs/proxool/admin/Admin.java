@@ -61,9 +61,9 @@ public class Admin {
      */
     public void connectionReturned(long activeTime) {
         try {
-            Iterator i = statsRollers.values().iterator();
-            while (i.hasNext()) {
-                StatsRoller statsRoller = (StatsRoller) i.next();
+            for (Object o : statsRollers.values())
+            {
+                StatsRoller statsRoller = (StatsRoller) o;
                 statsRoller.connectionReturned(activeTime);
             }
         } catch (Throwable e) {
@@ -76,9 +76,9 @@ public class Admin {
      */
     public void connectionRefused() {
         try {
-            Iterator i = statsRollers.values().iterator();
-            while (i.hasNext()) {
-                StatsRoller statsRoller = (StatsRoller) i.next();
+            for (Object o : statsRollers.values())
+            {
+                StatsRoller statsRoller = (StatsRoller) o;
                 statsRoller.connectionRefused();
             }
         } catch (Exception e) {
@@ -102,24 +102,25 @@ public class Admin {
      * Cancels the timer that outputs the stats
      */
     public void cancelAll() {
-        Iterator i = statsRollers.values().iterator();
-        while (i.hasNext()) {
-            StatsRoller statsRoller = (StatsRoller) i.next();
+        for (Object o : statsRollers.values())
+        {
+            StatsRoller statsRoller = (StatsRoller) o;
             statsRoller.cancel();
         }
     }
 
     public StatisticsIF[] getStatistics() {
         List statistics = new Vector();
-        Iterator i = statsRollers.values().iterator();
-        while (i.hasNext()) {
-            StatsRoller statsRoller = (StatsRoller) i.next();
+        for (Object o : statsRollers.values())
+        {
+            StatsRoller statsRoller = (StatsRoller) o;
             StatisticsIF s = statsRoller.getCompleteStatistics();
-            if (s != null) {
+            if (s != null)
+            {
                 statistics.add(s);
             }
         }
-        return (StatisticsIF[]) statistics.toArray(new StatisticsIF[statistics.size()]);
+        return (StatisticsIF[]) statistics.toArray(new StatisticsIF[0]);
     }
 
     /**

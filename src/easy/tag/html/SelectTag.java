@@ -32,7 +32,7 @@ public class SelectTag extends SimpleTagSupport
 	
 	protected String doSelect()
 	{
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		buffer.append(String.format("<SELECT NAME='%s'%s>",name,disabled?" DISABLED":""));
 		if (value != null)
 		{

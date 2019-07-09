@@ -34,16 +34,19 @@ public class CompositeProxoolListener extends AbstractListenerContainer implemen
                                 Properties 				   completeInfo) 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ProxoolListenerIF proxoolListener = (ProxoolListenerIF) listeners[i];
-                proxoolListener.onRegistration(connectionPoolDefinition, (Properties) completeInfo.clone());
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching onRegistration event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ProxoolListenerIF proxoolListener = (ProxoolListenerIF) listener;
+				proxoolListener.onRegistration(connectionPoolDefinition, (Properties) completeInfo.clone());
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching onRegistration event", re);
+			}
+		}
     }
 
     /**
@@ -52,16 +55,19 @@ public class CompositeProxoolListener extends AbstractListenerContainer implemen
     public void onShutdown(String alias) 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ProxoolListenerIF proxoolListener = (ProxoolListenerIF) listeners[i];
-                proxoolListener.onShutdown(alias);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching onShutdown event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ProxoolListenerIF proxoolListener = (ProxoolListenerIF) listener;
+				proxoolListener.onShutdown(alias);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching onShutdown event", re);
+			}
+		}
     }
 }
 

@@ -1,14 +1,5 @@
 package easy.servlet;
 
-/**
- * <p><i>Copyright: Easy (c) 2005-2005<br>
- * Company: Easy</i></p>
- *
- * TODO Response class˵��
- *
- * @version 1.0 (<i>2005-7-19 Gawen</i>)
- */
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

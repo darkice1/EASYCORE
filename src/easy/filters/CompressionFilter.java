@@ -112,14 +112,14 @@ public class CompressionFilter implements Filter
 			while (e.hasMoreElements())
 			{
 				String name = (String) e.nextElement();
-				if (name.indexOf("gzip") != -1)
+				if (name.contains("gzip"))
 				{
 					supportCompression = true;
 				}
 			}
 		}
 
-		if (supportCompression == false)
+		if (!supportCompression)
 		{
 			chain.doFilter(request, response);
 			return;

@@ -8,7 +8,6 @@ package org.logicalcobwebs.proxool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.logicalcobwebs.cglib.core.NamingPolicy;
-import org.logicalcobwebs.cglib.core.Predicate;
 import org.logicalcobwebs.cglib.proxy.Callback;
 import org.logicalcobwebs.cglib.proxy.Enhancer;
 import org.logicalcobwebs.cglib.proxy.Factory;
@@ -43,30 +42,15 @@ class ProxyFactory {
      *   $java/lang/Object$$FastClassByCGLIB$$3f697993
      * </pre>
      */
-    private static NamingPolicy NAMING_POLICY = new NamingPolicy() {
-        public String getClassName(String prefix, String source, Object key, Predicate names) {
-            StringBuffer sb = new StringBuffer();
-            sb.append(
-                    (prefix != null) ?
-                            (
-                                    prefix.startsWith("java") ?
-                                            "$" + prefix : prefix
-                            )
-                            : "net.sf.cglib.empty.Object"
-            );
-            sb.append("$$");
-            sb.append(source.substring(source.lastIndexOf('.') + 1));
-            sb.append("ByProxool$$");
-            sb.append(Integer.toHexString(key.hashCode()));
-            String base = sb.toString();
-            String attempt = base;
-            int index = 2;
-            while (names.evaluate(attempt)) {
-                attempt = base + "_" + index++;
-            }
-
-            return attempt;
+    private static NamingPolicy NAMING_POLICY = (prefix, source, key, names) -> {
+        String base = ((prefix != null) ? (prefix.startsWith("java") ? "$" + prefix : prefix) : "net.sf.cglib.empty.Object") + "$$" + source.substring(source.lastIndexOf('.') + 1) + "ByProxool$$" + Integer.toHexString(key.hashCode());
+        String attempt = base;
+        int index = 2;
+        while (names.evaluate(attempt)) {
+            attempt = base + "_" + index++;
         }
+
+        return attempt;
     };
 
     /**
@@ -200,8 +184,8 @@ class ProxyFactory {
             }
             interfaceArray = (Class[]) interfaces.toArray(new Class[interfaces.size()]);
             if (LOG.isDebugEnabled()) {
-                for (int i = 0; i < interfaceArray.length; i++) {
-                    Class aClass = interfaceArray[i];
+                for (Class aClass : interfaceArray)
+                {
                     LOG.debug("Implementing " + aClass);
                 }
             }
@@ -239,17 +223,19 @@ class ProxyFactory {
             }
 */
             Class[] interfaceArray = clazz.getInterfaces();
-            for (int i = 0; i < interfaceArray.length; i++) {
+            for (Class aClass : interfaceArray)
+            {
 /*
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Adding " + interfaceArray[i]);
                 }
 */
-                traverseInterfacesRecursively(interfaces, interfaceArray[i]);
+                traverseInterfacesRecursively(interfaces, aClass);
                 // We're only interested in public interfaces. In fact, including
                 // non-public interfaces will give IllegalAccessExceptions.
-                if (Modifier.isPublic(interfaceArray[i].getModifiers())) {
-                    interfaces.add(interfaceArray[i]);
+                if (Modifier.isPublic(aClass.getModifiers()))
+                {
+                    interfaces.add(aClass);
                 }
             }
             Class superClazz = clazz.getSuperclass();

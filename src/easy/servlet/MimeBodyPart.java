@@ -1,14 +1,5 @@
 package easy.servlet;
 
-/**
- * <p><i>Copyright: 9esoft.com (c) 2005-2006<br>
- * Company: ��������Ƽ���չ���޹�˾</i></p>
- *
- * TODO MimeBodyPart class˵��
- *
- * @version 1.0 (<i>2006-5-11 Neo</i>)
- */
-
 import java.io.*;
 
 public class MimeBodyPart

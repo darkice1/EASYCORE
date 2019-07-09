@@ -35,16 +35,19 @@ public class CompositeConfigurationListener extends AbstractListenerContainer im
                                    Properties changedInfo) 
     {
         Object[] listeners = getListeners();
-            
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ConfigurationListenerIF configurationListener = (ConfigurationListenerIF) listeners[i];
-                configurationListener.definitionUpdated(connectionPoolDefinition, (Properties) completeInfo.clone(), (Properties) changedInfo.clone());
-            } 
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ConfigurationListenerIF configurationListener = (ConfigurationListenerIF) listener;
+				configurationListener.definitionUpdated(connectionPoolDefinition, (Properties) completeInfo.clone(), (Properties) changedInfo.clone());
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching event", re);
+			}
+		}
     }
 }
 

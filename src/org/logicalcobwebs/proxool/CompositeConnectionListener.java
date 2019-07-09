@@ -34,20 +34,24 @@ public class CompositeConnectionListener extends AbstractListenerContainer imple
     public void onBirth(Connection connection) throws SQLException 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ConnectionListenerIF connectionListener = (ConnectionListenerIF) listeners[i];
-                connectionListener.onBirth(connection);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching onBirth event", re);
-            }
-            catch(SQLException se) {
-                LOG.warn("SQLException received from listener "+listeners[i]+" when dispatching onBirth event - event dispatching cancelled");
-                throw se;
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ConnectionListenerIF connectionListener = (ConnectionListenerIF) listener;
+				connectionListener.onBirth(connection);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching onBirth event", re);
+			}
+			catch (SQLException se)
+			{
+				LOG.warn("SQLException received from listener " + listener + " when dispatching onBirth event - event dispatching cancelled");
+				throw se;
+			}
+		}
     }
 
     /**
@@ -56,20 +60,24 @@ public class CompositeConnectionListener extends AbstractListenerContainer imple
     public void onDeath(Connection connection, int reasonCode) throws SQLException
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ConnectionListenerIF connectionListener = (ConnectionListenerIF) listeners[i];
-                connectionListener.onDeath(connection, reasonCode);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching onDeath event", re);
-            }
-            catch(SQLException se) {
-                LOG.warn("SQLException received from listener "+listeners[i]+" when dispatching onDeath event - event dispatching cancelled");
-                throw se;
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ConnectionListenerIF connectionListener = (ConnectionListenerIF) listener;
+				connectionListener.onDeath(connection, reasonCode);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching onDeath event", re);
+			}
+			catch (SQLException se)
+			{
+				LOG.warn("SQLException received from listener " + listener + " when dispatching onDeath event - event dispatching cancelled");
+				throw se;
+			}
+		}
     }
 
     /**
@@ -78,16 +86,19 @@ public class CompositeConnectionListener extends AbstractListenerContainer imple
     public void onExecute(String command, long elapsedTime) 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ConnectionListenerIF connectionListener = (ConnectionListenerIF) listeners[i];
-                connectionListener.onExecute(command, elapsedTime);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching onExecute event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ConnectionListenerIF connectionListener = (ConnectionListenerIF) listener;
+				connectionListener.onExecute(command, elapsedTime);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching onExecute event", re);
+			}
+		}
     }
 
     /**
@@ -96,16 +107,19 @@ public class CompositeConnectionListener extends AbstractListenerContainer imple
     public void onFail(String command, Exception exception) 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                ConnectionListenerIF connectionListener = (ConnectionListenerIF) listeners[i];
-                connectionListener.onFail(command, exception);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching onFail event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				ConnectionListenerIF connectionListener = (ConnectionListenerIF) listener;
+				connectionListener.onFail(command, exception);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching onFail event", re);
+			}
+		}
     }
 }
 

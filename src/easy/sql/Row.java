@@ -302,7 +302,7 @@ public class Row implements Comparable<Row>,Serializable
 						break;
 					}
 				}
-				if (canadd == false)
+				if (!canadd)
 				{
 					continue;
 				}

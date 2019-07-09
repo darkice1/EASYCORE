@@ -338,9 +338,9 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
 	byte[] nameBytes = getUTF8Bytes(e.name);
 	writeShort(nameBytes.length);
 	writeShort(e.extra != null ? e.extra.length : 0);
-	writeBytes(nameBytes, 0, nameBytes.length);
+	writeBytes(nameBytes, nameBytes.length);
 	if (e.extra != null) {
-	    writeBytes(e.extra, 0, e.extra.length);
+	    writeBytes(e.extra, e.extra.length);
 	}
 	locoff = written;
     }
@@ -384,12 +384,12 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
 	writeShort(0);		    // internal file attributes (unused)
 	writeInt(0);		    // external file attributes (unused)
 	writeInt(e.offset);	    // relative offset of local header
-	writeBytes(nameBytes, 0, nameBytes.length);
+	writeBytes(nameBytes, nameBytes.length);
 	if (e.extra != null) {
-	    writeBytes(e.extra, 0, e.extra.length);
+	    writeBytes(e.extra, e.extra.length);
 	}
 	if (commentBytes != null) {
-	    writeBytes(commentBytes, 0, commentBytes.length);
+	    writeBytes(commentBytes, commentBytes.length);
 	}
     }
 
@@ -407,7 +407,7 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
 	if (comment != null) {	    // zip file comment
 	    byte[] b = getUTF8Bytes(comment);
 	    writeShort(b.length);
-	    writeBytes(b, 0, b.length);
+	    writeBytes(b, b.length);
 	} else {
 	    writeShort(0);
 	}
@@ -438,8 +438,8 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
     /*
      * Writes an array of bytes to the output stream.
      */
-    private void writeBytes(byte[] b, int off, int len) throws IOException {
-	super.out.write(b, off, len);
+    private void writeBytes(byte[] b, int len) throws IOException {
+	super.out.write(b, 0, len);
 	written += len;
     }
 
@@ -470,32 +470,42 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
 	int len = c.length;
 	// Count the number of encoded bytes...
 	int count = 0;
-	for (int i = 0; i < len; i++) {
-	    int ch = c[i];
-	    if (ch <= 0x7f) {
-		count++;
-	    } else if (ch <= 0x7ff) {
-		count += 2;
-	    } else {
-		count += 3;
-	    }
-	}
+		for (int ch : c)
+		{
+			if (ch <= 0x7f)
+			{
+				count++;
+			}
+			else if (ch <= 0x7ff)
+			{
+				count += 2;
+			}
+			else
+			{
+				count += 3;
+			}
+		}
 	// Now return the encoded bytes...
 	byte[] b = new byte[count];
 	int off = 0;
-	for (int i = 0; i < len; i++) {
-	    int ch = c[i];
-	    if (ch <= 0x7f) {
-		b[off++] = (byte)ch;
-	    } else if (ch <= 0x7ff) {
-		b[off++] = (byte)((ch >> 6) | 0xc0);
-		b[off++] = (byte)((ch & 0x3f) | 0x80);
-	    } else {
-		b[off++] = (byte)((ch >> 12) | 0xe0);
-		b[off++] = (byte)(((ch >> 6) & 0x3f) | 0x80);
-		b[off++] = (byte)((ch & 0x3f) | 0x80);
-	    }
-	}
+		for (int ch : c)
+		{
+			if (ch <= 0x7f)
+			{
+				b[off++] = (byte) ch;
+			}
+			else if (ch <= 0x7ff)
+			{
+				b[off++] = (byte) ((ch >> 6) | 0xc0);
+				b[off++] = (byte) ((ch & 0x3f) | 0x80);
+			}
+			else
+			{
+				b[off++] = (byte) ((ch >> 12) | 0xe0);
+				b[off++] = (byte) (((ch >> 6) & 0x3f) | 0x80);
+				b[off++] = (byte) ((ch & 0x3f) | 0x80);
+			}
+		}
 	return b;
     }
 }

@@ -28,7 +28,7 @@ import java.util.Properties;
 
 public class SendTextMail
 {
-	protected final List <String> list = new ArrayList<String>();
+	protected final List <String> list = new ArrayList<>();
 	
 	protected String from;
 
@@ -72,7 +72,7 @@ public class SendTextMail
 			props.put(SMTPHOST, host);
 		}
 
-		if (user != null && user.equals("") == false && password != null && password.equals("") == false)
+		if (user != null && !user.equals("") && password != null && !password.equals(""))
 		{
 			//验证
 			props.put(AUTH, TRUE);

@@ -1,14 +1,5 @@
 package easy.servlet;
 
-/**
- * <p><i>Copyright: 9esoft.com (c) 2005-2006<br>
- * Company: ��������Ƽ���չ���޹�˾</i></p>
- *
- * �ļ��ϴ�
- *
- * @version 1.0 (<i>2006-5-11 Neo</i>)
- */
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -133,7 +124,7 @@ public class FileUpload
 				{
 					//�����ļ���
 					state = 1;
-					if (s.indexOf("filename=") == -1)
+					if (!s.contains("filename="))
 					{
 						name = s.substring(s.indexOf("name=") + "name=".length(), s.length() - 2);
 					}
@@ -152,9 +143,9 @@ public class FileUpload
 				            // ��Linux/Unix��Mac�����ֻ�����ļ�����
 							String userAgent = request.getHeader("User-Agent");
 							String userSeparator = "/";
-							if (userAgent.indexOf("Windows") != -1)
+							if (userAgent.contains("Windows"))
 								userSeparator = "\\";
-							if (userAgent.indexOf("Linux") != -1)
+							if (userAgent.contains("Linux"))
 								userSeparator = "/";
 							fileName = fileName.substring(fileName.lastIndexOf(userSeparator) + 1, fileName.length() - 1);
 							if (fileName.startsWith("\""))

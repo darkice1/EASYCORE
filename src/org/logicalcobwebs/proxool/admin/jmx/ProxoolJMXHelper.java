@@ -45,24 +45,29 @@ public class ProxoolJMXHelper {
                 ProxoolFacade.getConnectionPoolDefinition(alias);
         String[] agentIds = getAgentIds(poolPropeties);
         ArrayList servers = null;
-        for (int i = 0; i < agentIds.length; i++) {
-            servers = MBeanServerFactory.findMBeanServer(agentIds[i]);
-            if (servers == null || servers.size() < 1) {
-                LOG.error("Could not register pool " + connectionPoolDefinition.getAlias() + " for JMX instrumentation"
-                        + " because lookup of MBeanServer using agent id " + agentIds[i] + " failed.");
-            } else {
-                MBeanServer mBeanServer = (MBeanServer) servers.get(0);
-                ConnectionPoolMBean poolMBean = new ConnectionPoolMBean(alias, poolPropeties);
+		for (String agentId : agentIds)
+		{
+			servers = MBeanServerFactory.findMBeanServer(agentId);
+			if (servers == null || servers.size() < 1)
+			{
+				LOG.error("Could not register pool " + connectionPoolDefinition.getAlias() + " for JMX instrumentation" + " because lookup of MBeanServer using agent id " + agentId + " failed.");
+			}
+			else
+			{
+				MBeanServer mBeanServer = (MBeanServer) servers.get(0);
+				ConnectionPoolMBean poolMBean = new ConnectionPoolMBean(alias, poolPropeties);
 
-                try {
-                    mBeanServer.registerMBean(poolMBean, getObjectName(connectionPoolDefinition.getAlias()));
-                    LOG.info("Registered JMX MBean for pool " + connectionPoolDefinition.getAlias() + " in agent " + agentIds[i]);
-                } catch (Exception e) {
-                    LOG.error("Registration of JMX MBean for pool " + connectionPoolDefinition.getAlias()
-                            + "in agent " + agentIds[i] + " failed.", e);
-                }
-            }
-        }
+				try
+				{
+					mBeanServer.registerMBean(poolMBean, getObjectName(connectionPoolDefinition.getAlias()));
+					LOG.info("Registered JMX MBean for pool " + connectionPoolDefinition.getAlias() + " in agent " + agentId);
+				}
+				catch (Exception e)
+				{
+					LOG.error("Registration of JMX MBean for pool " + connectionPoolDefinition.getAlias() + "in agent " + agentId + " failed.", e);
+				}
+			}
+		}
     }
 
     /**
@@ -73,22 +78,27 @@ public class ProxoolJMXHelper {
     public static void unregisterPool(String alias, Properties poolPropeties) {
         String[] agentIds = getAgentIds(poolPropeties);
         ArrayList servers = null;
-        for (int i = 0; i < agentIds.length; i++) {
-            servers = MBeanServerFactory.findMBeanServer(agentIds[i]);
-            if (servers == null || servers.size() < 1) {
-                LOG.error("Could not unregister MBean for pool " + alias
-                        + " because lookup of MBeanServer using agent id " + agentIds[i] + " failed.");
-            } else {
-                MBeanServer mBeanServer = (MBeanServer) servers.get(0);
-                try {
-                    mBeanServer.unregisterMBean(getObjectName(alias));
-                    LOG.info("Unregistered JMX MBean for pool " + alias + " in agent " + agentIds[i]);
-                } catch (Exception e) {
-                    LOG.error("Unregistration of JMX MBean for pool " + alias + "in agent "
-                            + agentIds[i] + " failed.", e);
-                }
-            }
-        }
+		for (String agentId : agentIds)
+		{
+			servers = MBeanServerFactory.findMBeanServer(agentId);
+			if (servers == null || servers.size() < 1)
+			{
+				LOG.error("Could not unregister MBean for pool " + alias + " because lookup of MBeanServer using agent id " + agentId + " failed.");
+			}
+			else
+			{
+				MBeanServer mBeanServer = (MBeanServer) servers.get(0);
+				try
+				{
+					mBeanServer.unregisterMBean(getObjectName(alias));
+					LOG.info("Unregistered JMX MBean for pool " + alias + " in agent " + agentId);
+				}
+				catch (Exception e)
+				{
+					LOG.error("Unregistration of JMX MBean for pool " + alias + "in agent " + agentId + " failed.", e);
+				}
+			}
+		}
     }
 
     /**
@@ -126,10 +136,10 @@ public class ProxoolJMXHelper {
      * @return the converted attribute name.
      */
     public static String getValidIdentifier(String propertyName) {
-        if (propertyName.indexOf("-") == -1) {
+        if (!propertyName.contains("-")) {
             return propertyName;
         } else {
-            StringBuffer buffer = new StringBuffer (propertyName);
+            StringBuilder buffer = new StringBuilder(propertyName);
             int index = -1;
             while ((index = buffer.toString().indexOf("-")) > -1) {
                 buffer.deleteCharAt(index);

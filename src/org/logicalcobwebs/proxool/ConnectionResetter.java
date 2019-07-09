@@ -10,7 +10,10 @@ import org.apache.commons.logging.Log;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Responsible for resetting a Connection to its default state when it is
@@ -86,25 +89,33 @@ public class ConnectionResetter {
             Method mutator = null;
 
             Method[] methods = Connection.class.getMethods();
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-                if (method.getName().equals(accessorName)) {
-                    if (accessor == null) {
-                        accessor = method;
-                    } else {
-                        log.info("Skipping ambiguous reset method " + accessorName);
-                        return;
-                    }
-                }
-                if (method.getName().equals(mutatorName)) {
-                    if (mutator == null) {
-                        mutator = method;
-                    } else {
-                        log.info("Skipping ambiguous reset method " + mutatorName);
-                        return;
-                    }
-                }
-            }
+			for (Method method : methods)
+			{
+				if (method.getName().equals(accessorName))
+				{
+					if (accessor == null)
+					{
+						accessor = method;
+					}
+					else
+					{
+						log.info("Skipping ambiguous reset method " + accessorName);
+						return;
+					}
+				}
+				if (method.getName().equals(mutatorName))
+				{
+					if (mutator == null)
+					{
+						mutator = method;
+					}
+					else
+					{
+						log.info("Skipping ambiguous reset method " + mutatorName);
+						return;
+					}
+				}
+			}
 
             if (accessor == null) {
                 log.debug("Ignoring attempt to map reset method " + accessorName + " (probably because it isn't implemented in this JDK)");
@@ -147,23 +158,28 @@ public class ConnectionResetter {
                 if (!initialised) {
 
                     Set accessorsToRemove = new HashSet();
-                    Iterator i = accessorMutatorMap.keySet().iterator();
-                    while (i.hasNext()) {
-                        Method accessor = (Method) i.next();
+                    for (Object item : accessorMutatorMap.keySet())
+                    {
+                        Method accessor = (Method) item;
                         Method mutator = (Method) accessorMutatorMap.get(accessor);
                         Object value = null;
-                        try {
+                        try
+                        {
                             value = accessor.invoke(connection, null);
                             // It's perfectly ok for the default value to be null, we just
                             // don't want to add it to the map.
-                            if (value != null) {
+                            if (value != null)
+                            {
                                 defaultValues.put(mutator, value);
                             }
-                            if (log.isDebugEnabled()) {
+                            if (log.isDebugEnabled())
+                            {
                                 log.debug("Remembering default value: " + accessor.getName() + "() = " + value);
                             }
 
-                        } catch (Throwable t) {
+                        }
+                        catch (Throwable t)
+                        {
                             log.debug(driverName + " does not support " + accessor.getName() + ". Proxool doesn't mind.");
                             // We will remove this later (to avoid ConcurrentModifcation)
                             accessorsToRemove.add(accessor);
@@ -171,10 +187,13 @@ public class ConnectionResetter {
 
                         // Just test that the mutator works too. Otherwise it's going to fall over
                         // everytime we close a connection
-                        try {
+                        try
+                        {
                             Object[] args = {value};
                             mutator.invoke(connection, args);
-                        } catch (Throwable t) {
+                        }
+                        catch (Throwable t)
+                        {
                             log.debug(driverName + " does not support " + mutator.getName() + ". Proxool doesn't mind.");
                             // We will remove this later (to avoid ConcurrentModifcation)
                             accessorsToRemove.add(accessor);
@@ -183,9 +202,9 @@ public class ConnectionResetter {
                     }
 
                     // Remove all the reset methods that we had trouble configuring
-                    Iterator j = accessorsToRemove.iterator();
-                    while (j.hasNext()) {
-                        Method accessor = (Method) j.next();
+                    for (Object o : accessorsToRemove)
+                    {
+                        Method accessor = (Method) o;
                         Method mutator = (Method) accessorMutatorMap.get(accessor);
                         accessorMutatorMap.remove(accessor);
                         defaultValues.remove(mutator);
@@ -250,26 +269,36 @@ public class ConnectionResetter {
         // or something). We want to know about transactions that are pending.
         // It doesn't seem like a very good idea to close a connection with
         // pending transactions.
-        Iterator i = accessorMutatorMap.keySet().iterator();
-        while (i.hasNext()) {
-            Method accessor = (Method) i.next();
+        for (Object o : accessorMutatorMap.keySet())
+        {
+            Method accessor = (Method) o;
             Method mutator = (Method) accessorMutatorMap.get(accessor);
             Object[] args = {defaultValues.get(mutator)};
-            try {
+            try
+            {
                 Object currentValue = accessor.invoke(connection, null);
-                if (currentValue == null && args[0] == null) {
+                if (currentValue == null && args[0] == null)
+                {
                     // Nothing to do then
-                } else if (currentValue.equals(args[0])) {
+                }
+                else if (currentValue.equals(args[0]))
+                {
                     // Nothing to do here either
-                } else {
+                }
+                else
+                {
                     mutator.invoke(connection, args);
-                    if (log.isDebugEnabled()) {
+                    if (log.isDebugEnabled())
+                    {
                         log.debug(id + " - Reset: " + mutator.getName() + "(" + args[0] + ") from " + currentValue);
                     }
                 }
-            } catch (Throwable t) {
+            }
+            catch (Throwable t)
+            {
                 errorsEncountered = true;
-                if (log.isDebugEnabled()) {
+                if (log.isDebugEnabled())
+                {
                     log.debug(id + " - Problem resetting: " + mutator.getName() + "(" + args[0] + ").", t);
                 }
             }

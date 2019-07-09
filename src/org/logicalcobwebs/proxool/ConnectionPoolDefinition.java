@@ -252,7 +252,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
     private void logChange(boolean proxoolProperty, String key, String value) {
         if (poolLog.isDebugEnabled()) {
             String displayValue = value;
-            if (key.toLowerCase().indexOf("password") > -1) {
+            if (key.toLowerCase().contains("password")) {
                 displayValue = "********";
             }
             poolLog.debug((proxoolProperty ? "Recognised proxool property: " : "Delegating property to driver: ") + key + "=" + displayValue);
@@ -269,126 +269,178 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
         changed = changed || setInjectableProperty(key, value, pretend);
         changed = changed || setJndiProperty(key, value, pretend);
 
-        if (key.equals(ProxoolConstants.USER_PROPERTY)) {
-            proxoolProperty = false;
-            if (isChanged(getUser(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setUser(value);
+        switch (key)
+        {
+            case ProxoolConstants.USER_PROPERTY:
+                proxoolProperty = false;
+                if (isChanged(getUser(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setUser(value);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.PASSWORD_PROPERTY)) {
-            proxoolProperty = false;
-            if (isChanged(getPassword(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setPassword(value);
+                break;
+            case ProxoolConstants.PASSWORD_PROPERTY:
+                proxoolProperty = false;
+                if (isChanged(getPassword(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setPassword(value);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.DELEGATE_DRIVER_PROPERTY)) {
-            if (isChanged(getDriver(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setDriver(value);
+                break;
+            case ProxoolConstants.DELEGATE_DRIVER_PROPERTY:
+                if (isChanged(getDriver(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setDriver(value);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.DELEGATE_URL_PROPERTY)) {
-            if (isChanged(getUrl(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setUrl(value);
+                break;
+            case ProxoolConstants.DELEGATE_URL_PROPERTY:
+                if (isChanged(getUrl(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setUrl(value);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.MAXIMUM_CONNECTION_COUNT_PROPERTY)) {
-            if (getMaximumConnectionCount() != getInt(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setMaximumConnectionCount(getInt(key, value));
+                break;
+            case ProxoolConstants.MAXIMUM_CONNECTION_COUNT_PROPERTY:
+                if (getMaximumConnectionCount() != getInt(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setMaximumConnectionCount(getInt(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME_PROPERTY)) {
-            if (getMaximumConnectionLifetime() != getLong(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setMaximumConnectionLifetime(getLong(key, value));
+                break;
+            case ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME_PROPERTY:
+                if (getMaximumConnectionLifetime() != getLong(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setMaximumConnectionLifetime(getLong(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.MAXIMUM_NEW_CONNECTIONS_PROPERTY)) {
-            poolLog.warn("Use of " + ProxoolConstants.MAXIMUM_NEW_CONNECTIONS_PROPERTY + " is deprecated. Use more descriptive " + ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY + " instead.");
-            if (getSimultaneousBuildThrottle() != getInt(key, value)) {
-                changed = true;
-                if (!pretend) {
+                break;
+            case ProxoolConstants.MAXIMUM_NEW_CONNECTIONS_PROPERTY:
+                poolLog.warn("Use of " + ProxoolConstants.MAXIMUM_NEW_CONNECTIONS_PROPERTY + " is deprecated. Use more descriptive " + ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY + " instead.");
+                if (getSimultaneousBuildThrottle() != getInt(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setSimultaneousBuildThrottle(getInt(key, value));
+                    }
+                }
+                break;
+            case ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY:
+                if (getSimultaneousBuildThrottle() != getInt(key, value))
+                {
+                    changed = true;
                     setSimultaneousBuildThrottle(getInt(key, value));
                 }
-            }
-        } else if (key.equals(ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY)) {
-            if (getSimultaneousBuildThrottle() != getInt(key, value)) {
-                changed = true;
-                setSimultaneousBuildThrottle(getInt(key, value));
-            }
-        } else if (key.equals(ProxoolConstants.MINIMUM_CONNECTION_COUNT_PROPERTY)) {
-            if (getMinimumConnectionCount() != getInt(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setMinimumConnectionCount(getInt(key, value));
+                break;
+            case ProxoolConstants.MINIMUM_CONNECTION_COUNT_PROPERTY:
+                if (getMinimumConnectionCount() != getInt(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setMinimumConnectionCount(getInt(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.PROTOTYPE_COUNT_PROPERTY)) {
-            if (getPrototypeCount() != getInt(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setPrototypeCount(getInt(key, value));
+                break;
+            case ProxoolConstants.PROTOTYPE_COUNT_PROPERTY:
+                if (getPrototypeCount() != getInt(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setPrototypeCount(getInt(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.RECENTLY_STARTED_THRESHOLD_PROPERTY)) {
-            if (getRecentlyStartedThreshold() != getLong(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setRecentlyStartedThreshold(getLong(key, value));
+                break;
+            case ProxoolConstants.RECENTLY_STARTED_THRESHOLD_PROPERTY:
+                if (getRecentlyStartedThreshold() != getLong(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setRecentlyStartedThreshold(getLong(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY)) {
-            if (getOverloadWithoutRefusalLifetime() != getLong(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setOverloadWithoutRefusalLifetime(getLong(key, value));
+                break;
+            case ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY:
+                if (getOverloadWithoutRefusalLifetime() != getLong(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setOverloadWithoutRefusalLifetime(getLong(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.MAXIMUM_ACTIVE_TIME_PROPERTY)) {
-            if (getMaximumActiveTime() != getLong(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setMaximumActiveTime(getLong(key, value));
+                break;
+            case ProxoolConstants.MAXIMUM_ACTIVE_TIME_PROPERTY:
+                if (getMaximumActiveTime() != getLong(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setMaximumActiveTime(getLong(key, value));
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY)) {
-            if (isChanged(fatalSqlExceptionsAsString, value)) {
-                changed = true;
-                if (!pretend) {
-                    setFatalSqlExceptionsAsString(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.FATAL_SQL_EXCEPTION_PROPERTY:
+                if (isChanged(fatalSqlExceptionsAsString, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setFatalSqlExceptionsAsString(value.length() > 0 ? value : null);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS_PROPERTY)) {
-            if (isChanged(fatalSqlExceptionWrapper, value)) {
-                changed = true;
-                if (!pretend) {
-                    setFatalSqlExceptionWrapper(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS_PROPERTY:
+                if (isChanged(fatalSqlExceptionWrapper, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setFatalSqlExceptionWrapper(value.length() > 0 ? value : null);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.STATISTICS_PROPERTY)) {
-            if (isChanged(getStatistics(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setStatistics(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.STATISTICS_PROPERTY:
+                if (isChanged(getStatistics(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setStatistics(value.length() > 0 ? value : null);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.STATISTICS_LOG_LEVEL_PROPERTY)) {
-            if (isChanged(getStatisticsLogLevel(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setStatisticsLogLevel(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.STATISTICS_LOG_LEVEL_PROPERTY:
+                if (isChanged(getStatisticsLogLevel(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setStatisticsLogLevel(value.length() > 0 ? value : null);
+                    }
                 }
-            }
+                break;
         }
 
         if (!key.startsWith(ProxoolConstants.PROPERTY_PREFIX)) {
@@ -414,39 +466,59 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
      */
     private boolean setLoggingProperty(String key, String value, boolean pretend) {
         boolean changed = false;
-        if (key.equals(ProxoolConstants.DEBUG_LEVEL_PROPERTY)) {
-            if (value != null && value.equals("1")) {
-                poolLog.warn("Use of " + ProxoolConstants.DEBUG_LEVEL_PROPERTY + "=1 is deprecated. Use " + ProxoolConstants.VERBOSE_PROPERTY + "=true instead.");
-                if (!isVerbose()) {
-                    changed = true;
-                    if (!pretend) {
-                        setVerbose(true);
+        switch (key)
+        {
+            case ProxoolConstants.DEBUG_LEVEL_PROPERTY:
+                if (value != null && value.equals("1"))
+                {
+                    poolLog.warn("Use of " + ProxoolConstants.DEBUG_LEVEL_PROPERTY + "=1 is deprecated. Use " + ProxoolConstants.VERBOSE_PROPERTY + "=true instead.");
+                    if (!isVerbose())
+                    {
+                        changed = true;
+                        if (!pretend)
+                        {
+                            setVerbose(true);
+                        }
                     }
                 }
-            } else {
-                poolLog.warn("Use of " + ProxoolConstants.DEBUG_LEVEL_PROPERTY + "=0 is deprecated. Use " + ProxoolConstants.VERBOSE_PROPERTY + "=false instead.");
-                if (isVerbose()) {
-                    changed = true;
-                    if (!pretend) {
-                        setVerbose(false);
+                else
+                {
+                    poolLog.warn("Use of " + ProxoolConstants.DEBUG_LEVEL_PROPERTY + "=0 is deprecated. Use " + ProxoolConstants.VERBOSE_PROPERTY + "=false instead.");
+                    if (isVerbose())
+                    {
+                        changed = true;
+                        if (!pretend)
+                        {
+                            setVerbose(false);
+                        }
                     }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.VERBOSE_PROPERTY)) {
-            final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
-            if (isVerbose() != valueAsBoolean) {
-                changed = true;
-                if (!pretend) {
-                    setVerbose(valueAsBoolean);
+                break;
+            case ProxoolConstants.VERBOSE_PROPERTY:
+            {
+                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                if (isVerbose() != valueAsBoolean)
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setVerbose(valueAsBoolean);
+                    }
                 }
+                break;
             }
-        } else if (key.equals(ProxoolConstants.TRACE_PROPERTY)) {
-            final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
-            if (isTrace() != valueAsBoolean) {
-                changed = true;
-                if (!pretend) {
-                    setTrace(valueAsBoolean);
+            case ProxoolConstants.TRACE_PROPERTY:
+            {
+                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                if (isTrace() != valueAsBoolean)
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setTrace(valueAsBoolean);
+                    }
                 }
+                break;
             }
         }
         return changed;
@@ -458,34 +530,48 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
      */
     private boolean setInjectableProperty(String key, String value, boolean pretend) {
         boolean changed = false;
-        if (key.equals(ProxoolConstants.INJECTABLE_CONNECTION_INTERFACE_NAME_PROPERTY)) {
-            if (isChanged(getInjectableConnectionInterfaceName(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setInjectableConnectionInterfaceName(value.length() > 0 ? value : null);
+        switch (key)
+        {
+            case ProxoolConstants.INJECTABLE_CONNECTION_INTERFACE_NAME_PROPERTY:
+                if (isChanged(getInjectableConnectionInterfaceName(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setInjectableConnectionInterfaceName(value.length() > 0 ? value : null);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.INJECTABLE_STATEMENT_INTERFACE_NAME_PROPERTY)) {
-            if (isChanged(getInjectableStatementInterfaceName(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setInjectableStatementInterfaceName(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.INJECTABLE_STATEMENT_INTERFACE_NAME_PROPERTY:
+                if (isChanged(getInjectableStatementInterfaceName(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setInjectableStatementInterfaceName(value.length() > 0 ? value : null);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME_PROPERTY)) {
-            if (isChanged(getInjectablePreparedStatementInterfaceName(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setInjectablePreparedStatementInterfaceName(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.INJECTABLE_PREPARED_STATEMENT_INTERFACE_NAME_PROPERTY:
+                if (isChanged(getInjectablePreparedStatementInterfaceName(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setInjectablePreparedStatementInterfaceName(value.length() > 0 ? value : null);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME_PROPERTY)) {
-            if (isChanged(getInjectableCallableStatememtInterfaceName(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setInjectableCallableStatementInterfaceName(value.length() > 0 ? value : null);
+                break;
+            case ProxoolConstants.INJECTABLE_CALLABLE_STATEMENT_INTERFACE_NAME_PROPERTY:
+                if (isChanged(getInjectableCallableStatememtInterfaceName(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setInjectableCallableStatementInterfaceName(value.length() > 0 ? value : null);
+                    }
                 }
-            }
+                break;
         }
         return changed;
     }
@@ -496,35 +582,53 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
      */
     private boolean setHouseKeeperProperty(String key, String value, boolean pretend) throws ProxoolException {
         boolean changed = false;
-        if (key.equals(ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME_PROPERTY)) {
-            if (getHouseKeepingSleepTime() != getLong(key, value)) {
-                changed = true;
-                if (!pretend) {
-                    setHouseKeepingSleepTime(getLong(key, value));
+        switch (key)
+        {
+            case ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME_PROPERTY:
+                if (getHouseKeepingSleepTime() != getLong(key, value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setHouseKeepingSleepTime(getLong(key, value));
+                    }
                 }
+                break;
+            case ProxoolConstants.HOUSE_KEEPING_TEST_SQL_PROPERTY:
+                if (isChanged(getHouseKeepingTestSql(), value))
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setHouseKeepingTestSql(value.length() > 0 ? value : null);
+                    }
+                }
+                break;
+            case ProxoolConstants.TEST_BEFORE_USE_PROPERTY:
+            {
+                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                if (isTestBeforeUse() != valueAsBoolean)
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setTestBeforeUse(valueAsBoolean);
+                    }
+                }
+                break;
             }
-        } else if (key.equals(ProxoolConstants.HOUSE_KEEPING_TEST_SQL_PROPERTY)) {
-            if (isChanged(getHouseKeepingTestSql(), value)) {
-                changed = true;
-                if (!pretend) {
-                    setHouseKeepingTestSql(value.length() > 0 ? value : null);
+            case ProxoolConstants.TEST_AFTER_USE_PROPERTY:
+            {
+                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                if (isTestAfterUse() != valueAsBoolean)
+                {
+                    changed = true;
+                    if (!pretend)
+                    {
+                        setTestAfterUse(valueAsBoolean);
+                    }
                 }
-            }
-        } else if (key.equals(ProxoolConstants.TEST_BEFORE_USE_PROPERTY)) {
-            final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
-            if (isTestBeforeUse() != valueAsBoolean) {
-                changed = true;
-                if (!pretend) {
-                    setTestBeforeUse(valueAsBoolean);
-                }
-            }
-        } else if (key.equals(ProxoolConstants.TEST_AFTER_USE_PROPERTY)) {
-            final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
-            if (isTestAfterUse() != valueAsBoolean) {
-                changed = true;
-                if (!pretend) {
-                    setTestAfterUse(valueAsBoolean);
-                }
+                break;
             }
         }
         return changed;

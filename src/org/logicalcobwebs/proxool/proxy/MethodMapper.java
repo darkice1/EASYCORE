@@ -52,29 +52,31 @@ public class MethodMapper {
         if (concreteMethod == null) {
             // Look it up
             Method[] candidateMethods = concreteClass.getMethods();
-            for (int i = 0; i < candidateMethods.length; i++) {
-                Method candidateMethod = candidateMethods[i];
-                // First pass: does the name, parameter count and return type match?
-                if (candidateMethod.getName().equals(injectableMethod.getName()) &&
-                        candidateMethod.getParameterTypes().length == injectableMethod.getParameterTypes().length &&
-                        candidateMethod.getReturnType().equals(injectableMethod.getReturnType())) {
-                    // Let's check each parameter type
-                    boolean matches = true;
-                    Class[] candidateTypes = candidateMethod.getParameterTypes();
-                    Class[] injectableTypes = injectableMethod.getParameterTypes();
-                    for (int j = 0; j < candidateTypes.length; j++) {
-                        if (!candidateTypes[j].equals(injectableTypes[j])) {
-                            matches = false;
-                            break;
-                        }
+			for (Method candidateMethod : candidateMethods)
+			{
+				// First pass: does the name, parameter count and return type match?
+				if (candidateMethod.getName().equals(injectableMethod.getName()) && candidateMethod.getParameterTypes().length == injectableMethod.getParameterTypes().length && candidateMethod.getReturnType().equals(injectableMethod.getReturnType()))
+				{
+					// Let's check each parameter type
+					boolean matches = true;
+					Class[] candidateTypes = candidateMethod.getParameterTypes();
+					Class[] injectableTypes = injectableMethod.getParameterTypes();
+					for (int j = 0; j < candidateTypes.length; j++)
+					{
+						if (!candidateTypes[j].equals(injectableTypes[j]))
+						{
+							matches = false;
+							break;
+						}
 
-                    }
-                    if (matches) {
-                        concreteMethod = candidateMethod;
-                        break;
-                    }
-                }
-            }
+					}
+					if (matches)
+					{
+						concreteMethod = candidateMethod;
+						break;
+					}
+				}
+			}
             // Success?
             if (concreteMethod == null) {
                 throw new ProxoolException("Couldn't match injectable method " + injectableMethod + " with any of those " +

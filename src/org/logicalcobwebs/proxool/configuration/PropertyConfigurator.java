@@ -129,24 +129,25 @@ public class PropertyConfigurator {
             }
         }
 
-        final Iterator tags = propertiesMap.keySet().iterator();
-        while (tags.hasNext()) {
-            proxoolProperties = (Properties) propertiesMap.get(tags.next());
+        for (Object o : propertiesMap.keySet())
+        {
+            proxoolProperties = (Properties) propertiesMap.get(o);
             // make sure that required propeties are defined
             // and build the url
             // Check that we have defined the minimum information
             final String driverClass = proxoolProperties.getProperty(ProxoolConstants.DRIVER_CLASS_PROPERTY);
             final String driverUrl = proxoolProperties.getProperty(ProxoolConstants.DRIVER_URL_PROPERTY);
-            if (driverClass == null || driverUrl == null) {
-                throw new ProxoolException("You must define the " + ProxoolConstants.DRIVER_CLASS_PROPERTY + " and the "
-                    + ProxoolConstants.DRIVER_URL_PROPERTY + ".");
+            if (driverClass == null || driverUrl == null)
+            {
+                throw new ProxoolException("You must define the " + ProxoolConstants.DRIVER_CLASS_PROPERTY + " and the " + ProxoolConstants.DRIVER_URL_PROPERTY + ".");
             }
             final String alias = proxoolProperties.getProperty(ProxoolConstants.ALIAS_PROPERTY);
 
             // Build the URL; optionally defining a name
-            StringBuffer url = new StringBuffer();
+            StringBuilder url = new StringBuilder();
             url.append("proxool");
-            if (alias != null) {
+            if (alias != null)
+            {
                 url.append(ProxoolConstants.ALIAS_DELIMITER);
                 url.append(alias);
                 proxoolProperties.remove(ProxoolConstants.ALIAS_PROPERTY);
@@ -157,7 +158,8 @@ public class PropertyConfigurator {
             url.append(ProxoolConstants.URL_DELIMITER);
             url.append(driverUrl);
             proxoolProperties.remove(ProxoolConstants.DRIVER_URL_PROPERTY);
-            if (LOG.isDebugEnabled()) {
+            if (LOG.isDebugEnabled())
+            {
                 LOG.debug("Created url: " + url);
             }
 

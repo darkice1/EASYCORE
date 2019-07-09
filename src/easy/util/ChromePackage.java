@@ -25,7 +25,7 @@ public class ChromePackage
 	{
 		JFile.copyDir(sourcepath, targetpath);
 
-		if (jslist != null && jslist.isEmpty() == false)
+		if (jslist != null && !jslist.isEmpty())
 		{
 			Files.walkFileTree(Paths.get(targetpath), new SimpleFileVisitor<Path>()
 			{

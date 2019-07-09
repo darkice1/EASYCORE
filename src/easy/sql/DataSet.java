@@ -630,7 +630,7 @@ public class DataSet implements Serializable
 
 				for (int i=0,len=sks.length; i<len; i++)
 				{
-					if (sr.getString(sks[i]).equals(r.getString(ks[i])) == false)
+					if (!sr.getString(sks[i]).equals(r.getString(ks[i])))
 					{
 						isok = false;
 						break;

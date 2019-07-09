@@ -167,7 +167,7 @@ public class SelectDataSet
 
 							String TimeTemp = "";
 
-							if (Ds.getString(SeletTemp[0]) == ""
+							if (Ds.getString(SeletTemp[0]).equals("")
 									|| Ds.getString(SeletTemp[0]) == null)
 							{
 								break;
@@ -383,7 +383,7 @@ public class SelectDataSet
 
 							String TimeTemp = "";
 
-							if (Ds.getString(SeletTemp[0]) == ""
+							if (Ds.getString(SeletTemp[0]).equals("")
 									|| Ds.getString(SeletTemp[0]) == null)
 							{
 								break;

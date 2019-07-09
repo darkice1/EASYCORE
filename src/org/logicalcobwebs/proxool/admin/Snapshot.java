@@ -176,11 +176,13 @@ class Snapshot implements SnapshotIF {
     public ConnectionInfoIF getConnectionInfo(long id) {
         ConnectionInfoIF connectionInfo = null;
         ConnectionInfoIF[] connectionInfos = getConnectionInfos();
-        for (int i = 0; i < connectionInfos.length; i++) {
-            if (connectionInfos[i].getId() == id) {
-                connectionInfo = connectionInfos[i];
-            }
-        }
+		for (ConnectionInfoIF info : connectionInfos)
+		{
+			if (info.getId() == id)
+			{
+				connectionInfo = info;
+			}
+		}
         return connectionInfo;
     }
 

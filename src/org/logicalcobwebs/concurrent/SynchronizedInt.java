@@ -219,7 +219,7 @@ public class SynchronizedInt extends SynchronizedVariable implements Comparable,
 
     public int compareTo(int other) {
         int val = get();
-        return (val < other) ? -1 : (val == other) ? 0 : 1;
+        return Integer.compare(val, other);
     }
 
     public int compareTo(SynchronizedInt other) {

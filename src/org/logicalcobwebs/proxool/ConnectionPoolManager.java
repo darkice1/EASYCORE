@@ -62,7 +62,7 @@ class ConnectionPoolManager {
      * @return a description of the wht the pool couldn't be found
      */
     protected String getKnownPools(String alias) {
-        StringBuffer message = new StringBuffer("Couldn't find a pool called '" + alias + "'. Known pools are: ");
+        StringBuilder message = new StringBuilder("Couldn't find a pool called '" + alias + "'. Known pools are: ");
         Iterator i = connectionPoolMap.keySet().iterator();
         while (i.hasNext()) {
             message.append((String) i.next());

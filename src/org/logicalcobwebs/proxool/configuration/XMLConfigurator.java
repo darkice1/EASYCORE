@@ -177,7 +177,7 @@ public class XMLConfigurator extends DefaultHandler {
             }
 
             // Build the URL; optinally defining a name
-            StringBuffer url = new StringBuffer();
+            StringBuilder url = new StringBuilder();
             url.append("proxool");
             if (poolName != null) {
                 url.append(ProxoolConstants.ALIAS_DELIMITER);
@@ -213,17 +213,24 @@ public class XMLConfigurator extends DefaultHandler {
     }
 
     private void setProxoolProperty(String localName, String value) {
-        if (localName.equals(ProxoolConstants.ALIAS)) {
-            poolName = value;
-        } else if (localName.equals(ProxoolConstants.DRIVER_CLASS)) {
-            driverClass = value;
-        } else if (localName.equals(ProxoolConstants.DRIVER_URL)) {
-            driverUrl = value;
-        } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Setting property '" + ProxoolConstants.PROPERTY_PREFIX + localName + "' to value '" + value + "'.");
-            }
-            properties.put(ProxoolConstants.PROPERTY_PREFIX + localName, value);
+        switch (localName)
+        {
+            case ProxoolConstants.ALIAS:
+                poolName = value;
+                break;
+            case ProxoolConstants.DRIVER_CLASS:
+                driverClass = value;
+                break;
+            case ProxoolConstants.DRIVER_URL:
+                driverUrl = value;
+                break;
+            default:
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("Setting property '" + ProxoolConstants.PROPERTY_PREFIX + localName + "' to value '" + value + "'.");
+                }
+                properties.put(ProxoolConstants.PROPERTY_PREFIX + localName, value);
+                break;
         }
     }
 
@@ -235,7 +242,7 @@ public class XMLConfigurator extends DefaultHandler {
                 + "Name: '" + name + "' Value: '" + value + "'.");
         }
         if (LOG.isDebugEnabled()) {
-            if (name.toLowerCase().indexOf("password") > -1) {
+            if (name.toLowerCase().contains("password")) {
                 LOG.debug("Adding driver property: " + name + "=" + "*******");
             } else {
                 LOG.debug("Adding driver property: " + name + "=" + value);

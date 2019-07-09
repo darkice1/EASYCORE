@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.sql;
 
 import java.io.Serializable;

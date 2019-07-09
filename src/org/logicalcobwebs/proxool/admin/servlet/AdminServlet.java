@@ -279,14 +279,19 @@ public class AdminServlet extends HttpServlet {
                     tab = TAB_DEFINITION;
                 }
                 doTabs(response.getOutputStream(), alias, link, tab, statisticsAvailable, statisticsComingSoon);
-                if (tab.equals(TAB_DEFINITION)) {
-                    doDefinition(response.getOutputStream(), def);
-                } else if (tab.equals(TAB_SNAPSHOT)) {
-                    doSnapshot(response.getOutputStream(), def, link, snapshotDetail, snapshotConnectionId);
-                } else if (tab.equals(TAB_STATISTICS)) {
-                    doStatistics(response.getOutputStream(), statisticsArray, def);
-                } else {
-                    throw new ServletException("Unrecognised tab '" + tab + "'");
+                switch (tab)
+                {
+                    case TAB_DEFINITION:
+                        doDefinition(response.getOutputStream(), def);
+                        break;
+                    case TAB_SNAPSHOT:
+                        doSnapshot(response.getOutputStream(), def, link, snapshotDetail, snapshotConnectionId);
+                        break;
+                    case TAB_STATISTICS:
+                        doStatistics(response.getOutputStream(), statisticsArray, def);
+                        break;
+                    default:
+                        throw new ServletException("Unrecognised tab '" + tab + "'");
                 }
             }
         } catch (ProxoolException e) {
@@ -328,37 +333,36 @@ public class AdminServlet extends HttpServlet {
      */
     private void doStatistics(ServletOutputStream out, StatisticsIF[] statisticsArray, ConnectionPoolDefinitionIF cpd) throws IOException {
 
-        for (int i = 0; i < statisticsArray.length; i++) {
-            StatisticsIF statistics = statisticsArray[i];
+		for (StatisticsIF statistics : statisticsArray)
+		{
+			openDataTable(out);
 
-            openDataTable(out);
+			printDefinitionEntry(out, ProxoolConstants.ALIAS, cpd.getAlias(), CORE_PROPERTY);
 
-            printDefinitionEntry(out, ProxoolConstants.ALIAS, cpd.getAlias(), CORE_PROPERTY);
+			// Period
+			printDefinitionEntry(out, "Period", TIME_FORMAT.format(statistics.getStartDate()) + " to " + TIME_FORMAT.format(statistics.getStopDate()), STATISTIC);
 
-            // Period
-            printDefinitionEntry(out, "Period", TIME_FORMAT.format(statistics.getStartDate()) + " to " + TIME_FORMAT.format(statistics.getStopDate()), STATISTIC);
+			// Served
+			printDefinitionEntry(out, "Served", statistics.getServedCount() + " (" + DECIMAL_FORMAT.format(statistics.getServedPerSecond()) + "/s)", STATISTIC);
 
-            // Served
-            printDefinitionEntry(out, "Served", statistics.getServedCount() + " (" + DECIMAL_FORMAT.format(statistics.getServedPerSecond()) + "/s)", STATISTIC);
+			// Refused
+			printDefinitionEntry(out, "Refused", statistics.getRefusedCount() + " (" + DECIMAL_FORMAT.format(statistics.getRefusedPerSecond()) + "/s)", STATISTIC);
 
-            // Refused
-            printDefinitionEntry(out, "Refused", statistics.getRefusedCount() + " (" + DECIMAL_FORMAT.format(statistics.getRefusedPerSecond()) + "/s)", STATISTIC);
+			// averageActiveTime
+			printDefinitionEntry(out, "Average active time", DECIMAL_FORMAT.format(statistics.getAverageActiveTime() / 1000) + "s", STATISTIC);
 
-            // averageActiveTime
-            printDefinitionEntry(out, "Average active time", DECIMAL_FORMAT.format(statistics.getAverageActiveTime() / 1000) + "s", STATISTIC);
+			// activityLevel
+			StringBuffer activityLevelBuffer = new StringBuffer();
+			int activityLevel = (int) (100 * statistics.getAverageActiveCount() / cpd.getMaximumConnectionCount());
+			activityLevelBuffer.append(activityLevel);
+			activityLevelBuffer.append("%<br/>");
+			String[] colours = {"0000ff", "eeeeee"};
+			int[] lengths = {activityLevel, 100 - activityLevel};
+			drawBarChart(activityLevelBuffer, colours, lengths);
+			printDefinitionEntry(out, "Activity level", activityLevelBuffer.toString(), STATISTIC);
 
-            // activityLevel
-            StringBuffer activityLevelBuffer = new StringBuffer();
-            int activityLevel = (int) (100 * statistics.getAverageActiveCount() / cpd.getMaximumConnectionCount());
-            activityLevelBuffer.append(activityLevel);
-            activityLevelBuffer.append("%<br/>");
-            String[] colours = {"0000ff", "eeeeee"};
-            int[] lengths = {activityLevel, 100 - activityLevel};
-            drawBarChart(activityLevelBuffer, colours, lengths);
-            printDefinitionEntry(out, "Activity level", activityLevelBuffer.toString(), STATISTIC);
-
-            closeTable(out);
-        }
+			closeTable(out);
+		}
     }
 
     /**
@@ -426,7 +430,7 @@ public class AdminServlet extends HttpServlet {
         // fatalSqlExceptions
         String fatalSqlExceptions = null;
         if (cpd.getFatalSqlExceptions() != null && cpd.getFatalSqlExceptions().size() > 0) {
-            StringBuffer fatalSqlExceptionsBuffer = new StringBuffer();
+            StringBuilder fatalSqlExceptionsBuffer = new StringBuilder();
             Iterator i = cpd.getFatalSqlExceptions().iterator();
             while (i.hasNext()) {
                 String s = (String) i.next();
@@ -443,12 +447,13 @@ public class AdminServlet extends HttpServlet {
         printDefinitionEntry(out, ProxoolConstants.TRACE, String.valueOf(cpd.isTrace()), STANDARD_PROPERTY);
         // Now all the properties that are forwarded to the delegate driver.
         Properties p = cpd.getDelegateProperties();
-        Iterator i = p.keySet().iterator();
-        while (i.hasNext()) {
-            String name = (String) i.next();
+        for (Object o : p.keySet())
+        {
+            String name = (String) o;
             String value = p.getProperty(name);
             // Better hide the password!
-            if (name.toLowerCase().indexOf("password") > -1 || name.toLowerCase().indexOf("passwd") > -1) {
+            if (name.toLowerCase().contains("password") || name.toLowerCase().contains("passwd"))
+            {
                 value = "******";
             }
             printDefinitionEntry(out, name + " (delegated)", value, DELEGATED_PROPERTY);
@@ -591,85 +596,96 @@ public class AdminServlet extends HttpServlet {
             out.print("</tr>");
 
             ConnectionInfoIF[] connectionInfos = snapshot.getConnectionInfos();
-            for (int i = 0; i < connectionInfos.length; i++) {
-                ConnectionInfoIF connectionInfo = connectionInfos[i];
+			for (ConnectionInfoIF connectionInfo : connectionInfos)
+			{
+				if (connectionInfo.getStatus() != ConnectionInfoIF.STATUS_NULL)
+				{
 
-                if (connectionInfo.getStatus() != ConnectionInfoIF.STATUS_NULL) {
+					out.print("<tr>");
 
-                    out.print("<tr>");
+					// drillDownConnectionId
+					out.print("<td style=\"background-color: #");
+					if (connectionInfo.getStatus() == ConnectionInfoIF.STATUS_ACTIVE)
+					{
+						out.print("ffcccc");
+					}
+					else if (connectionInfo.getStatus() == ConnectionInfoIF.STATUS_AVAILABLE)
+					{
+						out.print("ccffcc");
+					}
+					else if (connectionInfo.getStatus() == ConnectionInfoIF.STATUS_OFFLINE)
+					{
+						out.print("ccccff");
+					}
+					out.print("\" style=\"");
 
-                    // drillDownConnectionId
-                    out.print("<td style=\"background-color: #");
-                    if (connectionInfo.getStatus() == ConnectionInfoIF.STATUS_ACTIVE) {
-                        out.print("ffcccc");
-                    } else if (connectionInfo.getStatus() == ConnectionInfoIF.STATUS_AVAILABLE) {
-                        out.print("ccffcc");
-                    } else if (connectionInfo.getStatus() == ConnectionInfoIF.STATUS_OFFLINE) {
-                        out.print("ccccff");
-                    }
-                    out.print("\" style=\"");
+					if (drillDownConnectionId == connectionInfo.getId())
+					{
+						out.print("border: 1px solid black;");
+						out.print("\">");
+						out.print(connectionInfo.getId());
+					}
+					else
+					{
+						out.print("border: 1px solid transparent;");
+						out.print("\"><a href=\"");
+						out.print(link);
+						out.print("?");
+						out.print(ALIAS);
+						out.print("=");
+						out.print(cpd.getAlias());
+						out.print("&");
+						out.print(TAB);
+						out.print("=");
+						out.print(TAB_SNAPSHOT);
+						out.print("&");
+						out.print(DETAIL);
+						out.print("=");
+						out.print(DETAIL_MORE);
+						out.print("&");
+						out.print(CONNECTION_ID);
+						out.print("=");
+						out.print(connectionInfo.getId());
+						out.print("\">");
+						out.print(connectionInfo.getId());
+						out.print("</a>");
+					}
+					out.print("</td>");
 
-                    if (drillDownConnectionId == connectionInfo.getId()) {
-                        out.print("border: 1px solid black;");
-                        out.print("\">");
-                        out.print(connectionInfo.getId());
-                    } else {
-                        out.print("border: 1px solid transparent;");
-                        out.print("\"><a href=\"");
-                        out.print(link);
-                        out.print("?");
-                        out.print(ALIAS);
-                        out.print("=");
-                        out.print(cpd.getAlias());
-                        out.print("&");
-                        out.print(TAB);
-                        out.print("=");
-                        out.print(TAB_SNAPSHOT);
-                        out.print("&");
-                        out.print(DETAIL);
-                        out.print("=");
-                        out.print(DETAIL_MORE);
-                        out.print("&");
-                        out.print(CONNECTION_ID);
-                        out.print("=");
-                        out.print(connectionInfo.getId());
-                        out.print("\">");
-                        out.print(connectionInfo.getId());
-                        out.print("</a>");
-                    }
-                    out.print("</td>");
+					// birth
+					out.print("<td>&nbsp;");
+					out.print(TIME_FORMAT.format(connectionInfo.getBirthDate()));
+					out.print("</td>");
 
-                    // birth
-                    out.print("<td>&nbsp;");
-                    out.print(TIME_FORMAT.format(connectionInfo.getBirthDate()));
-                    out.print("</td>");
+					// started
+					out.print("<td>&nbsp;");
+					out.print(connectionInfo.getTimeLastStartActive() > 0 ? TIME_FORMAT.format(new Date(connectionInfo.getTimeLastStartActive())) : "-");
+					out.print("</td>");
 
-                    // started
-                    out.print("<td>&nbsp;");
-                    out.print(connectionInfo.getTimeLastStartActive() > 0 ? TIME_FORMAT.format(new Date(connectionInfo.getTimeLastStartActive())) : "-");
-                    out.print("</td>");
+					// active
+					out.print("<td align=\"right\" class=\"");
+					out.print(getStatusClass(connectionInfo));
+					out.print("\">");
+					String active = "&nbsp;";
+					if (connectionInfo.getTimeLastStopActive() > 0)
+					{
+						active = String.valueOf((int) (connectionInfo.getTimeLastStopActive() - connectionInfo.getTimeLastStartActive()));
+					}
+					else if (connectionInfo.getTimeLastStartActive() > 0)
+					{
+						active = String.valueOf((int) (snapshot.getSnapshotDate().getTime() - connectionInfo.getTimeLastStartActive()));
+					}
+					out.print(active);
+					out.print("&nbsp;&nbsp;</td>");
 
-                    // active
-                    out.print("<td align=\"right\" class=\"");
-                    out.print(getStatusClass(connectionInfo));
-                    out.print("\">");
-                    String active = "&nbsp;";
-                    if (connectionInfo.getTimeLastStopActive() > 0) {
-                        active = String.valueOf((int) (connectionInfo.getTimeLastStopActive() - connectionInfo.getTimeLastStartActive()));
-                    } else if (connectionInfo.getTimeLastStartActive() > 0) {
-                        active = String.valueOf((int) (snapshot.getSnapshotDate().getTime() - connectionInfo.getTimeLastStartActive()));
-                    }
-                    out.print(active);
-                    out.print("&nbsp;&nbsp;</td>");
+					// requester
+					out.print("<td>&nbsp;");
+					out.print(connectionInfo.getRequester() != null ? connectionInfo.getRequester() : "-");
+					out.print("</td>");
 
-                    // requester
-                    out.print("<td>&nbsp;");
-                    out.print(connectionInfo.getRequester() != null ? connectionInfo.getRequester() : "-");
-                    out.print("</td>");
-
-                    out.println("</tr>");
-                }
-            }
+					out.println("</tr>");
+				}
+			}
             out.println("  </tbody>");
             out.println("</table>");
 
@@ -805,15 +821,16 @@ public class AdminServlet extends HttpServlet {
         } else {
             out.println("<form action=\"" + link + "\" method=\"GET\" name=\"alias\">");
             out.println("<select name=\"alias\" size=\"" + Math.min(aliases.length, 5) + "\">");
-            for (int i = 0; i < aliases.length; i++) {
-                out.print("  <option value=\"");
-                out.print(aliases[i]);
-                out.print("\"");
-                out.print(aliases[i].equals(alias) ? " selected" : "");
-                out.print(">");
-                out.print(aliases[i]);
-                out.println("</option>");
-            }
+			for (String s : aliases)
+			{
+				out.print("  <option value=\"");
+				out.print(s);
+				out.print("\"");
+				out.print(s.equals(alias) ? " selected" : "");
+				out.print(">");
+				out.print(s);
+				out.println("</option>");
+			}
             out.println("</select>");
             out.println("<input name=\"" + TAB + "\" value=\"" + tab + "\" type=\"hidden\">");
             out.println("<input value=\"Show\" type=\"submit\">");

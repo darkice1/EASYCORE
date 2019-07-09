@@ -18,7 +18,6 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.cookie.ClientCookie;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
@@ -36,8 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +72,7 @@ public class EHttpClient
 
 	public void setProxy(final String host, final Integer port)
 	{
-		if (host != null && "".equals(host) == false && port != null)
+		if (host != null && !"".equals(host) && port != null)
 		{
 			// System.out.println(host+"##"+port);
 			HttpHost proxy = new HttpHost(host, port);
@@ -121,14 +118,7 @@ public class EHttpClient
 
 		try
 		{
-			SSLContext sslContext  = SSLContexts.custom().loadTrustMaterial(null, new TrustStrategy() {
-								
-								@Override
-								public boolean isTrusted(X509Certificate[] arg0, String arg1)
-										throws CertificateException {
-									return true;
-								}
-							}).build();
+			SSLContext sslContext  = SSLContexts.custom().loadTrustMaterial(null, (arg0, arg1) -> true).build();
 
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory( sslContext, new String[] { "TLSv1" }, null,SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
@@ -193,7 +183,7 @@ public class EHttpClient
 
 			Date d = null;
 			JSONObject dj = cj.getJSONObject("expiryDate");
-			if (dj != null && dj.isEmpty() == false)
+			if (dj != null && !dj.isEmpty())
 			{
 				d = new Date();
 				d.setTime(dj.getLong("time"));
@@ -201,7 +191,7 @@ public class EHttpClient
 			else
 			{
 				dj = cj.getJSONObject("expires");
-				if (dj != null && dj.isEmpty() == false)
+				if (dj != null && !dj.isEmpty())
 				{
 					d = new Date();
 					d.setTime(dj.getLong("time"));
@@ -466,11 +456,8 @@ public class EHttpClient
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
 			// 处理图片
-			Iterator<Entry<String, String>> fileps = files.entrySet()
-					.iterator();
-			while (fileps.hasNext())
+			for (Entry<String, String> e : files.entrySet())
 			{
-				Entry<String, String> e = fileps.next();
 				post.setHeader(e.getKey(), e.getValue());
 
 				File file = new File(e.getValue());
@@ -479,8 +466,7 @@ public class EHttpClient
 				// builder.addPart(e.getKey(), fb);
 				// System.out.println(URLConnection.getFileNameMap().getContentTypeFor(localpath));
 				// URL u = new URL();
-				String ct = URLConnection.getFileNameMap()
-						.getContentTypeFor(file.getAbsolutePath());
+				String ct = URLConnection.getFileNameMap().getContentTypeFor(file.getAbsolutePath());
 				// URLConnection uc = u.openConnection();
 				// String ct = uc.getContentType();
 				if (ct == null)
@@ -491,8 +477,7 @@ public class EHttpClient
 						ct = "image/png";
 					}
 				}
-				builder.addBinaryBody(e.getKey(), file, ContentType.create(ct),
-						file.getName());
+				builder.addBinaryBody(e.getKey(), file, ContentType.create(ct), file.getName());
 			}
 
 			if (request != null)
@@ -556,7 +541,7 @@ public class EHttpClient
 			}
 		}
 
-		HashMap<String, String> info = new HashMap<String, String>();
+		HashMap<String, String> info = new HashMap<>();
 		response = client.execute(post);
 
 		Header[] hs = response.getAllHeaders();
@@ -637,7 +622,7 @@ public class EHttpClient
 		HashMap<String, String> head = null;
 		if (ref != null)
 		{
-			head = new HashMap<String, String>();
+			head = new HashMap<>();
 			head.put("Referer", ref);
 		}
 
@@ -660,7 +645,7 @@ public class EHttpClient
 	public HashMap<String, String> getPro(final String url,
 			Map<String, String> head, final String chartset,String localpath) throws IOException
 	{
-		HashMap<String, String> result = new HashMap<String, String>();
+		HashMap<String, String> result = new HashMap<>();
 		HttpGet get = new HttpGet(url);
 		get.setConfig(requestconfig);
 
@@ -723,7 +708,7 @@ public class EHttpClient
 
 	public String getCookieString(String key, String domain)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		List<Cookie> clist = cookieStore.getCookies();
 		for (Cookie cc : clist)
@@ -732,7 +717,7 @@ public class EHttpClient
 			String cdomain = cc.getDomain();
 
 			if ((key == null || key.equals(name))
-					&& cdomain.indexOf(domain) >= 0)
+					&& cdomain.contains(domain))
 			{
 				if (key == null)
 				{

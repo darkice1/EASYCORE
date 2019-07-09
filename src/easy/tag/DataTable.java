@@ -243,7 +243,7 @@ public class DataTable extends SimpleTagSupport
 
 	private String outDefaultStyle()
 	{
-		StringBuffer styleBuffer = new StringBuffer();
+		StringBuilder styleBuffer = new StringBuilder();
 		styleBuffer.append("<table width='100%' cellpadding='0' cellspacing='0'><tr class='PageToolbar'><td align='center' nowrap>");
 
 		styleBuffer.append(String.format("<font style='font-size:10pt;'>��%s����¼",dataset.getCount()));
@@ -259,7 +259,7 @@ public class DataTable extends SimpleTagSupport
 			styleBuffer.append(String.format(" ��%sҳ��ʾ ",pages < 1?1:pages));
 		}
 		
-		styleBuffer.append("��ǰ��" + page + "ҳ ");
+		styleBuffer.append("��ǰ��").append(page).append("ҳ ");
 		if (page.intValue() <= 1)
 		{
 			styleBuffer.append(" <input type='button' class='button' value='��ҳ' disabled>");

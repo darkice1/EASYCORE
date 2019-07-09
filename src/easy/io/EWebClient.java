@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.io;
 
 import com.gargoylesoftware.htmlunit.*;
@@ -131,7 +128,7 @@ public class EWebClient implements  AutoCloseable
 			
 			Date d = null;
 			JSONObject dj = cj.getJSONObject("expires");
-			if (dj != null && dj.isEmpty() == false)
+			if (dj != null && !dj.isEmpty())
 			{
 				d = new Date();
 				d.setTime(dj.getLong("time"));
@@ -167,7 +164,7 @@ public class EWebClient implements  AutoCloseable
 //			client.addRequestHeader("Proxy-Authorization", proxyAuthorization);
 //		}
 		
-		if (ref != null && "".equals(ref) == false)
+		if (ref != null && !"".equals(ref))
 		{
 			client.addRequestHeader("referer", ref);
 		}

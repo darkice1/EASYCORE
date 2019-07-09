@@ -42,16 +42,12 @@ public class Version {
     private static final String CVS = "0.9.1+";
 
     public static String getVersion() {
-        StringBuffer version = new StringBuffer();
+        StringBuilder version = new StringBuilder();
 
         if (VERSION != null) {
             version.append(VERSION);
         } else {
-            /**
-             * This means that we haven't used the Ant script so this
-             * is just our best guess at the version.
-             */
-            version.append(CVS);
+			version.append(CVS);
         }
 
         if (BUILD_DATE != null) {

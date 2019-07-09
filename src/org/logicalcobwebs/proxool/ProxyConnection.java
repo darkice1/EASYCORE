@@ -138,10 +138,9 @@ public class ProxyConnection implements ProxyConnectionIF {
      * to false or something). We don't reset unless this has been called to avoid
      * the overhead of unnecessary resetting.
      *
-     * @param needToReset true if the connection might need resetting.
-     */
-    protected void setNeedToReset(boolean needToReset) {
-        this.needToReset = needToReset;
+	 */
+    protected void setNeedToReset() {
+        this.needToReset = true;
     }
 
     /**
@@ -220,10 +219,11 @@ public class ProxyConnection implements ProxyConnectionIF {
             } else {
                 // Close any open statements, as specified in JDBC
                 Statement[] statements = (Statement[]) openStatements.toArray(new Statement[openStatements.size()]);
-                for (int j = 0; j < statements.length; j++) {
-                    Statement statement = statements[j];
+                for (Statement statement : statements)
+                {
                     statement.close();
-                    if (connectionPool.getLog().isDebugEnabled()) {
+                    if (connectionPool.getLog().isDebugEnabled())
+                    {
                         connectionPool.getLog().debug("Closing statement " + Integer.toHexString(statement.hashCode()) + " (belonging to connection " + getId() + ") automatically");
                     }
                 }
@@ -481,7 +481,7 @@ public class ProxyConnection implements ProxyConnectionIF {
      * @see Comparable#compareTo(Object)
      */
     public int compareTo(Object o) {
-        return new Long(((ConnectionInfoIF) o).getId()).compareTo(new Long(getId()));
+        return Long.compare(((ConnectionInfoIF) o).getId(), getId());
     }
 
     public String[] getSqlCalls() {

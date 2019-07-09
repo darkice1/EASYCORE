@@ -235,12 +235,16 @@ public class FJTaskRunnerGroup implements Executor {
         Thread current = Thread.currentThread();
         boolean stopCurrent = false;
 
-        for (int i = 0; i < threads.length; ++i) {
-            Thread t = threads[i];
+        for (Thread t : threads)
+        {
             if (t == current)
+            {
                 stopCurrent = true;
+            }
             else
+            {
                 t.interrupt();
+            }
         }
         if (stopCurrent)
             current.interrupt();
@@ -255,10 +259,13 @@ public class FJTaskRunnerGroup implements Executor {
      * will be used at least the next time a thread scans for work.
      **/
     public synchronized void setScanPriorities(int pri) {
-        for (int i = 0; i < threads.length; ++i) {
-            FJTaskRunner t = threads[i];
+        for (FJTaskRunner t : threads)
+        {
             t.setScanPriority(pri);
-            if (!t.active) t.setPriority(pri);
+            if (!t.active)
+            {
+                t.setPriority(pri);
+            }
         }
     }
 
@@ -272,10 +279,13 @@ public class FJTaskRunnerGroup implements Executor {
      * them running at this priority even when idly waiting for work.
      **/
     public synchronized void setRunPriorities(int pri) {
-        for (int i = 0; i < threads.length; ++i) {
-            FJTaskRunner t = threads[i];
+        for (FJTaskRunner t : threads)
+        {
             t.setRunPriority(pri);
-            if (t.active) t.setPriority(pri);
+            if (t.active)
+            {
+                t.setPriority(pri);
+            }
         }
     }
 

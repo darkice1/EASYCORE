@@ -60,10 +60,10 @@ public abstract class Licence
 
 	public Licence()
 	{
-		md5list = new ArrayList<String>();
+		md5list = new ArrayList<>();
 		licence = "";
 		
-		if (isinit == false)
+		if (!isinit)
 		{
 			isinit = true;
 			LIC = getLicenceA();
@@ -122,7 +122,7 @@ public abstract class Licence
 	
 	protected String intLicence()
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (String str : md5list)
 		{
 			buf.append(str);
@@ -180,7 +180,7 @@ public abstract class Licence
 			return ERROR_DATEEXPIRED;
 		}
 
-		if (licence.equals(lic) == false)
+		if (!licence.equals(lic))
 		{
 			return ERROR_LICENCE;
 		}

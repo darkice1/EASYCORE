@@ -49,115 +49,142 @@ class HouseKeeper {
            int[] verifiedConnectionCountByState = new int[4];
 
            ProxyConnectionIF[] proxyConnections = connectionPool.getProxyConnections();
-           for (int i = 0; i < proxyConnections.length; i++) {
-               proxyConnection = proxyConnections[i];
-               connection = proxyConnection.getConnection();
+		   for (ProxyConnectionIF proxyConnectionIF : proxyConnections)
+		   {
+			   proxyConnection = proxyConnectionIF;
+			   connection = proxyConnection.getConnection();
 
-               if (!connectionPool.isConnectionPoolUp()) {
-                   break;
-               }
+			   if (!connectionPool.isConnectionPoolUp())
+			   {
+				   break;
+			   }
 
-               // First lets check whether the connection still works. We should only validate
-               // connections that are not is use!  SetOffline only succeeds if the connection
-               // is available.
-               if (proxyConnection.setStatus(ProxyConnectionIF.STATUS_AVAILABLE, ProxyConnectionIF.STATUS_OFFLINE)) {
-                   try {
-                       testStatement = connection.createStatement();
+			   // First lets check whether the connection still works. We should only validate
+			   // connections that are not is use!  SetOffline only succeeds if the connection
+			   // is available.
+			   if (proxyConnection.setStatus(ProxyConnectionIF.STATUS_AVAILABLE, ProxyConnectionIF.STATUS_OFFLINE))
+			   {
+				   try
+				   {
+					   testStatement = connection.createStatement();
 
-                       // Some DBs return an object even if DB is shut down
-                       if (proxyConnection.isReallyClosed()) {
-                           proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_NULL);
-                           connectionPool.removeProxyConnection(proxyConnection, ConnectionListenerIF.HOUSE_KEEPER_TEST_FAIL, "it appears to be closed", ConnectionPool.FORCE_EXPIRY, true);
-                       }
+					   // Some DBs return an object even if DB is shut down
+					   if (proxyConnection.isReallyClosed())
+					   {
+						   proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_NULL);
+						   connectionPool.removeProxyConnection(proxyConnection, ConnectionListenerIF.HOUSE_KEEPER_TEST_FAIL, "it appears to be closed", ConnectionPool.FORCE_EXPIRY, true);
+					   }
 
-                       String sql = definition.getHouseKeepingTestSql();
-                       if (sql != null && sql.length() > 0) {
-                           // A Test Statement has been provided. Execute it!
-                           boolean testResult = false;
-                           try {
-                               testResult = testStatement.execute(sql);
-                           } finally {
-                               if (log.isDebugEnabled() && definition.isVerbose()) {
-                                   log.debug(connectionPool.displayStatistics() + " - Testing connection " + proxyConnection.getId() + (testResult ? ": True" : ": False"));
-                               }
-                           }
-                       }
+					   String sql = definition.getHouseKeepingTestSql();
+					   if (sql != null && sql.length() > 0)
+					   {
+						   // A Test Statement has been provided. Execute it!
+						   boolean testResult = false;
+						   try
+						   {
+							   testResult = testStatement.execute(sql);
+						   }
+						   finally
+						   {
+							   if (log.isDebugEnabled() && definition.isVerbose())
+							   {
+								   log.debug(connectionPool.displayStatistics() + " - Testing connection " + proxyConnection.getId() + (testResult ? ": True" : ": False"));
+							   }
+						   }
+					   }
 
-                       proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_AVAILABLE);
-                   } catch (Throwable e) {
-                       // There is a problem with this connection.  Let's remove it!
-                       proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_NULL);
-                       connectionPool.removeProxyConnection(proxyConnection, ConnectionListenerIF.HOUSE_KEEPER_TEST_FAIL, "it has problems: " + e, ConnectionPool.REQUEST_EXPIRY, true);
-                   } finally {
-                       try {
-                           testStatement.close();
-                       } catch (Throwable t) {
-                           // Never mind.
-                       }
-                   }
-               } // END if (poolableConnection.setOffline())
-               // Now to check whether the connection is due for expiry
-               if (proxyConnection.getAge() > definition.getMaximumConnectionLifetime()) {
-                   final String reason = "age is " + proxyConnection.getAge() + "ms";
-                   // Check whether we can make it offline
-                   if (proxyConnection.setStatus(ProxyConnectionIF.STATUS_AVAILABLE, ProxyConnectionIF.STATUS_OFFLINE)) {
-                       if (proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_NULL)) {
-                           // It is.  Expire it now .
-                           connectionPool.expireProxyConnection(proxyConnection, ConnectionListenerIF.MAXIMUM_CONNECTION_LIFETIME_EXCEEDED, reason, ConnectionPool.REQUEST_EXPIRY);
-                       }
-                   } else {
-                       // Oh no, it's in use.  Never mind, we'll mark it for expiry
-                       // next time it is available.  This will happen in the
-                       // putConnection() method.
-                       proxyConnection.markForExpiry(reason);
-                       if (log.isDebugEnabled()) {
-                           log.debug(connectionPool.displayStatistics() + " - #" + FormatHelper.formatMediumNumber(proxyConnection.getId())
-                                   + " marked for expiry.");
-                       }
-                   } // END if (poolableConnection.setOffline())
-               } // END if (poolableConnection.getAge() > maximumConnectionLifetime)
+					   proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_AVAILABLE);
+				   }
+				   catch (Throwable e)
+				   {
+					   // There is a problem with this connection.  Let's remove it!
+					   proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_NULL);
+					   connectionPool.removeProxyConnection(proxyConnection, ConnectionListenerIF.HOUSE_KEEPER_TEST_FAIL, "it has problems: " + e, ConnectionPool.REQUEST_EXPIRY, true);
+				   }
+				   finally
+				   {
+					   try
+					   {
+						   testStatement.close();
+					   }
+					   catch (Throwable t)
+					   {
+						   // Never mind.
+					   }
+				   }
+			   } // END if (poolableConnection.setOffline())
+			   // Now to check whether the connection is due for expiry
+			   if (proxyConnection.getAge() > definition.getMaximumConnectionLifetime())
+			   {
+				   final String reason = "age is " + proxyConnection.getAge() + "ms";
+				   // Check whether we can make it offline
+				   if (proxyConnection.setStatus(ProxyConnectionIF.STATUS_AVAILABLE, ProxyConnectionIF.STATUS_OFFLINE))
+				   {
+					   if (proxyConnection.setStatus(ProxyConnectionIF.STATUS_OFFLINE, ProxyConnectionIF.STATUS_NULL))
+					   {
+						   // It is.  Expire it now .
+						   connectionPool.expireProxyConnection(proxyConnection, ConnectionListenerIF.MAXIMUM_CONNECTION_LIFETIME_EXCEEDED, reason, ConnectionPool.REQUEST_EXPIRY);
+					   }
+				   }
+				   else
+				   {
+					   // Oh no, it's in use.  Never mind, we'll mark it for expiry
+					   // next time it is available.  This will happen in the
+					   // putConnection() method.
+					   proxyConnection.markForExpiry(reason);
+					   if (log.isDebugEnabled())
+					   {
+						   log.debug(connectionPool.displayStatistics() + " - #" + FormatHelper.formatMediumNumber(proxyConnection.getId()) + " marked for expiry.");
+					   }
+				   } // END if (poolableConnection.setOffline())
+			   } // END if (poolableConnection.getAge() > maximumConnectionLifetime)
 
-               // Now let's see if this connection has been active for a
-               // suspiciously long time.
-               if (proxyConnection.isActive()) {
+			   // Now let's see if this connection has been active for a
+			   // suspiciously long time.
+			   if (proxyConnection.isActive())
+			   {
 
-                   long activeTime = System.currentTimeMillis() - proxyConnection.getTimeLastStartActive();
+				   long activeTime = System.currentTimeMillis() - proxyConnection.getTimeLastStartActive();
 
-                   if (activeTime < definition.getRecentlyStartedThreshold()) {
+				   if (activeTime < definition.getRecentlyStartedThreshold())
+				   {
 
-                       // This connection hasn't been active for all that long
-                       // after all. And as long as we have at least one
-                       // connection that is "actively active" then we don't
-                       // consider the pool to be down.
-                       recentlyStartedActiveConnectionCountTemp++;
-                   }
+					   // This connection hasn't been active for all that long
+					   // after all. And as long as we have at least one
+					   // connection that is "actively active" then we don't
+					   // consider the pool to be down.
+					   recentlyStartedActiveConnectionCountTemp++;
+				   }
 
-                   if (activeTime > definition.getMaximumActiveTime()) {
+				   if (activeTime > definition.getMaximumActiveTime())
+				   {
 
-                       // This connection has been active for way too long. We're
-                       // going to kill it :)
-                       connectionPool.removeProxyConnection(proxyConnection, ConnectionListenerIF.MAXIMUM_ACTIVE_TIME_EXPIRED, 
-                               "it has been active for too long", ConnectionPool.FORCE_EXPIRY, true);
-                       String lastSqlCallMsg;
-                       if (proxyConnection.getLastSqlCall() != null) {
-                           lastSqlCallMsg = ", and the last SQL it performed is '" + proxyConnection.getLastSqlCall() + "'.";
-                       } else if (!proxyConnection.getDefinition().isTrace()) {
-                           lastSqlCallMsg = ", but the last SQL it performed is unknown because the trace property is not enabled.";
-                       } else {
-                           lastSqlCallMsg = ", but the last SQL it performed is unknown.";
-                       }
-                       log.warn("#" + FormatHelper.formatMediumNumber(proxyConnection.getId()) + " was active for " + activeTime
-                               + " milliseconds and has been removed automaticaly. The Thread responsible was named '"
-                               + proxyConnection.getRequester() + "'" + lastSqlCallMsg);
+					   // This connection has been active for way too long. We're
+					   // going to kill it :)
+					   connectionPool.removeProxyConnection(proxyConnection, ConnectionListenerIF.MAXIMUM_ACTIVE_TIME_EXPIRED, "it has been active for too long", ConnectionPool.FORCE_EXPIRY, true);
+					   String lastSqlCallMsg;
+					   if (proxyConnection.getLastSqlCall() != null)
+					   {
+						   lastSqlCallMsg = ", and the last SQL it performed is '" + proxyConnection.getLastSqlCall() + "'.";
+					   }
+					   else if (!proxyConnection.getDefinition().isTrace())
+					   {
+						   lastSqlCallMsg = ", but the last SQL it performed is unknown because the trace property is not enabled.";
+					   }
+					   else
+					   {
+						   lastSqlCallMsg = ", but the last SQL it performed is unknown.";
+					   }
+					   log.warn("#" + FormatHelper.formatMediumNumber(proxyConnection.getId()) + " was active for " + activeTime + " milliseconds and has been removed automaticaly. The Thread responsible was named '" + proxyConnection.getRequester() + "'" + lastSqlCallMsg);
 
-                   }
+				   }
 
-               }
+			   }
 
-               // What have we got?
-               verifiedConnectionCountByState[proxyConnection.getStatus()]++;
+			   // What have we got?
+			   verifiedConnectionCountByState[proxyConnection.getStatus()]++;
 
-           }
+		   }
 
            calculateUpState(recentlyStartedActiveConnectionCountTemp);
        } catch (Throwable e) {

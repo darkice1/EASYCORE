@@ -156,7 +156,7 @@ public class WrappedConnection implements MethodInterceptor {
             } else {
                 if (proxyConnection != null) {
                     if (concreteMethod.getName().startsWith(ConnectionResetter.MUTATOR_PREFIX)) {
-                        proxyConnection.setNeedToReset(true);
+                        proxyConnection.setNeedToReset();
                     }
                     try {
                         result = concreteMethod.invoke(proxyConnection.getConnection(), args);

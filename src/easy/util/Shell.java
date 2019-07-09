@@ -60,7 +60,7 @@ public class Shell
 			}
 		}
 		//System.out.println(buf.toString());
-		if (isbreak == false)
+		if (!isbreak)
 		{
 			if (ein != null)
 			{

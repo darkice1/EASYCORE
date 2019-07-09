@@ -77,7 +77,7 @@ public abstract class ListXmlAction extends Action
 			String temp = (String) e.nextElement();
 			if (temp.startsWith("srw_"))
 			{
-				if (isset == false)
+				if (!isset)
 				{
 					isset = true;
 					tmpSql.append("1=1 ");
@@ -92,21 +92,21 @@ public abstract class ListXmlAction extends Action
 				}
 				else if (temp.startsWith("srw_in_"))
 				{
-					if (request.getParameter(temp)!=null && request.getParameter(temp).equals("")==false)
+					if (request.getParameter(temp)!=null && !request.getParameter(temp).equals(""))
 					{
 						tmpSql.append(String.format(" AND %s IN (%s)", temp.replaceFirst("srw_in_", ""), request.getParameter(temp)));
 					}
 				}
 				else if (temp.startsWith("srw_nin_"))
 				{
-					if (request.getParameter(temp)!=null && request.getParameter(temp).equals("")==false)
+					if (request.getParameter(temp)!=null && !request.getParameter(temp).equals(""))
 					{
 						tmpSql.append(String.format(" AND %s NOT IN (%s)", temp.replaceFirst("srw_nin_", ""), request.getParameter(temp)));
 					}
 				}
 				else if (temp.startsWith("srw_w"))
 				{
-					if (request.getParameter(temp)!=null && request.getParameter(temp).equals("")==false)
+					if (request.getParameter(temp)!=null && !request.getParameter(temp).equals(""))
 					{
 						tmpSql.append(String.format(" AND %s", request.getParameter(temp)));
 					}

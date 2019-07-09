@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.robot.chat;
 
 import java.io.IOException;

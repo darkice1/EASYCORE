@@ -31,16 +31,19 @@ public class CompositeStatisticsListener extends AbstractListenerContainer imple
     public void statistics(String alias, StatisticsIF statistics) 
     {
         Object[] listeners = getListeners();
-        
-        for(int i=0; i<listeners.length; i++) {
-            try {
-                StatisticsListenerIF statisticsListener = (StatisticsListenerIF) listeners[i];
-                statisticsListener.statistics(alias, statistics);
-            }
-            catch (RuntimeException re) {
-                LOG.warn("RuntimeException received from listener "+listeners[i]+" when dispatching statistics event", re);
-            }
-        }
+
+		for (Object listener : listeners)
+		{
+			try
+			{
+				StatisticsListenerIF statisticsListener = (StatisticsListenerIF) listener;
+				statisticsListener.statistics(alias, statistics);
+			}
+			catch (RuntimeException re)
+			{
+				LOG.warn("RuntimeException received from listener " + listener + " when dispatching statistics event", re);
+			}
+		}
     }
 }
 

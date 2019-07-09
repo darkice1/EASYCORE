@@ -442,7 +442,8 @@ public abstract class FJTask implements Runnable {
         }
 
         public void run() {
-            for (int i = 0; i < tasks.length; ++i) FJTask.invoke(tasks[i]);
+			for (FJTask task : tasks)
+				FJTask.invoke(task);
         }
     }
 

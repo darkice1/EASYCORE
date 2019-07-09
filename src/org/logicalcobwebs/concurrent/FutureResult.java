@@ -71,15 +71,13 @@ public class FutureResult {
      **/
 
     public Runnable setter(final Callable function) {
-        return new Runnable() {
-            public void run() {
-                try {
-                    set(function.call());
-                } catch (Throwable ex) {
-                    setException(ex);
-                }
-            }
-        };
+        return () -> {
+			try {
+				set(function.call());
+			} catch (Throwable ex) {
+				setException(ex);
+			}
+		};
     }
 
     /** internal utility: either get the value or throw the exception **/

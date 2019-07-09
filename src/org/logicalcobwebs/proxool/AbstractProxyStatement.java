@@ -13,7 +13,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 /**
  * Contains most of the functionality that we require to manipilate the
@@ -67,7 +70,7 @@ abstract class AbstractProxyStatement {
             // just junk it.
             try {
                 statement.close();
-                connectionPool.throwConnection(proxyConnection, ConnectionListenerIF.FATAL_SQL_EXCEPTION_DETECTED, "Fatal SQL Exception has been detected");
+                connectionPool.throwConnection(proxyConnection);
 
                 // We should check all the existing connections as soon as possible
                 HouseKeeperController.sweepNow(connectionPool.getDefinition().getAlias());
@@ -137,16 +140,14 @@ abstract class AbstractProxyStatement {
 
         // Lazily instantiate parameters if necessary
         if (parameters == null) {
-            parameters = new TreeMap(new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    int c = 0;
+            parameters = new TreeMap((o1, o2) -> {
+                int c = 0;
 
-                    if (o1 instanceof Integer && o2 instanceof Integer) {
-                        c = ((Integer) o1).compareTo(((Integer) o2));
-                    }
-
-                    return c;
+                if (o1 instanceof Integer && o2 instanceof Integer) {
+                    c = ((Integer) o1).compareTo(((Integer) o2));
                 }
+
+                return c;
             });
         }
 

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package easy.model;
 
 import java.util.LinkedList;
@@ -13,8 +10,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class WebAgent
 {
-	private final static List<String> LIST = new LinkedList<String>();
-	private final static List<String> MOBLIST = new LinkedList<String>();
+	private final static List<String> LIST = new LinkedList<>();
+	private final static List<String> MOBLIST = new LinkedList<>();
 	
 	static
 	{

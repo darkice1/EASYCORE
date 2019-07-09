@@ -12,7 +12,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.Iterator;
 
 /**
  * Will wrap up exceptions in another exception which can be defined at runtime.
@@ -52,19 +51,21 @@ class FatalSqlExceptionHelper {
             Object[] args = null;
             String argDescription = "";
             Constructor[] constructors = clazz.getConstructors();
-            for (int i = 0; i < constructors.length; i++) {
-                Constructor constructor = constructors[i];
-                Class[] parameterTypes = constructor.getParameterTypes();
-                if (toUse == null && parameterTypes.length == 0) {
-                    toUse = constructor;
-                }
-                if (parameterTypes.length == 1 && Exception.class.isAssignableFrom(parameterTypes[0])) {
-                    toUse = constructor;
-                    args = new Object[]{originalException};
-                    argDescription = "Exception";
-                    break;
-                }
-            }
+			for (Constructor constructor : constructors)
+			{
+				Class[] parameterTypes = constructor.getParameterTypes();
+				if (toUse == null && parameterTypes.length == 0)
+				{
+					toUse = constructor;
+				}
+				if (parameterTypes.length == 1 && Exception.class.isAssignableFrom(parameterTypes[0]))
+				{
+					toUse = constructor;
+					args = new Object[]{originalException};
+					argDescription = "Exception";
+					break;
+				}
+			}
             try {
                 Object exceptionToThrow = toUse.newInstance(args);
                 if (exceptionToThrow instanceof RuntimeException) {
@@ -112,9 +113,10 @@ class FatalSqlExceptionHelper {
      */
     protected static boolean testException(ConnectionPoolDefinitionIF cpd, Throwable t, int level) {
         boolean fatalSqlExceptionDetected = false;
-        Iterator i = cpd.getFatalSqlExceptions().iterator();
-        while (i.hasNext()) {
-            if (t.getMessage() != null && t.getMessage().indexOf((String) i.next()) > -1) {
+        for (Object o : cpd.getFatalSqlExceptions())
+        {
+            if (t.getMessage() != null && t.getMessage().contains((String) o))
+            {
                 // This SQL exception indicates a fatal problem with this connection.
                 fatalSqlExceptionDetected = true;
             }

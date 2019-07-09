@@ -41,11 +41,11 @@ public abstract class CommitAction extends Action
 	 */
 	abstract protected void inittable();
 
-	protected void add(String tablename)
+	protected void add()
 	{
 		BaseTable b = new BaseTable();
-		b.setTablename(tablename);
-		add(tablename, b);
+		b.setTablename("democommit1");
+		add("democommit1", b);
 	}
 
 	/**
