@@ -2,14 +2,7 @@ package easy.servlet;
 
 import easy.config.Config;
 
-/**
- * <p><i>Copyright: 9esoft.com (c) 2005-2006<br>
- * Company: 九州易软科技发展有限公司</i></p>
- *
- * TODO PageInfo class说明
- *
- * @version 1.0 (<i>2006-7-24 Gawen</i>)
- */
+import java.util.Objects;
 
 public class PageInfo
 {
@@ -26,7 +19,7 @@ public class PageInfo
 		this.recordCount = recordCount;
 		try
 		{
-			this.pageSize = pageSize < 1?Integer.parseInt(Config.getProperty("DBDEFPAGESIZE","20")):pageSize;
+			this.pageSize = pageSize < 1?Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBDEFPAGESIZE", "20"))):pageSize;
 		}
 		catch (NumberFormatException nfe)
 		{
