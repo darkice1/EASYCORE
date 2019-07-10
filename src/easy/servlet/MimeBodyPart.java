@@ -184,8 +184,7 @@ public class MimeBodyPart
 				catch (Exception e)
 				{
 					err = e.toString();
-					boolean flag = false;
-					return flag;
+					return false;
 				}
 			}
 		}

@@ -30,12 +30,12 @@ public class DataTable extends SimpleTagSupport
 {
 	private final static Pattern FIELDPATTERN = Pattern.compile("\\{\\{[a-zA-Z0-9_]*\\}\\}");
 
-	private Integer pagesize = new Integer(-1);
+	private Integer pagesize = -1;
 
 	/**
 	 * ��ǰҳ��ҳ�Ŵ�1��ʼ
 	 */
-	private Integer page = new Integer(1);
+	private Integer page = 1;
 
 	private JspFragment row;
 	private JspFragment row1;
@@ -148,8 +148,8 @@ public class DataTable extends SimpleTagSupport
 		
 		StringBuffer buf = new StringBuffer();
 
-		int size = pagesize.intValue();
-		int pnum = page.intValue();
+		int size = pagesize;
+		int pnum = page;
 		
 		//:~para:BaseTable
 		if (dataset == null)
@@ -255,12 +255,12 @@ public class DataTable extends SimpleTagSupport
 		}
 		else
 		{
-		    int pages = ((dataset.getCount() + pagesize.intValue() - 1) / pagesize.intValue());
+		    int pages = ((dataset.getCount() + pagesize - 1) / pagesize);
 			styleBuffer.append(String.format(" ��%sҳ��ʾ ",pages < 1?1:pages));
 		}
 		
 		styleBuffer.append("��ǰ��").append(page).append("ҳ ");
-		if (page.intValue() <= 1)
+		if (page <= 1)
 		{
 			styleBuffer.append(" <input type='button' class='button' value='��ҳ' disabled>");
 			styleBuffer.append(" <input type='button' class='button' value='��һҳ' disabled>");
@@ -268,23 +268,23 @@ public class DataTable extends SimpleTagSupport
 		else
 		{
 			styleBuffer.append(String.format(" <input type='button' class='button' value='��ҳ' onclick=location.href('command?action=%s&page=%s')>",action,1));
-			styleBuffer.append(String.format(" <input type='button' class='button' value='��һҳ' onclick=location.href('command?action=%s&page=%s')>",action,page.intValue() - 1));
+			styleBuffer.append(String.format(" <input type='button' class='button' value='��һҳ' onclick=location.href('command?action=%s&page=%s')>",action, page - 1));
 		}
 
-		if (page.intValue() >= ((dataset.getCount() + pagesize.intValue() - 1) / pagesize.intValue()))
+		if (page >= ((dataset.getCount() + pagesize - 1) / pagesize))
 		{
 			styleBuffer.append(" <input type='button' class='button' value='��һҳ' disabled>");
 			styleBuffer.append(" <input type='button' class='button' value='ĩҳ' disabled>");
 		}
 		else
 		{
-			styleBuffer.append(String.format(" <input type='button' class='button' value='��һҳ' onclick=location.href('command?action=%s&page=%s')> ",action,page.intValue() + 1));
-			styleBuffer.append(String.format(" <input type='button' class='button' value='ĩҳ' onclick=location.href('command?action=%s&page=%s')> ",action,(dataset.getCount() + pagesize.intValue() - 1) / pagesize.intValue()));
+			styleBuffer.append(String.format(" <input type='button' class='button' value='��һҳ' onclick=location.href('command?action=%s&page=%s')> ",action, page + 1));
+			styleBuffer.append(String.format(" <input type='button' class='button' value='ĩҳ' onclick=location.href('command?action=%s&page=%s')> ",action,(dataset.getCount() + pagesize - 1) / pagesize));
 		}
 		styleBuffer.append(" ��ת��<input type='text' name='pageToTurn' id='pageToTurn' size=4 value='");
 		styleBuffer.append(page);
 		styleBuffer.append("'><input type=button value='Go' onclick='turnPage(");
-		styleBuffer.append((dataset.getCount() + pagesize.intValue() - 1) / pagesize.intValue());
+		styleBuffer.append((dataset.getCount() + pagesize - 1) / pagesize);
 		styleBuffer.append(")'>");
 
 		styleBuffer.append("<script>function turnPage(totalPage){");

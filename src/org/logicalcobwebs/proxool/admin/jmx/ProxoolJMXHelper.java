@@ -122,7 +122,7 @@ public class ProxoolJMXHelper {
             while (tokenizer.hasMoreElements()) {
                 tokens.add(tokenizer.nextToken().trim());
             }
-            return (String[]) tokens.toArray(new String[tokens.size()]);
+            return (String[]) tokens.toArray(new String[0]);
         }
     }
 

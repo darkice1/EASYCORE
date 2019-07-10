@@ -325,8 +325,7 @@ public class BaseTable
 		//String sql = sqlbuf.toString();
 		//sqlbuf = null;
 
-		String sqlbuf = "delete from " + tablename + " where " + where;
-		return sqlbuf;
+		return "delete from " + tablename + " where " + where;
 	}
 
 	/**

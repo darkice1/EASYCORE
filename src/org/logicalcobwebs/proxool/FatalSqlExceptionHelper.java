@@ -76,11 +76,7 @@ class FatalSqlExceptionHelper {
                 } else {
                     throw new ProxoolException("Couldn't throw " + clazz.getName() + " because it isn't either a RuntimeException or an SQLException");
                 }
-            } catch (InstantiationException e) {
-                throw new ProxoolException("Couldn't create " + clazz.getName() + "(" + argDescription + ")", e);
-            } catch (IllegalAccessException e) {
-                throw new ProxoolException("Couldn't create " + clazz.getName() + "(" + argDescription + ")", e);
-            } catch (InvocationTargetException e) {
+            } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
                 throw new ProxoolException("Couldn't create " + clazz.getName() + "(" + argDescription + ")", e);
             }
         } else {
@@ -164,11 +160,7 @@ class FatalSqlExceptionHelper {
             if (causeMethod != null) {
                 try {
                     cause = (Throwable) causeMethod.invoke(t, null);
-                } catch (IllegalAccessException e) {
-                    LOG.warn("Problem invoking " + t.getClass().getName() + "." + causeMethod.getName() + ". Ignoring.", e);
-                } catch (IllegalArgumentException e) {
-                    LOG.warn("Problem invoking " + t.getClass().getName() + "." + causeMethod.getName() + ". Ignoring.", e);
-                } catch (InvocationTargetException e) {
+                } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
                     LOG.warn("Problem invoking " + t.getClass().getName() + "." + causeMethod.getName() + ". Ignoring.", e);
                 }
             }

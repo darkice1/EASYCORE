@@ -82,7 +82,7 @@ class ConnectionPoolManager {
 
     /** @return an array of the connection pools */
     protected ConnectionPool[] getConnectionPools() {
-        return (ConnectionPool[]) connectionPools.toArray(new ConnectionPool[connectionPools.size()]);
+        return (ConnectionPool[]) connectionPools.toArray(new ConnectionPool[0]);
     }
 
     protected ConnectionPool createConnectionPool(ConnectionPoolDefinition connectionPoolDefinition) throws ProxoolException {
@@ -103,7 +103,7 @@ class ConnectionPoolManager {
     }
 
     public String[] getConnectionPoolNames() {
-        return (String[]) connectionPoolMap.keySet().toArray(new String[connectionPoolMap.size()]);
+        return (String[]) connectionPoolMap.keySet().toArray(new String[0]);
     }
 }
 

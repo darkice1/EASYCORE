@@ -83,12 +83,10 @@ public class JAXPConfigurator {
             saxParser.parse(inputSource, xmlConfigurator);
         } catch (ParserConfigurationException pce) {
             throw new ProxoolException("Parser configuration failed", pce);
-        } catch (SAXException se) {
+        } catch (SAXException | IOException se) {
             throw new ProxoolException("Parsing failed.", se);
-        } catch (IOException ioe) {
-            throw new ProxoolException("Parsing failed.", ioe);
         }
-    }
+	}
 
     /**
      * Configure Proxool with xml from the given reader.

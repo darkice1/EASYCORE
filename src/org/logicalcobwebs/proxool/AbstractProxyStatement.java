@@ -151,7 +151,7 @@ abstract class AbstractProxyStatement {
             });
         }
 
-        Object key = new Integer(index);
+        Object key = index;
         if (value == null) {
             parameters.put(key, "NULL");
         } else if (value instanceof String) {
@@ -217,7 +217,7 @@ abstract class AbstractProxyStatement {
             while (st.hasMoreTokens()) {
                 if (parameterIndex > 0) {
                     if (parameters != null) {
-                        final Object value = parameters.get(new Integer(parameterIndex));
+                        final Object value = parameters.get(parameterIndex);
                         if (value != null) {
                             sqlLog.append(value);
                         } else {
@@ -233,7 +233,7 @@ abstract class AbstractProxyStatement {
             if (sqlStatement.endsWith("?")) {
                 if (parameterIndex > 0) {
                     if (parameters != null) {
-                        final Object value = parameters.get(new Integer(parameterIndex));
+                        final Object value = parameters.get(parameterIndex);
                         if (value != null) {
                             sqlLog.append(value);
                         } else {

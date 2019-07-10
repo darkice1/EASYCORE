@@ -545,7 +545,7 @@ public class ProxoolDataSource implements DataSource, ObjectFactory {
         }
         property = reference.get(ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME_PROPERTY);
         if (property != null) {
-            setHouseKeepingSleepTime(Integer.valueOf(property.getContent().toString()).intValue());
+            setHouseKeepingSleepTime(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.HOUSE_KEEPING_TEST_SQL_PROPERTY);
         if (property != null) {
@@ -553,11 +553,11 @@ public class ProxoolDataSource implements DataSource, ObjectFactory {
         }
         property = reference.get(ProxoolConstants.MAXIMUM_CONNECTION_COUNT_PROPERTY);
         if (property != null) {
-            setMaximumConnectionCount(Integer.valueOf(property.getContent().toString()).intValue());
+            setMaximumConnectionCount(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME_PROPERTY);
         if (property != null) {
-            setMaximumConnectionLifetime(Integer.valueOf(property.getContent().toString()).intValue());
+            setMaximumConnectionLifetime(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.MAXIMUM_ACTIVE_TIME_PROPERTY);
         if (property != null) {
@@ -565,11 +565,11 @@ public class ProxoolDataSource implements DataSource, ObjectFactory {
         }
         property = reference.get(ProxoolConstants.MINIMUM_CONNECTION_COUNT_PROPERTY);
         if (property != null) {
-            setMinimumConnectionCount(Integer.valueOf(property.getContent().toString()).intValue());
+            setMinimumConnectionCount(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME_PROPERTY);
         if (property != null) {
-            setOverloadWithoutRefusalLifetime(Integer.valueOf(property.getContent().toString()).intValue());
+            setOverloadWithoutRefusalLifetime(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.PASSWORD_PROPERTY);
         if (property != null) {
@@ -577,15 +577,15 @@ public class ProxoolDataSource implements DataSource, ObjectFactory {
         }
         property = reference.get(ProxoolConstants.PROTOTYPE_COUNT_PROPERTY);
         if (property != null) {
-            setPrototypeCount(Integer.valueOf(property.getContent().toString()).intValue());
+            setPrototypeCount(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.RECENTLY_STARTED_THRESHOLD_PROPERTY);
         if (property != null) {
-            setRecentlyStartedThreshold(Integer.valueOf(property.getContent().toString()).intValue());
+            setRecentlyStartedThreshold(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE_PROPERTY);
         if (property != null) {
-            setSimultaneousBuildThrottle(Integer.valueOf(property.getContent().toString()).intValue());
+            setSimultaneousBuildThrottle(Integer.valueOf(property.getContent().toString()));
         }
         property = reference.get(ProxoolConstants.STATISTICS_PROPERTY);
         if (property != null) {

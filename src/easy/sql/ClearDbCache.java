@@ -40,11 +40,7 @@ public class ClearDbCache implements FileFilter
 					Log.OutLog("[%d/%d][%d]删除[%s][%s]",idx,total,delnum,rpath,f.delete());
 				}
 			}
-			catch (ClassNotFoundException e)
-			{
-				Log.OutException(e);
-			}
-			catch (IOException e)
+			catch (ClassNotFoundException | IOException e)
 			{
 				Log.OutException(e);
 			}

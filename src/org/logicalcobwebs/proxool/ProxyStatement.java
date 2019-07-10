@@ -115,10 +115,10 @@ class ProxyStatement extends AbstractProxyStatement implements MethodInterceptor
 
                     // What sort of method is it
                     if (concreteMethod.getName().equals(SET_NULL_METHOD) && argCount > 0 && args[0] instanceof Integer) {
-                        int index = ((Integer) args[0]).intValue();
+                        int index = (Integer) args[0];
                         putParameter(index, null);
                     } else if (concreteMethod.getName().startsWith(SET_PREFIX) && argCount > 1 && args[0] instanceof Integer) {
-                        int index = ((Integer) args[0]).intValue();
+                        int index = (Integer) args[0];
                         putParameter(index, args[1]);
                     }
 

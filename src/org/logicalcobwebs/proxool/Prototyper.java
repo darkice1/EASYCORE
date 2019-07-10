@@ -26,7 +26,7 @@ public class Prototyper {
 
     private long connectionCount;
 
-    private final Object lock = new Integer(1);
+    private final Object lock = 1;
 
     private boolean sweepNeeded = true;
 

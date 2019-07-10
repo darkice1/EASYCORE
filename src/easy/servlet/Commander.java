@@ -81,14 +81,9 @@ public class Commander extends HttpServlet
 			actionInstance.afterPerform();
 			actionInstance.send();
 		}
-		catch (ClassNotFoundException cnfe)
+		catch (Exception cnfe)
 		{
 			request.setAttribute("error",Log.OutException(cnfe).replaceAll("\r","<br>"));
-			request.getRequestDispatcher("/common/error.jsp").forward(request,response);			
-		}
-		catch (Exception e)
-		{
-			request.setAttribute("error",Log.OutException(e).replaceAll("\r","<br>"));
 			request.getRequestDispatcher("/common/error.jsp").forward(request,response);
 		}
 	}

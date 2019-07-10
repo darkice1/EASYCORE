@@ -535,7 +535,7 @@ public class AdminServlet extends HttpServlet {
 
                 long drillDownConnectionId;
                 if (connectionId != null) {
-                    drillDownConnectionId = Long.valueOf(connectionId).longValue();
+                    drillDownConnectionId = Long.valueOf(connectionId);
                     ConnectionInfoIF drillDownConnection = snapshot.getConnectionInfo(drillDownConnectionId);
                     if (drillDownConnection != null) {
                         out.println("    <tr>");
@@ -580,7 +580,7 @@ public class AdminServlet extends HttpServlet {
 
         long drillDownConnectionId = 0;
         if (connectionId != null) {
-            drillDownConnectionId = Long.valueOf(connectionId).longValue();
+            drillDownConnectionId = Long.valueOf(connectionId);
         }
 
         if (snapshot.getConnectionInfos() != null && snapshot.getConnectionInfos().length > 0) {

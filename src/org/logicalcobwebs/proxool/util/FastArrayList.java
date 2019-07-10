@@ -824,8 +824,7 @@ public class FastArrayList extends ArrayList {
      */
     public String toString() {
 
-		String sb = "FastArrayList[" + list.toString() + "]";
-		return (sb);
+		return ("FastArrayList[" + list.toString() + "]");
 
     }
 

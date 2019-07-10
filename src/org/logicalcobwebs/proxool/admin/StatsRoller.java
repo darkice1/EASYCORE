@@ -87,20 +87,16 @@ class StatsRoller {
         currentStatistics = new Statistics(now.getTime());
 
         // Automatically trigger roll if no activity
-        final Thread t = new Thread() {
-
-            public void run() {
-                while (running) {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        LOG.debug("Interruption", e);
-                    }
-                    roll();
-                }
-            }
-
-        };
+        final Thread t = new Thread(() -> {
+			while (running) {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					LOG.debug("Interruption", e);
+				}
+				roll();
+			}
+		});
         t.setDaemon(true);
         t.start();
     }

@@ -218,7 +218,7 @@ public class ProxyConnection implements ProxyConnectionIF {
                 }
             } else {
                 // Close any open statements, as specified in JDBC
-                Statement[] statements = (Statement[]) openStatements.toArray(new Statement[openStatements.size()]);
+                Statement[] statements = (Statement[]) openStatements.toArray(new Statement[0]);
                 for (Statement statement : statements)
                 {
                     statement.close();

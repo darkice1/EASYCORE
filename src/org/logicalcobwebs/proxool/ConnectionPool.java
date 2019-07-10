@@ -173,16 +173,14 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
                 // able to cope with connections being removed whilst we are going round this loop
                 try {
                     proxyConnection = (ProxyConnection) proxyConnections.get(nextAvailableConnection);
-                } catch (ArrayIndexOutOfBoundsException e) {
+                }
+                catch (IndexOutOfBoundsException e) {
                     // This is thrown by a Vector (which we no longer use), but is
                     // kept here for a while.
                     nextAvailableConnection = 0;
                     proxyConnection = (ProxyConnection) proxyConnections.get(nextAvailableConnection);
-                } catch (IndexOutOfBoundsException e) {
-                    // This is thrown by a true List
-                    nextAvailableConnection = 0;
-                    proxyConnection = (ProxyConnection) proxyConnections.get(nextAvailableConnection);
-                }
+                }// This is thrown by a true List
+
                 // setActive() returns false if the ProxyConnection wasn't available.  You
                 // can't set it active twice (at least, not without making it available again
                 // in between)
@@ -392,7 +390,7 @@ class ConnectionPool implements ConnectionPoolStatisticsIF {
      * @return array of connections
      */
     protected ProxyConnectionIF[] getProxyConnections() {
-        return (ProxyConnectionIF[]) proxyConnections.toArray(new ProxyConnectionIF[proxyConnections.size()]);
+        return (ProxyConnectionIF[]) proxyConnections.toArray(new ProxyConnectionIF[0]);
     }
 
     /**

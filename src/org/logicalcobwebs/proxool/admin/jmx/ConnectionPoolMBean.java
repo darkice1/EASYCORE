@@ -174,7 +174,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.HOUSE_KEEPING_SLEEP_TIME))
                 {
-                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getHouseKeepingSleepTime())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getHouseKeepingSleepTime()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.HOUSE_KEEPING_TEST_SQL))
                 {
@@ -182,47 +182,47 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.TEST_BEFORE_USE))
                 {
-                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isTestBeforeUse())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.isTestBeforeUse()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.TEST_AFTER_USE))
                 {
-                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isTestAfterUse())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.isTestAfterUse()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_ACTIVE_TIME))
                 {
-                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getMaximumActiveTime())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getMaximumActiveTime()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_CONNECTION_COUNT))
                 {
-                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getMaximumConnectionCount())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getMaximumConnectionCount()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_CONNECTION_LIFETIME))
                 {
-                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getMaximumConnectionLifetime())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getMaximumConnectionLifetime()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.MAXIMUM_NEW_CONNECTIONS))
                 {
-                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getMaximumNewConnections())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getMaximumNewConnections()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.SIMULTANEOUS_BUILD_THROTTLE))
                 {
-                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getSimultaneousBuildThrottle())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getSimultaneousBuildThrottle()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.MINIMUM_CONNECTION_COUNT))
                 {
-                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getMinimumConnectionCount())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getMinimumConnectionCount()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.OVERLOAD_WITHOUT_REFUSAL_LIFETIME))
                 {
-                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getOverloadWithoutRefusalLifetime())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getOverloadWithoutRefusalLifetime()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.PROTOTYPE_COUNT))
                 {
-                    resultList.add(new Attribute(attributeName, new Integer(this.poolDefinition.getPrototypeCount())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getPrototypeCount()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.RECENTLY_STARTED_THRESHOLD))
                 {
-                    resultList.add(new Attribute(attributeName, new Long(this.poolDefinition.getRecentlyStartedThreshold())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.getRecentlyStartedThreshold()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.STATISTICS))
                 {
@@ -234,11 +234,11 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.TRACE))
                 {
-                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isTrace())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.isTrace()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.VERBOSE))
                 {
-                    resultList.add(new Attribute(attributeName, new Boolean(this.poolDefinition.isVerbose())));
+                    resultList.add(new Attribute(attributeName, this.poolDefinition.isVerbose()));
                 }
                 else if (equalsProperty(attributeName, ProxoolConstants.FATAL_SQL_EXCEPTION_WRAPPER_CLASS))
                 {
@@ -644,7 +644,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
     }
 
     private boolean notEmptyOrZero(Integer integer) {
-        return integer != null && integer.intValue() > 0;
+        return integer != null && integer > 0;
     }
 
     private String getValueOrEmpty(String property) {
@@ -658,8 +658,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
             properties.setProperty(propertyName, value.toString());
             resultList.add(new Attribute(attributeName, value));
         } else {
-            resultList.add(new Attribute(attributeName,
-                    new Integer(defaultValue)));
+            resultList.add(new Attribute(attributeName, defaultValue));
         }
     }
 
@@ -754,7 +753,7 @@ public class ConnectionPoolMBean implements DynamicMBean, MBeanRegistration, Not
      * @see MBeanRegistration#postRegister(Boolean)
      */
     public void postRegister(Boolean success) {
-        if (success.booleanValue()) {
+        if (success) {
             this.active = true;
         }
     }

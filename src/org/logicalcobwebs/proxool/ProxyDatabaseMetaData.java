@@ -52,7 +52,7 @@ class ProxyDatabaseMetaData implements MethodInterceptor {
             if (method.getName().equals(GET_CONNECTION_METHOD)) {
                 result = getConnection();
             } else if (method.getName().equals(EQUALS_METHOD) && argCount == 1) {
-                result = new Boolean(equals(args[0]));
+                result = equals(args[0]);
             } else if (method.getName().equals(FINALIZE_METHOD)) {
                 super.finalize();
             } else {

@@ -399,7 +399,7 @@ public class DataSet implements Serializable
 				{
 					if(rowList.get(j-1).getLong(currField).longValue() == rowList.get(j).getLong(currField).longValue())
 						continue;
-					if((rowList.get(j-1).getLong(currField).longValue() < rowList.get(j).getLong(currField).longValue()) == isDESC[0])
+					if((rowList.get(j - 1).getLong(currField) < rowList.get(j).getLong(currField)) == isDESC[0])
 					{
 						Collections.swap(rowList,j-1,j);
 						flag = true;
@@ -409,7 +409,7 @@ public class DataSet implements Serializable
 				{
 					if(rowList.get(j-1).getDouble(currField).doubleValue() == rowList.get(j).getDouble(currField).doubleValue()) 
 						continue;
-					if((rowList.get(j-1).getDouble(currField).doubleValue() < rowList.get(j).getDouble(currField).doubleValue()) == isDESC[0])
+					if((rowList.get(j - 1).getDouble(currField) < rowList.get(j).getDouble(currField)) == isDESC[0])
 					{
 						Collections.swap(rowList,j-1,j);
 						flag = true;
@@ -449,7 +449,7 @@ public class DataSet implements Serializable
 						if("int".equals(fieldType)|| "long".equals(fieldType))
 						{
 							if(rowList.get(j-1).getLong(currField).longValue() == rowList.get(j).getLong(currField).longValue()) continue;
-							if((rowList.get(j-1).getLong(currField).longValue() < rowList.get(j).getLong(currField).longValue()) == isDESC[i])
+							if((rowList.get(j - 1).getLong(currField) < rowList.get(j).getLong(currField)) == isDESC[i])
 							{
 								Collections.swap(rowList,j-1,j);
 								flag = true;
@@ -458,7 +458,7 @@ public class DataSet implements Serializable
 						else if("float".equals(fieldType) || "double".equals(fieldType))
 						{
 							if(rowList.get(j-1).getDouble(currField).doubleValue() == (rowList.get(j).getDouble(currField)).doubleValue()) continue;
-							if((rowList.get(j-1).getDouble(currField).doubleValue() < (rowList.get(j).getDouble(currField)).doubleValue()) == isDESC[i])
+							if((rowList.get(j - 1).getDouble(currField) < rowList.get(j).getDouble(currField)) == isDESC[i])
 							{
 								Collections.swap(rowList,j-1,j);
 								flag = true;

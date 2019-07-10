@@ -271,8 +271,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
     private static String getUTF8String(byte[] b, int off, int len) {
     	
     	try {
-    		   String s = new String(b,off,len,"gbk");
-    		   return s;
+			return new String(b,off,len,"gbk");
     		  } catch (UnsupportedEncodingException e) {
     		   e.printStackTrace();
     		  }
@@ -408,7 +407,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
      * Fetches unsigned 16-bit value from byte array at specified offset.
      * The bytes are assumed to be in Intel (little-endian) byte order.
      */
-    private static final int get16(byte[] b, int off) {
+    private static int get16(byte[] b, int off) {
 	return (b[off] & 0xff) | ((b[off+1] & 0xff) << 8);
     }
 
@@ -416,7 +415,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
      * Fetches unsigned 32-bit value from byte array at specified offset.
      * The bytes are assumed to be in Intel (little-endian) byte order.
      */
-    private static final long get32(byte[] b, int off) {
+    private static long get32(byte[] b, int off) {
 	return get16(b, off) | ((long)get16(b, off+2) << 16);
     }
 }

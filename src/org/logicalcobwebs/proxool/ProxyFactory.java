@@ -182,7 +182,7 @@ class ProxyFactory {
                     }
                 }
             }
-            interfaceArray = (Class[]) interfaces.toArray(new Class[interfaces.size()]);
+            interfaceArray = (Class[]) interfaces.toArray(new Class[0]);
             if (LOG.isDebugEnabled()) {
                 for (Class aClass : interfaceArray)
                 {

@@ -42,11 +42,10 @@ class ShutdownHook implements Runnable {
             }
         } catch (NoSuchMethodException e) {
             LOG.warn("Proxool will have to be shutdown manually with ProxoolFacade.shutdown() because this version of the JDK does not support Runtime.getRuntime().addShutdownHook()");
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalAccessException e) {
             LOG.error("Problem removing shutdownHook", e);
-        } catch (IllegalAccessException e) {
-            LOG.error("Problem removing shutdownHook", e);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             // Use getTargetException() because getCause() is only supported in JDK 1.4 and later
             Throwable cause = e.getTargetException();
             if (cause instanceof IllegalStateException) {
@@ -74,11 +73,7 @@ class ShutdownHook implements Runnable {
             }
         } catch (NoSuchMethodException e) {
             LOG.warn("Proxool will have to be shutdown manually with ProxoolFacade.shutdown() because this version of the JDK does not support Runtime.getRuntime().addShutdownHook()");
-        } catch (SecurityException e) {
-            LOG.error("Problem registering shutdownHook", e);
-        } catch (IllegalAccessException e) {
-            LOG.error("Problem registering shutdownHook", e);
-        } catch (InvocationTargetException e) {
+        } catch (SecurityException | InvocationTargetException | IllegalAccessException e) {
             LOG.error("Problem registering shutdownHook", e);
         }
     }

@@ -32,7 +32,7 @@ public class HouseKeeperController {
 
     private static List houseKeeperThreads = new FastArrayList();
 
-    private static final Object LOCK = new Integer(1);
+    private static final Object LOCK = 1;
 
     private static HouseKeeper getHouseKeeper(String alias) throws ProxoolException {
         final HouseKeeper houseKeeper = (HouseKeeper) houseKeepers.get(alias);

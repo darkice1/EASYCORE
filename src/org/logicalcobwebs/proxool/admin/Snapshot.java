@@ -160,7 +160,7 @@ class Snapshot implements SnapshotIF {
      * @see SnapshotIF#getConnectionInfos
      */
     public ConnectionInfoIF[] getConnectionInfos() {
-        return (ConnectionInfoIF[]) connectionInfos.toArray(new ConnectionInfoIF[connectionInfos.size()]);
+        return (ConnectionInfoIF[]) connectionInfos.toArray(new ConnectionInfoIF[0]);
     }
 
     /**

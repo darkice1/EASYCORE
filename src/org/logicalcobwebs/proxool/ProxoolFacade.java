@@ -632,9 +632,7 @@ public class ProxoolFacade {
     public static long getId(Connection connection) throws ProxoolException {
         try {
             return ProxyFactory.getWrappedConnection(connection).getId();
-        } catch (NullPointerException e) {
-            throw new ProxoolException("Connection argument is not one provided by Proxool (it's a " + connection.getClass() + ")");
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             throw new ProxoolException("Connection argument is not one provided by Proxool (it's a " + connection.getClass() + ")");
         }
     }
@@ -648,9 +646,7 @@ public class ProxoolFacade {
     public static String getAlias(Connection connection) throws ProxoolException {
         try {
             return ProxyFactory.getWrappedConnection(connection).getAlias();
-        } catch (NullPointerException e) {
-            throw new ProxoolException("Connection argument is not one provided by Proxool (it's a " + connection.getClass() + ")");
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             throw new ProxoolException("Connection argument is not one provided by Proxool (it's a " + connection.getClass() + ")");
         }
     }

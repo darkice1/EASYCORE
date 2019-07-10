@@ -134,7 +134,7 @@ public class ServletConfigurator extends HttpServlet {
                     LOG.error("Problem configuring " + value, e);
                 }
             } else if (name.equals(AUTO_SHUTDOWN_PROPERTY)) {
-                autoShutdown = Boolean.valueOf(value).booleanValue();
+                autoShutdown = Boolean.valueOf(value);
             } else if (name.startsWith(PropertyConfigurator.PREFIX)) {
                 properties.setProperty(name, value);
             }

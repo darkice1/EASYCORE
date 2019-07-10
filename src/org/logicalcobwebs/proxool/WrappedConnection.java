@@ -139,7 +139,7 @@ public class WrappedConnection implements MethodInterceptor {
             } else if (concreteMethod.getName().equals(EQUALS_METHOD) && argCount == 1) {
                 result = equals(args[0]) ? Boolean.TRUE : Boolean.FALSE;
             } else if (concreteMethod.getName().equals(HASH_CODE_METHOD) && argCount == 0) {
-                result = new Integer(hashCode());
+                result = hashCode();
             } else if (concreteMethod.getName().equals(IS_CLOSED_METHOD) && argCount == 0) {
                 result = (proxyConnection == null || proxyConnection.isClosed()) ? Boolean.TRUE : Boolean.FALSE;
             } else if (concreteMethod.getName().equals(GET_META_DATA_METHOD) && argCount == 0) {

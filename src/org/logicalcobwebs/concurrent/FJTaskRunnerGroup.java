@@ -449,8 +449,7 @@ public class FJTaskRunnerGroup implements Executor {
 
     protected FJTask pollEntryQueue() {
         try {
-            FJTask t = (FJTask) (entryQueue.poll(0));
-            return t;
+			return (FJTask) (entryQueue.poll(0));
         } catch (InterruptedException ex) { // ignore interrupts
             Thread.currentThread().interrupt();
             return null;

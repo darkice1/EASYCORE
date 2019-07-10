@@ -496,7 +496,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
                 break;
             case ProxoolConstants.VERBOSE_PROPERTY:
             {
-                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                final boolean valueAsBoolean = Boolean.valueOf(value);
                 if (isVerbose() != valueAsBoolean)
                 {
                     changed = true;
@@ -509,7 +509,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
             }
             case ProxoolConstants.TRACE_PROPERTY:
             {
-                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                final boolean valueAsBoolean = Boolean.valueOf(value);
                 if (isTrace() != valueAsBoolean)
                 {
                     changed = true;
@@ -606,7 +606,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
                 break;
             case ProxoolConstants.TEST_BEFORE_USE_PROPERTY:
             {
-                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                final boolean valueAsBoolean = Boolean.valueOf(value);
                 if (isTestBeforeUse() != valueAsBoolean)
                 {
                     changed = true;
@@ -619,7 +619,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
             }
             case ProxoolConstants.TEST_AFTER_USE_PROPERTY:
             {
-                final boolean valueAsBoolean = Boolean.valueOf(value).booleanValue();
+                final boolean valueAsBoolean = Boolean.valueOf(value);
                 if (isTestAfterUse() != valueAsBoolean)
                 {
                     changed = true;
@@ -1150,9 +1150,7 @@ class ConnectionPoolDefinition implements ConnectionPoolDefinitionIF {
         //  Test it out. That's the best way.
         try {
             FatalSqlExceptionHelper.throwFatalSQLException(fatalSqlExceptionWrapper, new SQLException("Test"));
-        } catch (SQLException e) {
-            // That's OK, we were expecting one of these
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             // That's OK, we were expecting one of these
         }
 

@@ -26,9 +26,8 @@ public class Douqq extends ChatRobot
 		//java.net.URLEncoder.encode(msg,"utf-8")
 		String url = String.format("http://xiao.douqq.com/api.php?type=txt&msg=%s",msg);
 		//System.out.println(url);
-		String html = JFile.loadHttpFile(url);
-		
-		return html;
+
+		return JFile.loadHttpFile(url);
 	}
 
 	/**
