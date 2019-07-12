@@ -4,3 +4,4 @@ web/WEB-INF/classes/*
 .idea
 .settings
 web/WEB-INF/classes/
+web/WEB-INF/lib/
