@@ -130,7 +130,7 @@ public class Log
 		
 		if (isTrue("OUTERROR"))
 		{
-			return OutLog(strbuf.toString());
+			return OutLog(strbuf.toString(),true);
 		}
 		else
 		{
@@ -143,24 +143,37 @@ public class Log
 		String str = String.format(formate,strs);
 		return OutLog (str);
 	}
+
+	public static String OutLog (Object str,boolean iserror)
+	{
+		String datestr = normalformat.format (new Date());
+
+		String out = String.format("%s%s%s", datestr, str, SEP);
+
+		if (isTrue("WRITELOG"))
+		{
+			LOGFILE.WriteText(out);
+		}
+
+		if (isTrue("OUTLOG"))
+		{
+			if (iserror)
+			{
+				System.err.print(out);
+			}
+			else
+			{
+				System.out.print(out);
+			}
+		}
+
+		return out;
+	}
 	
 	public static String OutLog (Object str)
 	{
-		String datestr = normalformat.format (new Date());
-		
-		String out = String.format("%s%s%s", datestr, str, SEP);
-		
-		if (isTrue("WRITELOG"))
-		{
-			LOGFILE.WriteText(out);		
-		}
-		
-		if (isTrue("OUTLOG"))
-		{
-			System.out.print(out);
-		}
-		
-		return out;
+		return	OutLog(str,false);
+
 	}
 	
 	public static String OutSql (String str)
