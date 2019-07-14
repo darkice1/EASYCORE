@@ -4,16 +4,15 @@ import easy.config.Config;
 import easy.io.JFile;
 import easy.util.EDate;
 import easy.util.Log;
-import it.sauronsoftware.junique.AlreadyLockedException;
-import it.sauronsoftware.junique.JUnique;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static easy.util.Tools.JUniqueOne;
 
 /**
  * 将sql执行存入文件方便顺序执行
@@ -74,18 +73,7 @@ public class SqlExeCache implements Runnable,FileFilter
 //		writeCache("test10","sql你好");
 //		writeCache("test11","sql你好");
 		//放置每个线程的sql
-		boolean isexist;
-		final String PID = "sqlexecache.pid";
-		try
-		{
-			JUnique.acquireLock(PID);
-			isexist = false;
-		}
-		catch (AlreadyLockedException e1)
-		{
-			// Log.OutException(e1);
-			isexist = true;
-		}
+		JUniqueOne("sqlexecache.pid");
 		
 		Log.OutLog("DBEXECACHEPATH:%s",DBEXECACHEPATH);
 		Log.OutLog("DBEXECACHEEXT:%s",DBEXECACHEEXT);
@@ -94,21 +82,6 @@ public class SqlExeCache implements Runnable,FileFilter
 //		protected static String DBEXECACHEEXT = Config.getProperty("DBEXECACHEEXT","ec");
 //		protected static int DBEXECACHEMAXTHREAD = Integer.parseInt(Config.getProperty("DBEXECACHEMAXTHREAD","5"));
 		// boolean isexist = JFile.exists(PID);
-		if (isexist)
-		{
-			Log.OutLog("%s已开启,无需再次启动.", PID);
-			System.exit(0);
-		}
-		CPSql sql = new CPSql();
-		try
-		{
-			sql.executeQuery("select 1");
-		}
-		catch (SQLException e)
-		{
-			Log.OutException(e);
-		}
-		sql.close();
 		
 		List<ConcurrentLinkedQueue <String>> list = new ArrayList<>();
 
@@ -117,7 +90,7 @@ public class SqlExeCache implements Runnable,FileFilter
 		File file = new File(DBEXECACHEPATH);
 		File[] fs =  file.listFiles(new SqlExeCache());
 		//按时间排序
-		Arrays.sort(fs, new Comparator<File>()
+		Arrays.sort(Objects.requireNonNull(fs), new Comparator<File>()
 		{
 			public int compare(File f1, File f2)
 			{

@@ -4,12 +4,12 @@ import easy.config.Config;
 import easy.io.JFile;
 import easy.util.Format;
 import easy.util.Log;
-import it.sauronsoftware.junique.AlreadyLockedException;
-import it.sauronsoftware.junique.JUnique;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+
+import static easy.util.Tools.JUniqueOne;
 
 /**
  * 清除数据库缓存文件
@@ -61,27 +61,7 @@ public class ClearDbCache implements FileFilter
 	 */
 	public static void main(String[] args)
 	{
-		boolean isexist;
-		String PID ="ClearDbCache.pid";
-		if (args.length > 0)
-		{
-			PID = args[0];
-		}
-		
-		try
-		{
-			JUnique.acquireLock(PID);
-			isexist = false;
-		}
-		catch (AlreadyLockedException e1)
-		{
-			isexist = true;
-		}
-		if (isexist)
-		{
-			Log.OutLog("%s已开启，无需再次启动。",PID);
-			System.exit(0);
-		}
+		JUniqueOne("ClearDbCache.pid");
 		
 		String path = Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));
 		Log.OutLog("读取目录[%s]",path);
