@@ -362,20 +362,16 @@ public abstract class Sql implements  AutoCloseable
 			Log.OutSql(sql);
 			return getStmtWrite().executeUpdate(sqlstr);
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
-			if (ex.toString().indexOf("Data truncation: Data truncated for column") <= 0)
+			if (Format.isEmpty(jdbcurlwrite ))
 			{
-				if (Format.isEmpty(jdbcurlwrite ))
-				{
-					jdbcurlwrite = jdbcurl;
-				}
-				Log.OutException(ex, jdbcurlwrite + "\r\n" + sql);
+				jdbcurlwrite = jdbcurl;
 			}
+			Log.OutException(ex, jdbcurlwrite + "\r\n" + sql);
 			
 			return -1;
 		}
-
 	}
 	
 	private Statement getStmt()
