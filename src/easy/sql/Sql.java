@@ -362,7 +362,7 @@ public abstract class Sql implements  AutoCloseable
 			Log.OutSql(sql);
 			return getStmtWrite().executeUpdate(sqlstr);
 		}
-		catch (Exception ex)
+		catch (SQLException ex)
 		{
 			if (Format.isEmpty(jdbcurlwrite ))
 			{
