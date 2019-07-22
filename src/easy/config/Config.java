@@ -96,20 +96,22 @@ public class Config
 
 	public static void load()
 	{
-		CFG = new Config();
-		String cpath = CFG.getClass().getResource("/").getPath();
-		if (cpath.indexOf("file:") == 0)
-		{
-			cpath = cpath.substring(5);
-		}
-		cpath = Format.replaceAll(cpath,"%20"," ");
-
-//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
-
-		String fpath = getConfigPath(cpath);
+		String cpath=null,fpath=null;
 
 		try
 		{
+			CFG = new Config();
+
+			cpath = CFG.getClass().getResource("/").getPath();
+			if (cpath.indexOf("file:") == 0)
+			{
+				cpath = cpath.substring(5);
+			}
+			cpath = Format.replaceAll(cpath,"%20"," ");
+
+			//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
+
+			fpath = getConfigPath(cpath);
 			load(fpath);
 		}
 		catch (Exception ex)
