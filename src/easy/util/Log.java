@@ -144,7 +144,7 @@ public class Log
 		return OutLog (str);
 	}
 
-	public static String OutLog (Object str,boolean iserror)
+	private static String OutLog (Object str,boolean iserror)
 	{
 		String datestr = normalformat.format (new Date());
 
