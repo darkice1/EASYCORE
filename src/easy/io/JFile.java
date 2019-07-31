@@ -20,6 +20,8 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -73,6 +75,39 @@ public class JFile
 	{
 		File f = new File(filename);
 		return f.delete();
+	}
+
+	public static byte[] getFileBytes(String filename) throws IOException
+	{
+		FileChannel fc = null;
+		try
+		{
+			fc = new RandomAccessFile(filename,"r").getChannel();
+			MappedByteBuffer byteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size()).load();
+//			System.out.println(byteBuffer.isLoaded());
+			byte[] result = new byte[(int)fc.size()];
+			if (byteBuffer.remaining() > 0)
+			{
+				//              System.out.println("remain");
+				byteBuffer.get(result, 0, byteBuffer.remaining());
+			}
+			return result;
+		}
+		catch (IOException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			try
+			{
+				fc.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public JFile(String p_filename, boolean append)
@@ -1225,50 +1260,18 @@ public class JFile
 		return null;
 	}
 	
-	public static void main(String[] args)
+/*	public static void main(String[] args)
 	{
-		String a = "ASDf   adfaerweqrqwereqwrqewrdsf";
-		int max = 10000;
-		byte[] bs = JFile.kryoSerializeToBytes(a);
-
-
-		long ts = System.currentTimeMillis();
-		for (int i=0; i<max; i++)
+		try
 		{
-			JFile.kryoSerializeToBytes(a);
+			byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/aaa.png");
+			System.out.println(bs.length);
 		}
-		Log.OutLog("%d",System.currentTimeMillis()-ts);
-		//		System.out.println(new String(bs));
-		ts = System.currentTimeMillis();
-
-		for (int i=0; i<max; i++)
+		catch (IOException e)
 		{
-			JFile.kryoBytesUnSerialize(bs);
+			Log.OutException(e);
 		}
-		Log.OutLog("%d",System.currentTimeMillis()-ts);
-		System.out.println(JFile.kryoBytesUnSerialize(bs));
-
-
-		bs = JFile.kryoSerializeToCompressBytes(a);
-
-		ts = System.currentTimeMillis();
-
-		for (int i=0; i<max; i++)
-		{
-			JFile.kryoSerializeToCompressBytes(a);
-		}
-		Log.OutLog("%d",System.currentTimeMillis()-ts);
-
-		System.out.println(JFile.kryoCompressBytesUnSerialize(bs));
-		//		System.out.println(new String(bs));
-		ts = System.currentTimeMillis();
-
-		for (int i=0; i<max; i++)
-		{
-			JFile.kryoCompressBytesUnSerialize(bs);
-		}
-		Log.OutLog("%d",System.currentTimeMillis()-ts);
-	}
+	}*/
 
 	public static Object cloneObject(Object obj)
 	{
