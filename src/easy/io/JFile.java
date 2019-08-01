@@ -110,6 +110,13 @@ public class JFile
 		}
 	}
 
+	public static void  writeFileBytes(String path,byte[] data) throws IOException
+	{
+		BufferedOutputStream outputStream  = new BufferedOutputStream(new FileOutputStream(new File(path)));
+		outputStream.write(data);
+		outputStream.close();
+	}
+
 	public JFile(String p_filename, boolean append)
 	{
 		filename = p_filename;
@@ -1259,12 +1266,19 @@ public class JFile
 
 		return null;
 	}
-	
+
+	public static Object cloneObject(Object obj)
+	{
+		return JFile.kryoCompressBytesUnSerialize(JFile.kryoSerializeToCompressBytes(obj));
+	}
+
 /*	public static void main(String[] args)
 	{
 		try
 		{
 			byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/aaa.png");
+
+			JFile.writeFileBytes("/Users/Neo/Desktop/aaa2.png",bs);
 			System.out.println(bs.length);
 		}
 		catch (IOException e)
@@ -1272,9 +1286,4 @@ public class JFile
 			Log.OutException(e);
 		}
 	}*/
-
-	public static Object cloneObject(Object obj)
-	{
-		return JFile.kryoCompressBytesUnSerialize(JFile.kryoSerializeToCompressBytes(obj));
-	}
 }
