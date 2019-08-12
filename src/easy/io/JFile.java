@@ -825,8 +825,21 @@ public class JFile
 		saveHttpFile(url,localpath,ref,null,5000);
 	}
 
-	public static void saveHttpFile(final String url, final String localpath,final String ref,final String cookie,final int timeout) throws IOException
+	public static byte[] inputStreamToBytes(InputStream in) throws IOException
 	{
+		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+		byte[] buff = new byte[1024];
+		int rc;
+		while ((rc = in.read(buff, 0, 1024)) > 0)
+		{
+			swapStream.write(buff, 0, rc);
+		}
+		return swapStream.toByteArray();
+	}
+
+	public static byte[] getHttpFileBytes(final String url,final String ref,final String cookie,final int timeout) throws IOException
+	{
+		byte[] bs;
 		Proxy.initCfgProxy();
 		URL u = new URL(url);
 
@@ -841,27 +854,30 @@ public class JFile
 		{
 			uc.setRequestProperty(COOKIE, cookie);
 		}
-		
+
 		uc.setConnectTimeout(timeout);
 		uc.setReadTimeout(timeout);
 
-		File newFile = new File(localpath);
-		if (!newFile.exists())
-		{
-			newFile.createNewFile();
-		}
 		int byteread;
 
 		InputStream inStream = uc.getInputStream();
-		FileOutputStream fs = new FileOutputStream(newFile);
-		byte[] buffer = new byte[1444];
-		while ((byteread = inStream.read(buffer)) != -1)
-		{
-			fs.write(buffer, 0, byteread);
-		}
+
+		bs = inputStreamToBytes(inStream);
+
 		inStream.close();
-		fs.close();
+
 		Proxy.closeProxy();
+
+		return bs;
+	}
+
+	public static void saveHttpFile(final String url, final String localpath,final String ref,final String cookie,final int timeout) throws IOException
+	{
+		byte[] bs = getHttpFileBytes(url,ref,cookie,timeout);
+		if (bs != null)
+		{
+			JFile.writeFileBytes(localpath,bs);
+		}
 	}
 
 	public static void saveHttpFile(final String url, final String localpath)
@@ -1276,10 +1292,11 @@ public class JFile
 	{
 		try
 		{
-			byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/aaa.png");
+//			byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/aaa.png");
 
-			JFile.writeFileBytes("/Users/Neo/Desktop/aaa2.png",bs);
-			System.out.println(bs.length);
+//			JFile.writeFileBytes("/Users/Neo/Desktop/aaa2.png",bs);
+//			System.out.println(JFile.saveHttpFile("","/Users/Neo/Desktop/aaa.png"));
+			JFile.saveHttpFile("https://avatar.csdn.net/1/F/5/3_zzzgd_666.jpg","/Users/Neo/Desktop/aaa.png");
 		}
 		catch (IOException e)
 		{
