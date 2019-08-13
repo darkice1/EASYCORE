@@ -117,7 +117,7 @@ public class Config
 		catch (Exception ex)
 		{
 			System.out.println(String.format("载入配置文件错误[%s]->[%s]",cpath,fpath));
-			ex.printStackTrace();
+//			ex.printStackTrace();
 		}
 	}
 
