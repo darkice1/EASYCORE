@@ -5,6 +5,7 @@ import easy.util.Format;
 import easy.util.Log;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -101,8 +102,16 @@ public class Config
 		try
 		{
 			CFG = new Config();
+			URL u = CFG.getClass().getResource("/");
+			if (u == null)
+			{
+				cpath = System.getProperty("user.dir");
+			}
+			else
+			{
+				cpath = u.getPath();
+			}
 
-			cpath = CFG.getClass().getResource("/").getPath();
 			if (cpath.indexOf("file:") == 0)
 			{
 				cpath = cpath.substring(5);
