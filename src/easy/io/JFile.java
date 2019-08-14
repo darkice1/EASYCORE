@@ -79,13 +79,14 @@ public class JFile
 
 	public static byte[] getFileBytes(String filename) throws IOException
 	{
+		byte[] result = null;
 		FileChannel fc = null;
 		try
 		{
 			fc = new RandomAccessFile(filename,"r").getChannel();
 			MappedByteBuffer byteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size()).load();
 //			System.out.println(byteBuffer.isLoaded());
-			byte[] result = new byte[(int)fc.size()];
+			result = new byte[(int)fc.size()];
 			if (byteBuffer.remaining() > 0)
 			{
 				//              System.out.println("remain");
@@ -101,7 +102,10 @@ public class JFile
 		{
 			try
 			{
-				fc.close();
+				if (fc != null)
+				{
+					fc.close();
+				}
 			}
 			catch (IOException e)
 			{
@@ -1288,19 +1292,26 @@ public class JFile
 		return JFile.kryoCompressBytesUnSerialize(JFile.kryoSerializeToCompressBytes(obj));
 	}
 
-/*	public static void main(String[] args)
+	/*public static void main(String[] args)
 	{
+//		byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/f.txt");
+		byte[] bs = null;
 		try
 		{
-//			byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/aaa.png");
-
-//			JFile.writeFileBytes("/Users/Neo/Desktop/aaa2.png",bs);
-//			System.out.println(JFile.saveHttpFile("","/Users/Neo/Desktop/aaa.png"));
-			JFile.saveHttpFile("https://avatar.csdn.net/1/F/5/3_zzzgd_666.jpg","/Users/Neo/Desktop/aaa.png");
+			bs = JFile.getFileBytes("/Users/Neo/Desktop/f.txt");
 		}
 		catch (IOException e)
 		{
 			Log.OutException(e);
 		}
+
+		System.out.println(bs);
+
+		if (bs!= null)
+		{
+			System.out.println(new String(bs));
+		}
+
+		System.out.println("over");
 	}*/
 }
