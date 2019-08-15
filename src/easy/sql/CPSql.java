@@ -5,7 +5,6 @@ import easy.util.Format;
 import easy.util.Log;
 
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -121,7 +120,7 @@ public class CPSql extends Sql
 					connwrite = conn;
 				}
 
-				System.out.println(connwrite == conn);
+//				System.out.println(connwrite == conn);
 			}
 			else
 			{
@@ -156,7 +155,7 @@ public class CPSql extends Sql
 		super(resultSetType,resultSetConncurrency);
 	}
 
-	public static void main(String[] args)
+	/*public static void main(String[] args)
 	{
 		CPSql sql = new CPSql();
 
@@ -177,5 +176,5 @@ public class CPSql extends Sql
 		}
 
 		sql.close();
-	}
+	}*/
 }
