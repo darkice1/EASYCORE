@@ -116,13 +116,12 @@ public class BaseTable
 		CPSql sql = new CPSql();
 		int re = sql.executeUpdateEx(getInsertString(true,false));
 		sql.close();
-		sql = null;
 		return re;
 	}
 
 	/**
 	 * 
-	 * @param isreturn是否返回id
+	 * @param isreturn 是否返回id
 	 * @return isreturn=true返回id,isreturn=false返回-1
 	 * @throws SQLException
 	 */
@@ -139,14 +138,11 @@ public class BaseTable
 				id = ds.getInt("id");
 			}
 			sql.close();
-			sql = null;
-			ds = null;
 			return id;
 		}
 		else
 		{
 			sql.close();
-			sql = null;
 			return -1;
 		}
 	}
@@ -163,8 +159,8 @@ public class BaseTable
 
 		sqlbuf.append(tablename);
 
-		StringBuffer fieldbuf = new StringBuffer("(");
-		StringBuffer valuebuf = new StringBuffer("(");
+		StringBuilder fieldbuf = new StringBuilder("(");
+		StringBuilder valuebuf = new StringBuilder("(");
 
 		// 一般属性
 		while (paramsfields.hasNext())
@@ -178,9 +174,7 @@ public class BaseTable
 
 			valuebuf.append(doValue(params.get(field)));
 			valuebuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 		// 存储过程等
 		while (profields.hasNext())
@@ -193,9 +187,7 @@ public class BaseTable
 
 			valuebuf.append(proparams.get(field));
 			valuebuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 		fieldbuf.setCharAt(fieldbuf.length() - 1, ')');
 		valuebuf.setCharAt(valuebuf.length() - 1, ')');
@@ -203,15 +195,7 @@ public class BaseTable
 		sqlbuf.append(fieldbuf);
 		sqlbuf.append(" VALUES ");
 		sqlbuf.append(valuebuf);
-		
-		paramsfields = null;
-		profields = null;
-		
-		//String sql = sqlbuf.toString();
-		
-		//sqlbuf = null;
-		fieldbuf = null;
-		valuebuf = null;
+
 
 		return sqlbuf.toString();
 	}
@@ -244,8 +228,8 @@ public class BaseTable
 
 		sqlbuf.append(tablename);
 
-		StringBuffer fieldbuf = new StringBuffer("(");
-		StringBuffer valuebuf = new StringBuffer("(");
+		StringBuilder fieldbuf = new StringBuilder("(");
+		StringBuilder valuebuf = new StringBuilder("(");
 
 		// 一般属性
 		while (paramsfields.hasNext())
@@ -259,9 +243,7 @@ public class BaseTable
 
 			valuebuf.append(doValue(params.get(field)));
 			valuebuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 		// 存储过程等
 		while (profields.hasNext())
@@ -274,9 +256,7 @@ public class BaseTable
 
 			valuebuf.append(proparams.get(field));
 			valuebuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 		fieldbuf.setCharAt(fieldbuf.length() - 1, ')');
 		valuebuf.setCharAt(valuebuf.length() - 1, ')');
@@ -284,17 +264,6 @@ public class BaseTable
 		sqlbuf.append(fieldbuf);
 		sqlbuf.append(" VALUES ");
 		sqlbuf.append(valuebuf);
-		
-		paramsfields = null;
-		profields = null;
-		
-		//String sql = sqlbuf.toString();
-		
-		//sqlbuf = null;
-		fieldbuf = null;
-		valuebuf = null;
-		delayed = null;
-		ignore = null;
 
 		return sqlbuf.toString();
 	}
@@ -316,10 +285,9 @@ public class BaseTable
 		CPSql sql = new CPSql();
 		sql.executeUpdateEx(getdeleteString(where));
 		sql.close();
-		sql = null;
 	}
 
-	public String getdeleteString(String where) throws SQLException
+	public String getdeleteString(String where)
 	{
 
 		//String sql = sqlbuf.toString();
@@ -340,8 +308,7 @@ public class BaseTable
 		CPSql sql = new CPSql();
 		int re = sql.executeUpdateEx(getUpdateString(where));
 		sql.close();
-		sql = null;
-		
+
 		return re;
 	}
 	
@@ -374,9 +341,7 @@ public class BaseTable
 			sqlbuf.append('=');
 			sqlbuf.append(doValue(params.get(field)));
 			sqlbuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 		// 存储过程等
 		while (profields.hasNext())
@@ -388,9 +353,7 @@ public class BaseTable
 			sqlbuf.append('=');
 			sqlbuf.append(proparams.get(field));
 			sqlbuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 
 		sqlbuf.setCharAt(sqlbuf.length() - 1, ' ');
@@ -400,8 +363,6 @@ public class BaseTable
 		
 		//String sql = sqlbuf.toString();
 		//sqlbuf = null;
-		paramsfields = null;
-		profields = null;
 
 		return sqlbuf.toString();
 	}
@@ -479,9 +440,7 @@ public class BaseTable
 			sqlbuf.append('=');
 			sqlbuf.append(doValue(params.get(field)));
 			sqlbuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 		// 存储过程等
 		while (profields.hasNext())
@@ -493,9 +452,7 @@ public class BaseTable
 			sqlbuf.append('=');
 			sqlbuf.append(proparams.get(field));
 			sqlbuf.append(',');
-			
-			field = null;
-			entry = null;
+
 		}
 
 		sqlbuf.setCharAt(sqlbuf.length() - 1, ' ');
@@ -506,7 +463,7 @@ public class BaseTable
 	/**
 	 * 
 	 * @param fields 后面需要操作字段
-	 * @param ops操作符 如果少写以最后一个为准
+	 * @param ops 如果少写以最后一个为准
 	 * @return
 	 */
 	public String getInsertUpdateOnDuplPro(String fields,String ops)
@@ -583,14 +540,13 @@ public class BaseTable
 		CPSql sql = new CPSql();
 		sql.executeUpdateEx(getInsertUpdateOnDupl(updateString));
 		sql.close();
-		sql = null;
 	}
 
 	public DataSet select(String where, int startidx, int count)
 			throws SQLException
 	{
-		StringBuffer sqlbuf = new StringBuffer("SELECT ");
-		StringBuffer cbuf = new StringBuffer("SELECT COUNT(*) C FROM ");
+		StringBuilder sqlbuf = new StringBuilder("SELECT ");
+		StringBuilder cbuf = new StringBuilder("SELECT COUNT(*) C FROM ");
 
 		sqlbuf.append(fieldlist);
 		sqlbuf.append(" FROM ");
@@ -655,10 +611,7 @@ public class BaseTable
 			ds.setCount(cds.getInt("C"));
 		}
 		sql.close();
-		sql = null;
-		cbuf = null;
-		sqlbuf = null;
-		
+
 		initdate(ds);
 		return ds;
 	}

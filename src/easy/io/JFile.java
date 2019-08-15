@@ -79,7 +79,7 @@ public class JFile
 
 	public static byte[] getFileBytes(String filename) throws IOException
 	{
-		byte[] result = null;
+		byte[] result;
 		FileChannel fc = null;
 		try
 		{
@@ -93,10 +93,6 @@ public class JFile
 				byteBuffer.get(result, 0, byteBuffer.remaining());
 			}
 			return result;
-		}
-		catch (IOException e)
-		{
-			throw e;
 		}
 		finally
 		{
@@ -227,7 +223,7 @@ public class JFile
 		       
 			 byte[] temp = new byte[BUFSIZE];
 			 int size;
-			 while ((size = p_in.read(temp)) != -1) 
+			 while ((size = p_in.read(temp)) != -1)
 			 {        
 				 out.write(temp, 0, size);        
 			}     
@@ -521,17 +517,10 @@ public class JFile
 			}
 
 			Object o;
-			try
-			{
 
-				InputStream in = uc.getInputStream();
-				o = readObject(in);
-				in.close();
-			}
-			catch (SocketException e)
-			{
-				throw e;
-			}
+			InputStream in = uc.getInputStream();
+			o = readObject(in);
+			in.close();
 
 			return o;
 		}
@@ -589,17 +578,10 @@ public class JFile
 			}
 
 			Object o;
-			try
-			{
 
-				InputStream in = uc.getInputStream();
-				o = readGZipObject(in);
-				in.close();
-			}
-			catch (SocketException e)
-			{
-				throw e;
-			}
+			InputStream in = uc.getInputStream();
+			o = readGZipObject(in);
+			in.close();
 
 			return o;
 		}
@@ -956,7 +938,7 @@ public class JFile
 			{
 				newFile.createNewFile();
 			}
-			int byteread = 0;
+			int byteread;
 			File oldfile = new File(oldPath);
 			if (oldfile.exists())
 			{ // 文件存在时
