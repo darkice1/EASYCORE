@@ -110,12 +110,12 @@ public class BatchInsert
 		return sqllist;
 	}
 	
-	public int executeUpdate (CPSql sql)
+	public int executeUpdate (Sql sql)
 	{
 		return executeUpdateOnDupl(sql,null);
 	}
 	
-	public int executeUpdateIgnore (CPSql sql)
+	public int executeUpdateIgnore (Sql sql)
 	{
 		int count=0;
 		for (StringBuffer r : sqllist)
@@ -130,7 +130,7 @@ public class BatchInsert
 		return count;
 	}
 
-	public int executeUpdateOnDupl (CPSql sql,String updateString)
+	public int executeUpdateOnDupl (Sql sql,String updateString)
 	{
 		int count=0;
 		for (StringBuffer r : sqllist)

@@ -333,9 +333,9 @@ public class Row implements Comparable<Row>,Serializable
 	 * @return
 	 */
 	public String toBackSqlString(String tablename)
-	{	
-		StringBuffer fieldbuf = new StringBuffer();
-		StringBuffer valuebuf = new StringBuffer();
+	{
+		StringBuilder fieldbuf = new StringBuilder();
+		StringBuilder valuebuf = new StringBuilder();
 		for (String str : getColsNameList())
 		{
 			fieldbuf.append(String.format("%s,",str));
@@ -345,6 +345,23 @@ public class Row implements Comparable<Row>,Serializable
 		valuebuf.setLength(valuebuf.length()-1);
 		
 		return String.format("INSERT INTO %s (%s) VALUES (%s);\r\n", tablename,fieldbuf,valuebuf);
+	}
+
+	public String getWhereString(String[] fields)
+	{
+		StringBuilder buf = new StringBuilder();
+
+		for (int i=0,len=fields.length;i<len;i++)
+		{
+			if (i != 0)
+			{
+				buf.append("and ");
+			}
+			String f = fields[i];
+			buf.append(String.format("%s=%s",f,BaseTable.doValue(getString(f))));
+		}
+
+		return buf.toString();
 	}
 	
 	public void remove (String field)

@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -542,6 +544,135 @@ public abstract class Sql implements  AutoCloseable
 	public Statement getStatement()
 	{
 		return getStmt();
+	}
+
+
+	/**
+	 * 同步表 list 内容到  dblist同步
+	 * @param tablename
+	 * @param keyfields
+	 * @param valuesfields
+	 * @param dblist 数据库里的数据
+	 * @param list
+	 */
+	public void syncTable(String tablename, String[] keyfields, String[] valuesfields, List<Row> dblist, List<Row> list)
+	{
+//		System.out.println("list.size()"+list.size());
+		Map<String,Row> map = new HashMap<>();
+		for (Row r : list)
+		{
+			StringBuilder kb = new StringBuilder();
+			for (String k : keyfields)
+			{
+				kb.append(r.getString(k));
+			}
+			String key = Format.getKey(kb.toString());
+			map.put(key,r);
+		}
+
+		final int DELSIZE = 1000;
+
+		int delnum = 0;
+
+		StringBuilder delwhere = new StringBuilder();
+
+		for (Row r : dblist)
+		{
+			StringBuilder kb = new StringBuilder();
+			for (String k : keyfields)
+			{
+				kb.append(r.getString(k));
+			}
+			String key = Format.getKey(kb.toString());
+
+			Row nr = map.get(key);
+
+			if (nr == null)
+			{
+				//如果没有就生成删除
+				delwhere.append(String.format(" OR (%s)",r.getWhereString(keyfields)));
+				delnum++;
+
+				if (delnum == DELSIZE)
+				{
+					addBatch("delete from %s where 0 %s",tablename,delwhere.toString());
+					delwhere = new StringBuilder();
+					delnum = 0 ;
+				}
+//				addBatch("delete from %s where %s",tablename,r.getWhereString(keyfields));
+			}
+			else
+			{
+				//如果有就检查是否一样 不一样更新
+				boolean needupdate = false;
+				BaseTable bt = new BaseTable();
+				for (String k : valuesfields)
+				{
+					if (r.getString(k).equals(nr.getString(k)) == false)
+					{
+						needupdate = true;
+						bt.Add(k,nr.getString(k));
+					}
+				}
+
+/*				System.out.println(r);
+				System.out.println(nr);
+				System.out.println("----------------------------");*/
+
+				if (needupdate)
+				{
+					bt.setTablename(tablename);
+					addBatch(bt.getUpdateString(r.getWhereString(keyfields)));
+				}
+				//删除map里的row
+				map.remove(key);
+			}
+		}
+		if (delnum > 0)
+		{
+			addBatch("delete from %s where 0 %s",tablename,delwhere.toString());
+		}
+//		System.out.println("delnum.size()"+delnum);
+
+		//		剩下的map是新的直接插入
+
+		executeBatch();
+
+		if (map.isEmpty() == false)
+		{
+			BatchInsert bi = null;
+			final int INSERTSIZE = 1000;
+			int insertnum = 0;
+			for (String key : map.keySet())
+			{
+				Row r = map.get(key);
+				if (bi == null)
+				{
+					bi= new BatchInsert(tablename,Format.toListString(r.getColsNameList()));
+				}
+
+				BaseTable bt = new BaseTable();
+				bt.setTablename(tablename);
+				bt.AddRow(r);
+
+				bi.Add(bt);
+				insertnum++;
+				if (insertnum == INSERTSIZE)
+				{
+					bi.executeUpdate(this);
+					bi = null;
+					insertnum = 0;
+				}
+			}
+
+			if (insertnum > 0)
+			{
+				bi.executeUpdate(this);
+			}
+
+//			System.out.println("insertnum.size()"+insertnum);
+
+		}
 	}
 
 

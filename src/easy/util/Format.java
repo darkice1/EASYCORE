@@ -1313,6 +1313,20 @@ public class Format
 		return all;
 	}
 
+	/**
+	 * 通过字符串返回key
+	 * @param key
+	 * @return
+	 */
+	public static String getKey(String key)
+	{
+		if (key.length() >= 32)
+		{
+			return Format.Md5(key);
+		}
+		return key;
+	}
+
 	public static String getMyIp()
 	{
 		return getMyIpAll().get("ip");
