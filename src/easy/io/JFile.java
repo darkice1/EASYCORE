@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers;
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import easy.config.Config;
 import easy.net.Proxy;
 import easy.sql.Col;
@@ -1032,7 +1033,8 @@ public class JFile
         kryo.setReferences(false); 
         kryo.setRegistrationRequired(false);
 
-        kryo.register(DataSet.class);
+		kryo.register(Message.class);
+		kryo.register(DataSet.class);
         kryo.register(Row.class);
         kryo.register(Col.class);
 
