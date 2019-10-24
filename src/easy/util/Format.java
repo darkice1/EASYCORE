@@ -999,6 +999,11 @@ public class Format
 		return MessageDigest("md5", bytes);
 	}
 
+	public static String Md5Str(byte[] bytes)
+	{
+		return byte2hex(MessageDigest("md5", bytes));
+	}
+
 	public static String Md5(String str)
 	{
 		return MessageDigest("md5", str);
