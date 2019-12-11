@@ -120,7 +120,7 @@ public class EHttpClient
 		{
 			SSLContext sslContext  = SSLContexts.custom().loadTrustMaterial(null, (arg0, arg1) -> true).build();
 
-			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory( sslContext, new String[] { "TLSv1" }, null,SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory( sslContext, new String[] { "TLSv1", "TLSv1.1", "TLSv1.2" }, null,SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
 			@SuppressWarnings("rawtypes")
 			Registry registry = RegistryBuilder.create().register("http", PlainConnectionSocketFactory.INSTANCE).register("https", sslsf).build();
