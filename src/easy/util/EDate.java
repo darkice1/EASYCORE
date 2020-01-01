@@ -254,7 +254,11 @@ public class EDate
 
 	public static boolean isWorkday(Date d)
 	{
-		boolean isok = true;
+//		https://holiday-api.leanapp.cn/api/v1/work?date=2020-1-1
+//		工作日对应结果为 0, 休息日对应结果为 1, 节假日对应的结果为 2；
+//		https://tool.bitefu.net/jiari/?d=2020-01-02&apikey=YOUR_API_KEY
+//		http://api.goseek.cn/Tools/holiday?date=20200101
+/*		boolean isok = true;
 		String dstr = EDate.toString(d,"yyyyMMdd");
 		String url = String.format("http://api.goseek.cn/Tools/holiday?date=%s",dstr);
 		try
@@ -265,17 +269,36 @@ public class EDate
 			{
 				isok = false;
 			}
-			/* System.out.println(html); */
+			*//* System.out.println(html); *//*
+		}
+		catch (IOException e)
+		{
+			Log.OutException(e);
+		}*/
+
+		boolean isok = true;
+		String url = String.format("https://holiday-api.leanapp.cn/api/v1/work?date=%s",EDate.getSQLDate(d));
+		try
+		{
+			String html = JFile.loadHttpFile(url);
+			JSONObject json = JSONObject.fromObject(html);
+//			System.out.println(html);
+			if ("N".equals(json.getJSONObject("data").getString("shouldWork")))
+			{
+				isok = false;
+			}
+			//* System.out.println(html); *//*
 		}
 		catch (IOException e)
 		{
 			Log.OutException(e);
 		}
+
 		return isok;
 	}
 
-//	public static void main(String[] args)
-//	{
-//		System.out.println(isWorkday(new EDate("2019-05-05 00:00:00").getDate()));
-//	}
+	public static void main(String[] args)
+	{
+		System.out.println(isWorkday(new EDate("2020-01-01 00:00:00").getDate()));
+	}
 }
