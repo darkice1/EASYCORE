@@ -1,13 +1,5 @@
 package easy.util;
 
-import com.sun.image.codec.jpeg.ImageFormatException;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageDecoder;
-import com.sun.imageio.plugins.bmp.BMPImageReader;
-import com.sun.imageio.plugins.gif.GIFImageReader;
-import com.sun.imageio.plugins.jpeg.JPEGImageReader;
-import com.sun.imageio.plugins.png.PNGImageReader;
-import com.sun.imageio.plugins.wbmp.WBMPImageReader;
 
 import javax.imageio.*;
 import javax.imageio.stream.ImageInputStream;
@@ -104,34 +96,28 @@ public class Images
 
 		if (ext.equals("jpg"))
 		{
-			JPEGImageDecoder decoder = JPEGCodec
-					.createJPEGDecoder(new FileInputStream(srcFileName)); // 先把流转一遍
-			try
-			{
-				BufferedImage bi = decoder.decodeAsBufferedImage();
-				// Builder<BufferedImage> bu = Thumbnails.of(image).size(width,
-				// hight);
+/*			JPEGImageDecoder decoder = JPEGCodec
+					.createJPEGDecoder(new FileInputStream(srcFileName)); // 先把流转一遍*/
 
-				BufferedImage tag = new BufferedImage(width, height,BufferedImage.TYPE_INT_BGR);
-				Graphics2D g = (Graphics2D) tag.getGraphics();
-				//g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				//g.drawImage(bi, 0, 0, width, height, null);
-				g.drawImage(bi.getScaledInstance(width, height,
-						Image.SCALE_AREA_AVERAGING), 0, 0, width, height, null);
+			BufferedImage bi = ImageIO.read(new FileInputStream(srcFileName));
+			// Builder<BufferedImage> bu = Thumbnails.of(image).size(width,
+			// hight);
+
+			BufferedImage tag = new BufferedImage(width, height,BufferedImage.TYPE_INT_BGR);
+			Graphics2D g = (Graphics2D) tag.getGraphics();
+			//g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			//g.drawImage(bi, 0, 0, width, height, null);
+			g.drawImage(bi.getScaledInstance(width, height,
+					Image.SCALE_AREA_AVERAGING), 0, 0, width, height, null);
 				/*
 				 * tag.getGraphics().drawImage(
                     bi.getScaledInstance(width, height,
                             Image.SCALE_AREA_AVERAGING), 0, 0, null);
 				 */
 
-				toJpg(tagFileName,tag,0.9f);
+			toJpg(tagFileName,tag,0.9f);
 
-				isjpg = true;
-			}
-			catch (ImageFormatException e)
-			{
-				// Log.OutException(e);
-			}
+			isjpg = true;
 		}
 
 		if (!isjpg)
@@ -206,7 +192,10 @@ public class Images
 		while (itr.hasNext())
 		{
 			ImageReader reader = itr.next();
-			if (reader instanceof GIFImageReader)
+			type = reader.getFormatName();
+			break;
+//			System.out.println(reader.getFormatName());
+			/*if (reader instanceof GIFImageReader)
 			{
 				type = "gif";
 			}
@@ -225,7 +214,7 @@ public class Images
 			else if (reader instanceof WBMPImageReader)
 			{
 				type = "bmp";
-			}
+			}*/
 		}
 		fis.close();
 		return type;
@@ -277,7 +266,7 @@ public class Images
 		try
 		{
 			Images.resize("/Users/Neo/Desktop/a.jpg",
-					"/Users/Neo/Desktop/b.jpg", 350, 0);
+					"/Users/Neo/Desktop/b.jpg", 20, 0);
 			//			Images.resize("/Users/Neo/Desktop/a.",
 			//							"/Users/Neo/Desktop/bb.jpg", 350, 0);
 			// Images.resize("/Users/Neo/Desktop/a.png",

@@ -4,7 +4,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers;
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import easy.config.Config;
 import easy.net.Proxy;
 import easy.sql.Col;
@@ -13,6 +12,7 @@ import easy.sql.Row;
 import easy.util.Format;
 import easy.util.Log;
 
+import javax.mail.Message;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.math.BigDecimal;

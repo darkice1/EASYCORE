@@ -1,7 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.neo</groupId>
-  <artifactId>easy</artifactId>
+	<name>easy</name>
+	<description>Neo easy code.</description>
+	<url>https://github.com/darkice1/EASYCORE</url>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/darkice1/EASYCORE</url>
+		<connection>https://github.com/darkice1/EASYCORE.git</connection>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>neo</name>
+			<email>starneo@gmail.com</email>
+		</developer>
+	</developers>
+<!--  <groupId>com.github.darkice1</groupId>-->
+	<groupId>com.neo</groupId>
+	<artifactId>easy</artifactId>
   <version>1.0.31</version>
   <packaging>jar</packaging>
         <properties>
@@ -9,23 +30,64 @@
             <maven.compiler.target>1.8</maven.compiler.target>
             <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         </properties>
-
 	<distributionManagement>
+		<snapshotRepository>
+			<id>oss</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>oss</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+	<profiles>
+		<profile>
+			<id>oss</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>2.3.2</version>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<useReleaseProfile>false</useReleaseProfile>
+							<releaseProfiles>release</releaseProfiles>
+							<goals>deploy</goals>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+<!--	<distributionManagement>
 		<repository>
 			<id>neogithub</id>
 			<name>neogithub</name>
 			<url>https://github.com/darkice1/EASYLIB</url>
 		</repository>
-<!--		<site>
+&lt;!&ndash;		<site>
 			<id>neogithub</id>
 			<name>GitHub Project Pages</name>
 			<url>gitsite:git@github.com/darkice1/EASYLIB.git</url>
-		</site>-->
-	</distributionManagement>
+		</site>&ndash;&gt;
+	</distributionManagement>-->
 
 
-  <name>easy</name>
-  
+
 	<dependencies>
 		<!--连接池的依赖-->
 		<dependency>
@@ -166,7 +228,6 @@
 </dependencies>
 
 	<build>
-
 		<sourceDirectory>src</sourceDirectory>
 		<directory>${basedir}/web/WEB-INF/classes</directory>
 		<resources>
@@ -189,12 +250,19 @@
 					<source>8</source> <!-- 源代码使用的开发版本 -->
 					<target>8</target> <!-- 需要生成的目标class文件的编译版本 -->
 					<encoding>UTF-8</encoding>
-					<compilerArguments>
-						<verbose />
-						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
-					</compilerArguments>
 				</configuration>
 			</plugin>
+<!--			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>oss</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>-->
 <!--			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
