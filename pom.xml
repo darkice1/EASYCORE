@@ -3,6 +3,7 @@
 	<name>easy</name>
 	<description>Neo easy code.</description>
 	<url>https://github.com/darkice1/EASYCORE</url>
+<!--	https://oss.sonatype.org/#stagingRepositories -->
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -20,16 +21,19 @@
 			<email>starneo@gmail.com</email>
 		</developer>
 	</developers>
-<!--  <groupId>com.github.darkice1</groupId>-->
+  <groupId>com.github.darkice1</groupId>
+<!--
 	<groupId>com.neo</groupId>
+-->
 	<artifactId>easy</artifactId>
-  <version>1.0.31</version>
+  <version>1.0.32</version>
   <packaging>jar</packaging>
         <properties>
             <maven.compiler.source>1.8</maven.compiler.source>
             <maven.compiler.target>1.8</maven.compiler.target>
             <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
-        </properties>
+			<javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+		</properties>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>oss</id>
@@ -55,19 +59,6 @@
 							<releaseProfiles>release</releaseProfiles>
 							<goals>deploy</goals>
 						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
-						<executions>
-							<execution>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -251,6 +242,53 @@
 					<target>8</target> <!-- 需要生成的目标class文件的编译版本 -->
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<show>private</show>
+					<nohelp>true</nohelp>
+					<charset>UTF-8</charset>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 <!--			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
