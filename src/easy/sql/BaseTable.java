@@ -1,8 +1,8 @@
 package easy.sql;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,9 +29,9 @@ public class BaseTable
 
 	protected String where;
 
-	protected Map<String, String> params = new HashMap<>();
+	protected Map<String, String> params = new LinkedHashMap<>();
 
-	protected Map<String, String> proparams = new HashMap<>();
+	protected Map<String, String> proparams = new LinkedHashMap<>();
 
 	protected final static String LASTSQL = "SELECT LAST_INSERT_ID() id";
 
