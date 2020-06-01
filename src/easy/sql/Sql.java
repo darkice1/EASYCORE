@@ -22,9 +22,9 @@ import java.util.Map;
  * <i>Copyright: Easy (c) 2005-2005 <br>
  * Company: Easy </i>
  * </p>
- * 
+ *
  * 数据库基类
- * 
+ *
  * @version 1.0 ( <i>2005-7-5 neo </i>)
  */
 
@@ -59,11 +59,11 @@ public abstract class Sql implements  AutoCloseable
 
 	protected PreparedStatement ps;
 
-	protected int resultSetType = ResultSet.TYPE_FORWARD_ONLY;//TYPE_FORWARD_ONLY
+	protected int resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;//TYPE_FORWARD_ONLY
 
 	protected int resultSetConncurrency = ResultSet.CONCUR_READ_ONLY;
 
-	
+
 //	protected long upcount=0;
 //	protected long insertcount=0;
 //	protected long deltcount=0;
@@ -92,13 +92,13 @@ public abstract class Sql implements  AutoCloseable
 		this.resultSetConncurrency = resultSetConncurrency;
 		instance();
 	}
-	
+
 	public DataSet executeQuery(String formate,Object... strs) throws SQLException
 	{
 		String sql = String.format(formate,strs);
 		return executeQuery(sql);
 	}
-	
+
 	public static String getDBCachePath()
 	{
 		return Config.getProperty("DBCACHE",System.getProperty("java.io.tmpdir"));
@@ -121,24 +121,24 @@ public abstract class Sql implements  AutoCloseable
 			throw ex;
 		}
 	}
-	
+
 	public DataSet executeQueryCache(String formate,Object... strs) throws SQLException, IOException
 	{
 		String sql = String.format(formate,strs);
 		return executeQueryCache(sql);
 	}
-	
+
 	public DataSet executeQueryCache(long keeptime,String formate,Object... strs) throws SQLException, IOException
 	{
 		String sql = String.format(formate,strs);
 		return executeQueryCache(sql,keeptime);
 	}
-	
+
 	public DataSet executeQueryCache(String sql) throws SQLException, IOException
 	{
 		return executeQueryCache(sql,CACHEKEEPTIME);
 	}
-	
+
 	public DataSet executeQueryCache(String sql,long keeptime) throws SQLException, IOException
 	{
 		DataSet ds = null;
@@ -166,19 +166,19 @@ public abstract class Sql implements  AutoCloseable
 					pathok = true;
 				}
 			}
-			
+
 			if (!pathok)
 			{
 				throw new IOException(String.format("%s not find.", getDBCachePath()));
 			}
-			
+
 			sql = sql.trim();
 			/*
 			user = Config.getProperty("DBUSER");
 			password = Config.getProperty("DBPASSWORD");
 			jdbcurl = Config.getProperty("DBURL");
 			dbclass = Config.getProperty("DBCLASS");
-			*/		
+			*/
 
 			String md5 = Format.Md5(String.format("%s %s %s %s %s",user,password,jdbcurl,jdbcurl, sql));
 			String path = String.format("%s/%s.db", getDBCachePath(),md5);
@@ -190,10 +190,10 @@ public abstract class Sql implements  AutoCloseable
 				try
 				{
 					CDataSet cds = (CDataSet)JFile.readGZipObject(path);
-					
+
 					long now = System.currentTimeMillis();
 					long end = cds.getEndtime();
-					
+
 					if (now > end)
 					{
 						neednew = true;
@@ -204,7 +204,7 @@ public abstract class Sql implements  AutoCloseable
 						ds.setCount(-1);
 //						System.out.println(ds.getCursor());
 //						ds = new DataSet();
-//						
+//
 //						List<Row> list = cds.getDataSet().getRowList();
 //						for (Row r: list)
 //						{
@@ -230,15 +230,15 @@ public abstract class Sql implements  AutoCloseable
 			{
 				neednew = true;
 			}
-			
+
 			if (neednew)
 			{
 				ds = executeQuery(sql);
 				CDataSet cds = new CDataSet();
-				
+
 				long now = System.currentTimeMillis();
 				long endtime = now + keeptime;
-				
+
 				cds.setStarttime(now);
 				cds.setEndtime(endtime);
 				cds.setDataSet(ds);
@@ -270,7 +270,7 @@ public abstract class Sql implements  AutoCloseable
 			}
 		}
 
-	
+
 		return ds;
 	}
 
@@ -349,7 +349,7 @@ public abstract class Sql implements  AutoCloseable
 
 		return re;
 	}
-	
+
 	public int executeUpdate(String formate,Object... strs)
 	{
 		String sql = String.format(formate,strs);
@@ -371,11 +371,11 @@ public abstract class Sql implements  AutoCloseable
 				jdbcurlwrite = jdbcurl;
 			}
 			Log.OutException(ex, jdbcurlwrite + "\r\n" + sql);
-			
+
 			return -1;
 		}
 	}
-	
+
 	private Statement getStmt()
 	{
 		if (!isinit)
@@ -442,8 +442,8 @@ public abstract class Sql implements  AutoCloseable
 	{
 		return new DataSet(getStmt().getResultSet());
 	}
-	
-	
+
+
 	public void addBatch(String formate,Object... strs)
 	{
 		String sql = String.format(formate,strs);
@@ -521,7 +521,7 @@ public abstract class Sql implements  AutoCloseable
 		}
 	}
 
-	
+
 	public PreparedStatement createPstmt(String sql)
 	{
 		PreparedStatement pstmt = null;
@@ -530,7 +530,7 @@ public abstract class Sql implements  AutoCloseable
 			pstmt = getWriteConnection().prepareStatement(sql);
 		}
 		catch (Exception ex)
-		{	
+		{
 			Log.OutException(ex);
 		}
 		return pstmt;
@@ -540,7 +540,7 @@ public abstract class Sql implements  AutoCloseable
 	{
 		ps = getWriteConnection().prepareStatement(sql);
 	}
-	
+
 	public Statement getStatement()
 	{
 		return getStmt();
