@@ -1,11 +1,14 @@
 package easy.sql;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import easy.config.Config;
 import easy.util.Format;
 import easy.util.Log;
 
+import javax.sql.DataSource;
 import java.sql.DriverManager;
-import java.util.Properties;
+import java.util.Objects;
 
 /**
  * <p><i>Copyright: Easy (c) 2005-2005<br>
@@ -22,7 +25,7 @@ public class CPSql extends Sql
 	 * 别名
 	 */
 	//	protected String alias;
-	protected final String POOLCLASS = "org.logicalcobwebs.proxool.ProxoolDriver";
+//	protected final String POOLCLASS = "org.logicalcobwebs.proxool.ProxoolDriver";
 
 	//	protected String poolurl;
 	protected String dbclass;
@@ -48,10 +51,10 @@ public class CPSql extends Sql
 	}
 
 
-	private Properties getProperties()
+	private HikariConfig getProperties()
 	{
-		Properties info = new Properties();
-		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
+//		Properties info = new Properties();
+/*		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
 		//info.setProperty("proxool.house-keeping-test-sql", "select current_date from dual");
 		info.setProperty("proxool.house-keeping-test-sql", "select 1");
 		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","70000"));
@@ -61,9 +64,40 @@ public class CPSql extends Sql
 		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
 		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("SIMULTANEOUSBUILDTHROTTLE","10"));
 		info.setProperty("proxool.statistics-log-level", "ERROR");
-		info.setProperty("proxool.test-before-use",  "true");
+		info.setProperty("proxool.test-before-use",  "true");*/
 
-		return info;
+//		info.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+		HikariConfig conf = new HikariConfig();
+		conf.setAutoCommit(true);
+
+//		此属性控制允许连接在池中空闲的最长时间。 此设置仅在minimumIdle定义为小于时才适用maximumPoolSize。
+//		一旦池到达连接，空闲连接将不会退出minimumIdle。连接是否空闲退出的最大变化为+30秒，平均变化为+15秒。
+//		在此超时之前，连接永远不会被空闲。值为0表示永远不会从池中删除空闲连接。允许的最小值为10000毫秒（10秒）。
+//		默认值：600000（10分钟
+		conf.setConnectionTimeout(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBCONNECTIONTIMEOUT", "10000"))));
+
+/*		此属性控制池中连接的最长生命周期。使用中的连接永远不会退役，只有当它关闭时才会被删除。
+		在逐个连接的基础上，应用轻微的负衰减以避免池中的大量灭绝。
+		我们强烈建议设置此值，它应比任何数据库或基础结构强加的连接时间限制短几秒。
+		值0表示没有最大寿命（无限寿命），当然主题是idleTimeout设置。 默认值：1800000（30分钟）*/
+		conf.setMaxLifetime(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBMAXCONNECTIONLIFTIME", "30000"))));
+
+		conf.setIdleTimeout(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBIDLETIMEOUT", "10000"))));
+//		此属性控制HikariCP尝试在池中维护的最小空闲连接数。
+//		如果空闲连接低于此值并且池中的总连接数小于maximumPoolSize，
+//		则HikariCP将尽最大努力快速有效地添加其他连接。但是，为了获得最高性能和对峰值需求的响应，我们建议不要设置此值，
+//		而是允许HikariCP充当固定大小的连接池。 默认值：与maximumPoolSize相同
+		conf.setMinimumIdle(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBMINIDEL", "3"))));
+
+/*		此属性控制允许池到达的最大大小，包括空闲和正在使用的连接。基本上，此值将确定数据库后端的最大实际连接数。
+		对此的合理值最好由您的执行环境决定。当池达到此大小且没有空闲连接可用时，对getConnection（）
+		的调用将connectionTimeout在超时前阻塞最多毫秒。请阅读有关连接池尺寸的信息。 默认值：10*/
+		conf.setMaximumPoolSize(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBCONNECTMAX", "20"))));
+		conf.addDataSourceProperty("cachePrepStmts", "true");
+		conf.addDataSourceProperty("prepStmtCacheSize", "250");
+		conf.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+		return conf;
 	}
 	//	protected void finalize() throws Throwable
 	//	{
@@ -73,9 +107,50 @@ public class CPSql extends Sql
 	//		dbclass = null;
 	//	}
 
-	private String getAliasString(String user,String password,String dbclass,String jdbcurl)
+/*	private String getAliasString(String user,String password,String dbclass,String jdbcurl)
 	{
 		return Config.getProperty("PROJECT")+Format.Md5(String.format("%s-%s-%s-%s", user,password,dbclass,jdbcurl));
+	}*/
+
+	private static DataSource ds =null;
+	private static DataSource writeds =null;
+
+
+	private DataSource getDataSource()
+	{
+		if (ds == null)
+		{
+			HikariConfig conf = getProperties();
+			conf.setUsername(user);
+			conf.setPassword(password);
+			conf.setJdbcUrl(jdbcurl);
+			conf.setDriverClassName(dbclass);
+			String poolname = Config.getProperty("PROJECT","DB");
+//			conf.setPoolName(poolname);
+
+			ds = new HikariDataSource(conf);
+		}
+
+		return ds;
+	}
+
+	private DataSource getWriteDataSource()
+	{
+		if (writeds == null)
+		{
+			HikariConfig writeinfo = getProperties();
+			//info.setProperty("proxool.statistics-log-level", "ERROR");
+			//info.setProperty("house-keeping-sleep-time", "30000");
+			writeinfo.setUsername(userwrite);
+			writeinfo.setPassword(passwordwrite);
+			writeinfo.setJdbcUrl(jdbcurlwrite);
+			writeinfo.setDriverClassName(dbclasswrite);
+//			writeinfo.setPoolName(poolname+"_write");
+
+			writeds = new HikariDataSource(writeinfo);
+		}
+
+		return writeds;
 	}
 
 	/**
@@ -89,31 +164,46 @@ public class CPSql extends Sql
 		{
 			if (usepool)
 			{
-				Class.forName(POOLCLASS);
-				Properties info = getProperties();
+//				Class.forName(POOLCLASS);
+//				Properties info = getProperties();
+
+/*				HikariConfig conf = getProperties();
+				conf.setUsername(user);
+				conf.setPassword(password);
+				conf.setJdbcUrl(jdbcurl);
+				conf.setDriverClassName(dbclass);
+				String poolname = Config.getProperty("PROJECT","DB");
+				conf.setPoolName(poolname);*/
+
 				//info.setProperty("proxool.statistics-log-level", "ERROR");
 				//info.setProperty("house-keeping-sleep-time", "30000");
-				info.setProperty("user",user);
-				info.setProperty("password",password);
+//				info.setProperty("user",user);
+//				info.setProperty("password",password);
 
-				String poolurl = "proxool." +getAliasString(user,password,dbclass,jdbcurl)+":";
+//				String poolurl = "proxool." +getAliasString(user,password,dbclass,jdbcurl)+":";
 
 				//				System.out.println(poolurl+dbclass+":"+jdbcurl);
-				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
+//				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
+				conn = getDataSource().getConnection();
 
 				if (!Format.isEmpty(userwrite) || !Format.isEmpty(passwordwrite) || !Format.isEmpty(jdbcurlwrite) || !Format.isEmpty(dbclasswrite))
 				{
-					Properties writeinfo = getProperties();
+//					Properties writeinfo = getProperties();
+/*					HikariConfig writeinfo = getProperties();
 					//info.setProperty("proxool.statistics-log-level", "ERROR");
 					//info.setProperty("house-keeping-sleep-time", "30000");
-					writeinfo.setProperty("user",userwrite);
-					writeinfo.setProperty("password",passwordwrite);
+					writeinfo.setUsername(userwrite);
+					writeinfo.setPassword(passwordwrite);
+					writeinfo.setJdbcUrl(jdbcurlwrite);
+					writeinfo.setDriverClassName(dbclasswrite);
+					writeinfo.setPoolName(poolname+"_write");*/
 
 					//					System.out.println(jdbcurlwrite);
 					//					System.out.println(poolurl+dbclasswrite+":"+jdbcurlwrite);
-					String writepoolurl = "proxool." +getAliasString(userwrite,passwordwrite,dbclasswrite,jdbcurlwrite)+":";
+//					String writepoolurl = "proxool." +getAliasString(userwrite,passwordwrite,dbclasswrite,jdbcurlwrite)+":";
 
-					connwrite = DriverManager.getConnection(writepoolurl+dbclasswrite+":"+jdbcurlwrite,writeinfo);
+//					connwrite = DriverManager.getConnection(writepoolurl+dbclasswrite+":"+jdbcurlwrite,writeinfo);
+					connwrite = getWriteDataSource().getConnection();
 				}
 				else
 				{
@@ -155,26 +245,29 @@ public class CPSql extends Sql
 		super(resultSetType,resultSetConncurrency);
 	}
 
-	/*public static void main(String[] args)
+/*	public static void main(String[] args)
 	{
-		CPSql sql = new CPSql();
-
-		try
+		for (int i=0;i<1;i++)
 		{
-			BaseTable bt = new BaseTable();
-			bt.setTablename("real_test");
-			bt.Add("m_date","2019-02-01");
-			bt.Add("m_hour",Math.random()*1000);
-			bt.Insert();
+			CPSql sql = new CPSql();
 
-			DataSet ds = sql.executeQuery("select * from real_test");
-			System.out.println(ds.getRowList());
-		}
-		catch (SQLException e)
-		{
-			Log.OutException(e);
-		}
+			try
+			{
+				BaseTable bt = new BaseTable();
+				bt.setTablename("real_test");
+				bt.Add("m_date","2019-02-01");
+				bt.Add("m_hour",Math.random()*1000);
+				bt.Insert();
 
-		sql.close();
+				DataSet ds = sql.executeQuery("select * from real_test");
+				System.out.println(ds.getRowList());
+			}
+			catch (SQLException e)
+			{
+				Log.OutException(e);
+			}
+
+			sql.close();
+		}
 	}*/
 }
