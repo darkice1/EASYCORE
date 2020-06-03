@@ -8,7 +8,9 @@ import easy.util.Log;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p><i>Copyright: Easy (c) 2005-2005<br>
@@ -33,6 +35,7 @@ public class CPSql extends Sql
 
 	protected boolean usepool = true;
 
+
 	/**
 	 * @see easy.sql.Sql#init()
 	 */
@@ -43,11 +46,15 @@ public class CPSql extends Sql
 		jdbcurl = Config.getProperty("DBURL");
 		dbclass = Config.getProperty("DBCLASS");
 
+//		poolname = jdbcurl+dbclass+user;
+
 
 		userwrite = Config.getProperty("DBUSERWRITE");
 		passwordwrite = Config.getProperty("DBPASSWORDWRITE");
 		jdbcurlwrite = Config.getProperty("DBURLWRITE");
 		dbclasswrite = Config.getProperty("DBCLASSWRITE");
+
+//		writepoolname = jdbcurlwrite+dbclass+user;
 	}
 
 
@@ -112,12 +119,13 @@ public class CPSql extends Sql
 		return Config.getProperty("PROJECT")+Format.Md5(String.format("%s-%s-%s-%s", user,password,dbclass,jdbcurl));
 	}*/
 
-	private static DataSource ds =null;
-	private static DataSource writeds =null;
+	private static final Map<String,DataSource> DSMAP = new ConcurrentHashMap<>();
 
-
-	private DataSource getDataSource()
+	private DataSource getDataSource(String user,String password,String jdbcurl,String dbclass)
 	{
+		String poolname = jdbcurl+user;
+		DataSource ds = DSMAP.get(poolname);
+
 		if (ds == null)
 		{
 			HikariConfig conf = getProperties();
@@ -125,32 +133,24 @@ public class CPSql extends Sql
 			conf.setPassword(password);
 			conf.setJdbcUrl(jdbcurl);
 			conf.setDriverClassName(dbclass);
-			String poolname = Config.getProperty("PROJECT","DB");
-//			conf.setPoolName(poolname);
 
+			conf.setPoolName(poolname);
 			ds = new HikariDataSource(conf);
+			DSMAP.put(poolname,ds);
 		}
 
 		return ds;
 	}
 
+
+	private DataSource getDataSource()
+	{
+		return getDataSource(user,password,jdbcurl,dbclass);
+	}
+
 	private DataSource getWriteDataSource()
 	{
-		if (writeds == null)
-		{
-			HikariConfig writeinfo = getProperties();
-			//info.setProperty("proxool.statistics-log-level", "ERROR");
-			//info.setProperty("house-keeping-sleep-time", "30000");
-			writeinfo.setUsername(userwrite);
-			writeinfo.setPassword(passwordwrite);
-			writeinfo.setJdbcUrl(jdbcurlwrite);
-			writeinfo.setDriverClassName(dbclasswrite);
-//			writeinfo.setPoolName(poolname+"_write");
-
-			writeds = new HikariDataSource(writeinfo);
-		}
-
-		return writeds;
+		return getDataSource(userwrite,passwordwrite,jdbcurlwrite,dbclasswrite);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class CPSql extends Sql
 		super(resultSetType,resultSetConncurrency);
 	}
 
-/*	public static void main(String[] args)
+	/*public static void main(String[] args)
 	{
 		for (int i=0;i<1;i++)
 		{
