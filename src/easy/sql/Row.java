@@ -14,23 +14,23 @@ import java.util.Map.Entry;
  * <i>Copyright: Easy (c) 2005-2005 <br>
  * Company: Easy </i>
  * </p>
- * 
+ *
  * 锟斤拷菁锟斤拷锟斤拷锟�
- * 
+ *
  * @version 1.0 ( <i>2005-7-7 neo </i>)
  */
 
 public class Row implements Comparable<Row>,Serializable
 {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private Map<String, Col> row = new HashMap<>();
+
+	private final Map<String, Col> row = new HashMap<>();
 	protected String sortfield;
-	
-	
+
+
 //	@Override
 //	protected void finalize() throws Throwable
 //	{
@@ -39,17 +39,17 @@ public class Row implements Comparable<Row>,Serializable
 //		row = null;
 //		sortfield = null;
 //	}
-	
+
 	public boolean containsKey(String key)
 	{
 		return row.containsKey(key);
 	}
-	
+
 	public int compareTo(Row o)
 	{
 		return get(sortfield).compareTo(o.get(sortfield));
 	}
-	
+
 	public Object getObject(String key)
 	{
 		return row.get(key).getValue();
@@ -75,7 +75,7 @@ public class Row implements Comparable<Row>,Serializable
 		{
 			if (value instanceof Integer)
 			{
-				return (Integer)value;				
+				return (Integer)value;
 			}
 			else
 			{
@@ -93,7 +93,7 @@ public class Row implements Comparable<Row>,Serializable
 			return null;
 		}
 	}
-	
+
 	public Long getLong(String key)
 	{
 		Object value = row.get(key).getValue();
@@ -106,7 +106,7 @@ public class Row implements Comparable<Row>,Serializable
 		{
 			if (value instanceof Long)
 			{
-				return (Long)value;				
+				return (Long)value;
 			}
 			else
 			{
@@ -123,8 +123,8 @@ public class Row implements Comparable<Row>,Serializable
 			Log.OutException(ex,String.format("%s field not find",key));
 			return null;
 		}
-	}	
-	
+	}
+
 	public Float getFloat(String key)
 	{
 		Object value = row.get(key).getValue();
@@ -136,7 +136,7 @@ public class Row implements Comparable<Row>,Serializable
 		{
 			if (value instanceof Float)
 			{
-				return (Float)value;				
+				return (Float)value;
 			}
 			else
 			{
@@ -152,7 +152,7 @@ public class Row implements Comparable<Row>,Serializable
 		{
 			Log.OutException(ex,String.format("%s field not find",key));
 			return null;
-		}		
+		}
 	}
 	public Double getDouble(String key)
 	{
@@ -163,10 +163,10 @@ public class Row implements Comparable<Row>,Serializable
 			{
 				return null;
 			}
-						
+
 			if (value instanceof Double)
 			{
-				return (Double)value;				
+				return (Double)value;
 			}
 			else
 			{
@@ -182,7 +182,7 @@ public class Row implements Comparable<Row>,Serializable
 		{
 			Log.OutException(ex,String.format("%s field not find",key));
 			return null;
-		}		
+		}
 	}
 
 	public byte[] getBytes(String key)
@@ -257,33 +257,33 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		put(key,new Col(key,value));
 	}
-	
+
 	public void putInteger(String key, int value)
 	{
 		put(key,new Col(key,value));
 	}
-	
+
 	public void putLong(String key, long value)
 	{
 		put(key,new Col(key,value));
 	}
-	
-	
+
+
 	public void putFloat(String key, float value)
 	{
 		put(key,new Col(key,value));
 	}
-	
+
 	public void putDouble(String key, double value)
 	{
 		put(key,new Col(key,value));
 	}
-	
+
 	public void putJSONObjet(JSONObject json)
 	{
 		putJSONObjet(json,null);
 	}
-	
+
 	public void putJSONObjet(JSONObject json,String[] addkeys)
 	{
 		Iterator<?> keys = json.keys();
@@ -310,7 +310,7 @@ public class Row implements Comparable<Row>,Serializable
 			putString(key,json.getString(key));
 		}
 	}
-	
+
 	/**
 	 * @return Returns the sortfield.
 	 */
@@ -326,7 +326,7 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		this.sortfield = sortfield;
 	}
-	
+
 	/**
 	 * 锟斤拷锟斤拷sql
 	 * @param tablename
@@ -343,7 +343,7 @@ public class Row implements Comparable<Row>,Serializable
 		}
 		fieldbuf.setLength(fieldbuf.length()-1);
 		valuebuf.setLength(valuebuf.length()-1);
-		
+
 		return String.format("INSERT INTO %s (%s) VALUES (%s);\r\n", tablename,fieldbuf,valuebuf);
 	}
 
@@ -363,26 +363,27 @@ public class Row implements Comparable<Row>,Serializable
 
 		return buf.toString();
 	}
-	
+
 	public void remove (String field)
 	{
 		row.remove(field);
 	}
-	
+
 	public String toString()
 	{
-		StringBuilder buf = new StringBuilder();
-		
 		Iterator<Entry<String, Col>> rs = row.entrySet().iterator();
 		Entry<String,Col> m;
 		Col c;
+
+		JSONObject json = new JSONObject();
 		while (rs.hasNext())
 		{
 			m =  rs.next();
 			c = m.getValue();
-			buf.append(String.format("[%s]:[%s]\n",m.getKey(),c.getValue() ));
+			json.put(m.getKey(),c.getValue());
+//			buf.append(String.format("[%s]:[%s]\n",m.getKey(),c.getValue() ));
 		}
-		
-		return buf.toString();
+
+		return json.toString();
 	}
 }

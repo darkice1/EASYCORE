@@ -1,5 +1,8 @@
 package easy.sql;
 
+
+import net.sf.json.JSONObject;
+
 import java.io.Serializable;
 
 public class Col implements Comparable<Col>,Serializable
@@ -10,10 +13,10 @@ public class Col implements Comparable<Col>,Serializable
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private String fieldname;
 	private Object value;
 
@@ -38,7 +41,7 @@ public class Col implements Comparable<Col>,Serializable
 		}
 		this.fieldname = fieldname;
 	}
-	
+
 	public Col (String fieldname,String value)
 	{
 		if (value == null)
@@ -51,31 +54,31 @@ public class Col implements Comparable<Col>,Serializable
 		}
 		this.fieldname = fieldname;
 	}
-	
+
 	public Col (String fieldname,int value)
 	{
 		this.fieldname = fieldname;
 		this.value = value;
 	}
-	
+
 	public Col (String fieldname,float value)
 	{
 		this.fieldname = fieldname;
 		this.value = value;
 	}
-	
+
 	public Col (String fieldname,long value)
 	{
 		this.fieldname = fieldname;
 		this.value = value;
 	}
-	
+
 	public Col (String fieldname,double value)
 	{
 		this.fieldname = fieldname;
 		this.value = value;
 	}
-	
+
 	public int compareTo(Col o)
 	{
 //		Col c = (Col)o;
@@ -118,5 +121,13 @@ public class Col implements Comparable<Col>,Serializable
 	public Object getValue()
 	{
 		return value;
+	}
+
+	@Override
+	public String toString()
+	{
+		JSONObject json = new JSONObject();
+		json.put(fieldname,value);
+		return json.toString();
 	}
 }

@@ -38,7 +38,7 @@ import java.util.zip.GZIPOutputStream;
  * <p>
  * </p>
  * 格式化处理
- * 
+ *
  * @version 1.0 (<i>2005-8-17 Neo</i>)
  */
 
@@ -124,7 +124,7 @@ public class Format
 
 	/**
 	 * 转换成script输出使用字符串
-	 * 
+	 *
 	 * @param src
 	 * @return
 	 */
@@ -215,7 +215,7 @@ public class Format
 
 	/**
 	 * 转换成HTML输出使用字符串。取出&,",',<,>。
-	 * 
+	 *
 	 * @param src
 	 * @return
 	 */
@@ -240,7 +240,7 @@ public class Format
 
 	/**
 	 * 转换成HTML输出使用字符串。取出&,",',<,>。
-	 * 
+	 *
 	 * @param src
 	 * @return
 	 */
@@ -264,7 +264,7 @@ public class Format
 
 	/**
 	 * list转json.
-	 * 
+	 *
 	 * @param list
 	 * @return
 	 */
@@ -275,7 +275,7 @@ public class Format
 
 	/**
 	 * 讲row list转成json
-	 * 
+	 *
 	 * @param list
 	 * @param addjson
 	 *            新增json属性
@@ -373,7 +373,7 @@ public class Format
 
 	/**
 	 * 返回list输出字符串，使用,分割
-	 * 
+	 *
 	 * @param list
 	 * @return
 	 */
@@ -384,7 +384,7 @@ public class Format
 
 	/**
 	 * 返回list输出字符串
-	 * 
+	 *
 	 * @param list
 	 *            对应list
 	 * @param splitstr
@@ -467,7 +467,7 @@ public class Format
 
 	/**
 	 * 汉字转拼音
-	 * 
+	 *
 	 * @param str
 	 * @return
 	 */
@@ -493,7 +493,7 @@ public class Format
 
 	/**
 	 * 取得拼音首字母
-	 * 
+	 *
 	 * @param str
 	 * @return
 	 */
@@ -521,7 +521,7 @@ public class Format
 	{
 		return getAllField(obj.getClass(),getsuper);
 	}
-	
+
 	public static List<Field> getAllField(Class<?> c, boolean getsuper)
 	{
 		List<Field> list = new ArrayList<>();
@@ -570,7 +570,7 @@ public class Format
 
 	/**
 	 * 取得对象所有变量打印
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */
@@ -638,25 +638,25 @@ public class Format
 
 		return json.toString();
 	}
-	
-	public static String getRequestUrl(HttpServletRequest req) 
+
+	public static String getRequestUrl(HttpServletRequest req)
 	{
 		StringBuilder buf = new StringBuilder(req.getServerName());
 		buf.append("/");
 		buf.append(req.getServletPath());
-		
+
 		String q = req.getQueryString();
 		if (q != null)
 		{
 			buf.append("?").append(q);
 		}
-		
+
 		return buf.toString();
 	}
 
 	/**
 	 * 字符串相似值 Levenshtein Distance
-	 * 
+	 *
 	 * @param str1
 	 * @param str2
 	 * @return
@@ -713,7 +713,7 @@ public class Format
 
 	/**
 	 * 返回字符串相似百分比
-	 * 
+	 *
 	 * @param str1
 	 * @param str2
 	 * @return
@@ -740,7 +740,7 @@ public class Format
 
 	/**
 	 * ip地址转成整数.
-	 * 
+	 *
 	 * @param ip
 	 * @return
 	 */
@@ -787,7 +787,7 @@ public class Format
 
 	/**
 	 * 整数转成ip地址.
-	 * 
+	 *
 	 * @param ipLong
 	 * @return
 	 */
@@ -809,7 +809,7 @@ public class Format
 
 	/**
 	 * 返回随机字符串 只有小写字母与数字
-	 * 
+	 *
 	 * @param num
 	 * @return
 	 */
@@ -841,7 +841,7 @@ public class Format
 
 	/**
 	 * 返回随机字符串 只有小写字母
-	 * 
+	 *
 	 * @param num
 	 *            生成字母数量
 	 * @return
@@ -861,7 +861,7 @@ public class Format
 
 	/**
 	 * 返回随机字符串 大小写与数字
-	 * 
+	 *
 	 * @param num
 	 *            生成字母数量
 	 * @return
@@ -881,7 +881,7 @@ public class Format
 
 	/**
 	 * 获取URLEncoder.encode编码的原始字符串编码类型
-	 * 
+	 *
 	 * @param str
 	 * @return 编码
 	 */
@@ -1011,7 +1011,7 @@ public class Format
 
 	/**
 	 * 返回文件扩展名
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -1187,7 +1187,7 @@ public class Format
 
 	/**
 	 * 返回svm字符串
-	 * 
+	 *
 	 * @param type
 	 *            类别字段
 	 * @param fields
@@ -1365,7 +1365,7 @@ public class Format
 		}
 		/*
 		 * if (bytes == null || bytes.length < 2) { return code; }
-		 * 
+		 *
 		 * int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
 		 * switch (p) { case 0xefbb: code = "UTF-8"; break; case 0xfffe: code =
 		 * "Unicode"; break; case 0xfeff: code = "UTF-16BE"; break; default:
@@ -1448,11 +1448,11 @@ public class Format
 	 * public static void main(String[] args) { try { HashMap<String,Row> map =
 	 * new HashMap<String,Row>(); Row r = new Row(); r.putString("rrr", "rvrv");
 	 * map.put("aaa", r); System.out.println(Format.getMapString(map));
-	 * 
+	 *
 	 * String key = "aa123456"; String str = encodeDes(key,
 	 * "http://s.click.taobao.com/t?e=m%3D2%26s%3DWXz%2BpQdcHYccQipKwQzePOeEDrYVVa64Qih%2F7PxfOKS5VBFTL4hn2dFYoGP7L3a4NGaA%2Fv7qa0ST6eDNmvF6jBLOI4%2FU6Dke38XymDefB1EyH37S5WIg5fE%2FJZ20M53%2Bcy7llBOuH5ssPuCO17knxsYOae24fhW0"
 	 * ); System.out.println(str); System.out.println(decodeDes(key,str));
-	 * 
+	 *
 	 * //http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/
 	 * B0OvI3cIUDlFk /zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
 	 * System.out.println(decodeDes("UlTdTr8Y",
