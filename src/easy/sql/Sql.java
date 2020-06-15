@@ -676,27 +676,21 @@ public abstract class Sql implements  AutoCloseable
 	}
 
 
-	public int[] preparedStatementExe(String sql, List<Row> list, String[] fiedls)
+
+	public int[] preparedStatementExe(String sql, List<Row> list, String[] fiedls) throws SQLException
 	{
 		Connection con = getWriteConnection();
-		int[] re = null;
-		try
+		int[] re;
+		PreparedStatement ps = con.prepareStatement(sql);
+		for (Row r : list)
 		{
-			PreparedStatement ps = con.prepareStatement(sql);
-			for (Row r : list)
+			for (int i=0,len=fiedls.length;i<len;i++)
 			{
-				for (int i=0,len=fiedls.length;i<len;i++)
-				{
-					ps.setString(i+1,r.getString(fiedls[i]));
-				}
-				ps.addBatch();
+				ps.setString(i+1,r.getString(fiedls[i]));
 			}
-			re = ps.executeBatch();
+			ps.addBatch();
 		}
-		catch (SQLException e)
-		{
-			Log.OutException(e);
-		}
+		re = ps.executeBatch();
 
 		return re;
 	}
