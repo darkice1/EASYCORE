@@ -46,34 +46,16 @@ public class CPSql extends Sql
 		jdbcurl = Config.getProperty("DBURL");
 		dbclass = Config.getProperty("DBCLASS");
 
-//		poolname = jdbcurl+dbclass+user;
-
 
 		userwrite = Config.getProperty("DBUSERWRITE");
 		passwordwrite = Config.getProperty("DBPASSWORDWRITE");
 		jdbcurlwrite = Config.getProperty("DBURLWRITE");
 		dbclasswrite = Config.getProperty("DBCLASSWRITE");
-
-//		writepoolname = jdbcurlwrite+dbclass+user;
 	}
 
 
 	private HikariConfig getProperties()
 	{
-//		Properties info = new Properties();
-/*		info.setProperty("proxool.maximum-connection-count", Config.getProperty("DBCONNECTMAX","20"));
-		//info.setProperty("proxool.house-keeping-test-sql", "select current_date from dual");
-		info.setProperty("proxool.house-keeping-test-sql", "select 1");
-		info.setProperty("proxool.maximum-active-time",  Config.getProperty("DBMAXACTIVETIME","70000"));
-
-		info.setProperty("proxool.maximum-connection-lifetime",  Config.getProperty("DBMAXCONNECTIONLIFTIME","120000"));
-		info.setProperty("proxool.house-keeping-sleep-time",  Config.getProperty("DBMAXKEEPINGSLEEPTIME","30000"));
-		info.setProperty("proxool.minimum-connection-count",  Config.getProperty("DBMINIMUMCONNECTIONCOUNT","1"));
-		info.setProperty("proxool.simultaneous-build-throttle",  Config.getProperty("SIMULTANEOUSBUILDTHROTTLE","10"));
-		info.setProperty("proxool.statistics-log-level", "ERROR");
-		info.setProperty("proxool.test-before-use",  "true");*/
-
-//		info.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
 		HikariConfig conf = new HikariConfig();
 		conf.setAutoCommit(true);
 
@@ -164,45 +146,10 @@ public class CPSql extends Sql
 		{
 			if (usepool)
 			{
-//				Class.forName(POOLCLASS);
-//				Properties info = getProperties();
-
-/*				HikariConfig conf = getProperties();
-				conf.setUsername(user);
-				conf.setPassword(password);
-				conf.setJdbcUrl(jdbcurl);
-				conf.setDriverClassName(dbclass);
-				String poolname = Config.getProperty("PROJECT","DB");
-				conf.setPoolName(poolname);*/
-
-				//info.setProperty("proxool.statistics-log-level", "ERROR");
-				//info.setProperty("house-keeping-sleep-time", "30000");
-//				info.setProperty("user",user);
-//				info.setProperty("password",password);
-
-//				String poolurl = "proxool." +getAliasString(user,password,dbclass,jdbcurl)+":";
-
-				//				System.out.println(poolurl+dbclass+":"+jdbcurl);
-//				conn = DriverManager.getConnection(poolurl+dbclass+":"+jdbcurl,info);
 				conn = getDataSource().getConnection();
 
 				if (!Format.isEmpty(userwrite) || !Format.isEmpty(passwordwrite) || !Format.isEmpty(jdbcurlwrite) || !Format.isEmpty(dbclasswrite))
 				{
-//					Properties writeinfo = getProperties();
-/*					HikariConfig writeinfo = getProperties();
-					//info.setProperty("proxool.statistics-log-level", "ERROR");
-					//info.setProperty("house-keeping-sleep-time", "30000");
-					writeinfo.setUsername(userwrite);
-					writeinfo.setPassword(passwordwrite);
-					writeinfo.setJdbcUrl(jdbcurlwrite);
-					writeinfo.setDriverClassName(dbclasswrite);
-					writeinfo.setPoolName(poolname+"_write");*/
-
-					//					System.out.println(jdbcurlwrite);
-					//					System.out.println(poolurl+dbclasswrite+":"+jdbcurlwrite);
-//					String writepoolurl = "proxool." +getAliasString(userwrite,passwordwrite,dbclasswrite,jdbcurlwrite)+":";
-
-//					connwrite = DriverManager.getConnection(writepoolurl+dbclasswrite+":"+jdbcurlwrite,writeinfo);
 					connwrite = getWriteDataSource().getConnection();
 				}
 				else
