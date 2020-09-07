@@ -23,17 +23,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CPSql extends Sql
 {
-	/**
-	 * 别名
-	 */
-	//	protected String alias;
-//	protected final String POOLCLASS = "org.logicalcobwebs.proxool.ProxoolDriver";
-
-	//	protected String poolurl;
 	protected String dbclass;
 	protected String dbclasswrite;
 
 	protected boolean usepool = true;
+
+	protected HikariConfig config = null;
+
+	public CPSql(HikariConfig config)
+	{
+		this.config = config;
+	}
 
 
 	/**
@@ -41,16 +41,26 @@ public class CPSql extends Sql
 	 */
 	protected void init()
 	{
-		user = Config.getProperty("DBUSER");
-		password = Config.getProperty("DBPASSWORD");
-		jdbcurl = Config.getProperty("DBURL");
-		dbclass = Config.getProperty("DBCLASS");
+		if (config == null)
+		{
+			user = Config.getProperty("DBUSER");
+			password = Config.getProperty("DBPASSWORD");
+			jdbcurl = Config.getProperty("DBURL");
+			dbclass = Config.getProperty("DBCLASS");
 
 
-		userwrite = Config.getProperty("DBUSERWRITE");
-		passwordwrite = Config.getProperty("DBPASSWORDWRITE");
-		jdbcurlwrite = Config.getProperty("DBURLWRITE");
-		dbclasswrite = Config.getProperty("DBCLASSWRITE");
+			userwrite = Config.getProperty("DBUSERWRITE");
+			passwordwrite = Config.getProperty("DBPASSWORDWRITE");
+			jdbcurlwrite = Config.getProperty("DBURLWRITE");
+			dbclasswrite = Config.getProperty("DBCLASSWRITE");
+		}
+		else
+		{
+			user = config.getUsername();
+			password = config.getPassword();
+			jdbcurl = config.getJdbcUrl();
+			dbclass = config.getDriverClassName();
+		}
 	}
 
 
@@ -77,6 +87,8 @@ public class CPSql extends Sql
 //		则HikariCP将尽最大努力快速有效地添加其他连接。但是，为了获得最高性能和对峰值需求的响应，我们建议不要设置此值，
 //		而是允许HikariCP充当固定大小的连接池。 默认值：与maximumPoolSize相同
 		conf.setMinimumIdle(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBMINIDEL", "3"))));
+
+		conf.setValidationTimeout(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBVALIDATIONTIMEOUT", "10000"))));
 
 /*		此属性控制允许池到达的最大大小，包括空闲和正在使用的连接。基本上，此值将确定数据库后端的最大实际连接数。
 		对此的合理值最好由您的执行环境决定。当池达到此大小且没有空闲连接可用时，对getConnection（）
@@ -105,19 +117,35 @@ public class CPSql extends Sql
 
 	private DataSource getDataSource(String user,String password,String jdbcurl,String dbclass)
 	{
-		String poolname = jdbcurl+user;
-		DataSource ds = DSMAP.get(poolname);
+		DataSource ds;
+		String poolname;
+		if (config == null)
+		{
+			poolname = jdbcurl+user;
+			ds = DSMAP.get(poolname);
+
+			if (ds == null)
+			{
+				HikariConfig conf = getProperties();
+				conf.setUsername(user);
+				conf.setPassword(password);
+				conf.setJdbcUrl(jdbcurl);
+				conf.setDriverClassName(dbclass);
+
+				conf.setPoolName(poolname);
+
+				config = conf;
+			}
+		}
+		else
+		{
+			poolname = config.getPoolName();
+			ds = DSMAP.get(poolname);
+		}
 
 		if (ds == null)
 		{
-			HikariConfig conf = getProperties();
-			conf.setUsername(user);
-			conf.setPassword(password);
-			conf.setJdbcUrl(jdbcurl);
-			conf.setDriverClassName(dbclass);
-
-			conf.setPoolName(poolname);
-			ds = new HikariDataSource(conf);
+			ds = new HikariDataSource(config);
 			DSMAP.put(poolname,ds);
 		}
 
@@ -192,29 +220,27 @@ public class CPSql extends Sql
 		super(resultSetType,resultSetConncurrency);
 	}
 
-	/*public static void main(String[] args)
+/*	public static void main(String[] args)
 	{
-		for (int i=0;i<1;i++)
+		HikariConfig conf = new HikariConfig();
+		conf.setPoolName("test");
+		conf.setJdbcUrl( Config.getProperty("DBURL"));
+		conf.setDriverClassName( Config.getProperty("DBCLASS"));
+		conf.setUsername( Config.getProperty("DBUSER"));
+		conf.setPassword( Config.getProperty("DBPASSWORD"));
+
+
+		CPSql sql = new CPSql(conf);
+		try
 		{
-			CPSql sql = new CPSql();
+			DataSet ds = sql.executeQuery("select * from real_test");
+			System.out.println(ds.getRowList());
 
-			try
-			{
-				BaseTable bt = new BaseTable();
-				bt.setTablename("real_test");
-				bt.Add("m_date","2019-02-01");
-				bt.Add("m_hour",Math.random()*1000);
-				bt.Insert();
-
-				DataSet ds = sql.executeQuery("select * from real_test");
-				System.out.println(ds.getRowList());
-			}
-			catch (SQLException e)
-			{
-				Log.OutException(e);
-			}
-
-			sql.close();
 		}
+		catch (SQLException throwables)
+		{
+			Log.OutException(throwables);
+		}
+		sql.close();
 	}*/
 }
