@@ -89,7 +89,7 @@ public class CPSql extends Sql
 		conf.setMinimumIdle(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBMINIDEL", "3"))));
 
 		conf.setValidationTimeout(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBVALIDATIONTIMEOUT", "10000"))));
-		conf.setLeakDetectionThreshold(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBLEAKDETECTIONTHRESHOLD", "100"))));
+		conf.setLeakDetectionThreshold(Integer.parseInt(Objects.requireNonNull(Config.getProperty("DBLEAKDETECTIONTHRESHOLD", "2000"))));
 /*		此属性控制允许池到达的最大大小，包括空闲和正在使用的连接。基本上，此值将确定数据库后端的最大实际连接数。
 		对此的合理值最好由您的执行环境决定。当池达到此大小且没有空闲连接可用时，对getConnection（）
 		的调用将connectionTimeout在超时前阻塞最多毫秒。请阅读有关连接池尺寸的信息。 默认值：10*/
