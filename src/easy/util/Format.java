@@ -8,6 +8,7 @@ import easy.sql.Row;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
@@ -532,8 +533,7 @@ public class Format
 			String supername = c.getSuperclass().getName();
 			// System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
 
-			if (supername != null
-					&& !"java.lang.Object".equals(supername))
+			if (!"java.lang.Object".equals(supername))
 			{
 				list.addAll(getAllField(c.getSuperclass(), true));
 			}
@@ -922,17 +922,20 @@ public class Format
 
 	public static String Sha256(String str)
 	{
-		return MessageDigest("sha-256", str);
+//		return MessageDigest("sha-256", str);
+		return DigestUtils.sha256Hex(str);
 	}
 
 	public static String Sha1(String str)
 	{
-		return MessageDigest("sha-1", str);
+//		return MessageDigest("sha-1", str);
+		return DigestUtils.sha1Hex(str);
 	}
 
 	public static String Md2(String str)
 	{
-		return MessageDigest("md2", str);
+//		return MessageDigest("md2", str);
+		return DigestUtils.md2Hex(str);
 	}
 
 	public static byte[] HMACSha1(byte[] key, byte[] data)
@@ -996,17 +999,19 @@ public class Format
 
 	public static byte[] Md5(byte[] bytes)
 	{
-		return MessageDigest("md5", bytes);
+		return DigestUtils.md5( bytes);
 	}
 
 	public static String Md5Str(byte[] bytes)
 	{
-		return byte2hex(MessageDigest("md5", bytes));
+//		return byte2hex(MessageDigest("md5", bytes));
+		return DigestUtils.md5Hex(bytes);
 	}
 
 	public static String Md5(String str)
 	{
-		return MessageDigest("md5", str);
+//		return MessageDigest("md5", str);
+		return DigestUtils.md5Hex(str);
 	}
 
 	/**
@@ -1043,28 +1048,13 @@ public class Format
 		return Long.parseLong(buf.toString());
 	}
 
-	public static byte[] MessageDigest(String m, byte[] bytes)
-	{
-		byte[] mstr = null;
-		try
-		{
-			MessageDigest md = MessageDigest.getInstance(m);
-			mstr = md.digest(bytes);
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			Log.OutException(e);
-		}
-		return mstr;
-	}
-
-	public static String MessageDigest(String m, String str)
+/*	public static String MessageDigest(String m, String str)
 	{
 		String mstr;
 		mstr = byte2hex(MessageDigest(m, str.getBytes()));
 
 		return mstr;
-	}
+	}*/
 
 	public static byte[] hex2byte(String s)
 	{
@@ -1094,11 +1084,11 @@ public class Format
 		return hexString.toString();
 	}
 
-	private static Base64.Encoder ENBASE64URL = Base64.getUrlEncoder();
-	private static Base64.Decoder DEBASE64URL = Base64.getUrlDecoder();
+	private static final Base64.Encoder ENBASE64URL = Base64.getUrlEncoder();
+	private static final Base64.Decoder DEBASE64URL = Base64.getUrlDecoder();
 
-	private static Base64.Encoder ENBASE64 = Base64.getEncoder();
-	private static Base64.Decoder DEBASE64 = Base64.getDecoder();
+	private static final Base64.Encoder ENBASE64 = Base64.getEncoder();
+	private static final Base64.Decoder DEBASE64 = Base64.getDecoder();
 
 	public static String encodeBase64Url(final byte[] buf)
 	{
@@ -1235,7 +1225,7 @@ public class Format
 		// Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
 		final Pattern URLPAT = Pattern
 				.compile("((http(|s):)?//[-a-zA-Z0-9@:%_" +
-						"\\+.~,#?&//=]+)");
+						"+.~,#?&/=]+)");
 
 		List<String> list = new LinkedList<>();
 		Matcher matcher = URLPAT.matcher(str);
@@ -1440,44 +1430,16 @@ public class Format
 		}
 		return cstr;
 	}
-	/*
-	 * public static void main(String[] args) { long a =
-	 * Format.ip2long("192.168.1.2"); System.out.println(a); }
-	 */
-	/*
-	 * public static void main(String[] args) { try { HashMap<String,Row> map =
-	 * new HashMap<String,Row>(); Row r = new Row(); r.putString("rrr", "rvrv");
-	 * map.put("aaa", r); System.out.println(Format.getMapString(map));
-	 *
-	 * String key = "aa123456"; String str = encodeDes(key,
-	 * "http://s.click.taobao.com/t?e=m%3D2%26s%3DWXz%2BpQdcHYccQipKwQzePOeEDrYVVa64Qih%2F7PxfOKS5VBFTL4hn2dFYoGP7L3a4NGaA%2Fv7qa0ST6eDNmvF6jBLOI4%2FU6Dke38XymDefB1EyH37S5WIg5fE%2FJZ20M53%2Bcy7llBOuH5ssPuCO17knxsYOae24fhW0"
-	 * ); System.out.println(str); System.out.println(decodeDes(key,str));
-	 *
-	 * //http://wap.tk.woso100.com/nsfUlTdTr8Y_tR7WXBWIgfbSHVc7VQ3Dh/
-	 * B0OvI3cIUDlFk /zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p
-	 * System.out.println(decodeDes("UlTdTr8Y",
-	 * "tR7WXBWIgfbSHVc7VQ3Dh/B0OvI3cIUDlFk/zyY0zbKAwtNrdnLfMLxpnJVSq2Yc5MitswkRI72p"
-	 * )); } catch (InvalidKeyException e) { Log.OutException(e); } catch
-	 * (UnsupportedEncodingException e) { Log.OutException(e); } catch
-	 * (NoSuchAlgorithmException e) { Log.OutException(e); } catch
-	 * (NoSuchPaddingException e) { Log.OutException(e); } catch
-	 * (InvalidKeySpecException e) { Log.OutException(e); } }
-	 */
 
-	// public static void main(String[] args) throws ClassNotFoundException,
-	// IOException
-	// {
-	// try
-	// {
-	// System.out.println(Format.encodeBase64(HMACSha1("a4dc94b7d27fb8718eb4a348de708dcb","23454235")));
-	// }
-	// catch (InvalidKeyException e)
-	// {
-	// Log.OutException(e);
-	// }
-	// catch (NoSuchAlgorithmException e)
-	// {
-	// Log.OutException(e);
-	// }
-	// }
+/*	public static void main(String[] args)
+	{
+		String test = "aaabbcc";
+		System.out.println(Format.Md2(test));
+		System.out.println(Format.byte2hex(Format.Md5(test.getBytes())));
+		System.out.println(Format.Md5(test));
+		System.out.println(Format.Md5Str(Format.Md5(test.getBytes())));
+		System.out.println(Format.Sha1(test));
+		System.out.println(Format.Sha256(test));
+
+	}*/
 }
