@@ -83,8 +83,18 @@ public class Log
 	
 	public static String OutException (Throwable ex,String formate,Object... strs)
 	{
-		String str = String.format(formate,strs);
+		String str;
+
+		if (strs.length > 0)
+		{
+			str = String.format(formate,strs);
+		}
+		else
+		{
+			str = formate;
+		}
 		return OutException (ex,str);
+
 	}
 
 	public static String OutException (Throwable ex,String outstr)
@@ -140,7 +150,16 @@ public class Log
 	
 	public static String OutLog (String formate,Object... strs)
 	{
-		String str = String.format(formate,strs);
+		String str;
+
+		if (strs.length > 0)
+		{
+			str = String.format(formate,strs);
+		}
+		else
+		{
+			str = formate;
+		}
 		return OutLog (str);
 	}
 
