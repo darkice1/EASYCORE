@@ -112,7 +112,7 @@ public class JFile
 
 	public static void  writeFileBytes(String path,byte[] data) throws IOException
 	{
-		BufferedOutputStream outputStream  = new BufferedOutputStream(new FileOutputStream(new File(path)));
+		BufferedOutputStream outputStream  = new BufferedOutputStream(new FileOutputStream(path));
 		outputStream.write(data);
 		outputStream.close();
 	}
