@@ -467,12 +467,16 @@ public abstract class Sql implements  AutoCloseable
 		}
 	}
 
+	public int[] executeBatchEx() throws SQLException
+	{
+		return getStmtWrite().executeBatch();
+	}
 
 	public int[] executeBatch()
 	{
 		try
 		{
-			return getStmtWrite().executeBatch();
+			return executeBatchEx();
 		}
 		catch (Exception ex)
 		{
