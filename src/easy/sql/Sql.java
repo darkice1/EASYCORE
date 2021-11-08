@@ -394,12 +394,12 @@ public abstract class Sql implements  AutoCloseable
 		if (!isinit)
 		{
 			instance();
-			isinit = true;
 		}
 		if (stmtwrite == null)
 		{
 			stmtwrite = stmt;
 		}
+
 		//		if (stmt==null)
 		//		{
 		//			initdb();

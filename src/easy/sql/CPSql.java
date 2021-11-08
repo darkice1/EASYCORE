@@ -128,6 +128,7 @@ public class CPSql extends Sql
 	{
 		DataSource ds;
 		String poolname;
+
 		if (config == null)
 		{
 			poolname = jdbcurl+user;
@@ -143,7 +144,9 @@ public class CPSql extends Sql
 
 				conf.setPoolName(poolname);
 
-				config = conf;
+				ds = new HikariDataSource(conf);
+				DSMAP.put(poolname,ds);
+//				config = conf;
 			}
 		}
 		else
@@ -152,11 +155,11 @@ public class CPSql extends Sql
 			ds = DSMAP.get(poolname);
 		}
 
-		if (ds == null)
+/*		if (ds == null)
 		{
 			ds = new HikariDataSource(config);
 			DSMAP.put(poolname,ds);
-		}
+		}*/
 
 		return ds;
 	}
