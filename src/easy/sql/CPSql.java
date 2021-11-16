@@ -188,7 +188,7 @@ public class CPSql extends Sql
 			{
 				conn = getDataSource().getConnection();
 
-				if (!Format.isEmpty(userwrite) || !Format.isEmpty(passwordwrite) || !Format.isEmpty(jdbcurlwrite) || !Format.isEmpty(dbclasswrite))
+				if (!Format.isEmpty(userwrite) && !Format.isEmpty(jdbcurlwrite) && !Format.isEmpty(dbclasswrite))
 				{
 					connwrite = getWriteDataSource().getConnection();
 				}
@@ -204,7 +204,7 @@ public class CPSql extends Sql
 				Class.forName(dbclass);
 				conn = DriverManager.getConnection(jdbcurl,user,password);
 
-				if (!Format.isEmpty(userwrite) || !Format.isEmpty(passwordwrite) || !Format.isEmpty(jdbcurlwrite) || !Format.isEmpty(dbclasswrite))
+				if (!Format.isEmpty(userwrite) && !Format.isEmpty(jdbcurlwrite) && !Format.isEmpty(dbclasswrite))
 				{
 					Class.forName(dbclasswrite);
 					connwrite = DriverManager.getConnection(jdbcurlwrite,userwrite,passwordwrite);
