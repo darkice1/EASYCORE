@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
@@ -1327,17 +1329,17 @@ public class Format
 		return getMyIpAll().get("ip");
 	}
 
-	public static String getDomain(final String url)
+	public static String getDomain(final String urlstr)
 	{
-		String[] t = url.split("/");
-		String domain = "";
-
-		if (t.length >= 3)
+		try
 		{
-			domain = t[2];
+			URL url = new URL(urlstr);
+			return  url.getHost();
 		}
-
-		return domain;
+		catch (MalformedURLException ignored)
+		{
+		}
+		return "";
 	}
 
 	public static String getChartset(byte[] bytes)
