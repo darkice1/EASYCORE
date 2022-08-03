@@ -63,8 +63,8 @@ public class Format
 
 	// private final static Pattern URLPAT
 	// =Pattern.compile("(http://|https://)[^\\s]*");
-	protected final transient static List<String> GURLLIST = new ArrayList<>();
-	public final transient static List<String> GAELIST = new ArrayList<>();
+	protected final static List<String> GURLLIST = new ArrayList<>();
+	public final static List<String> GAELIST = new ArrayList<>();
 	static
 	{
 		GAELIST.add("hwosoproxy1.appspot.com");
@@ -134,10 +134,10 @@ public class Format
 	public static String toScriptString(String src)
 	{
 		String tmp = src;
-		tmp = Format.replaceAll(tmp,"\r|\n", "");
-		tmp = Format.replaceAll(tmp,"\"", "\\\\\"");
-		tmp = Format.replaceAll(tmp,"</script>", "\"+\"<\"+\"/script>\"+\"");
-		tmp = Format.replaceAll(tmp,"</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"");
+		tmp = replaceAll(tmp,"\r|\n", "");
+		tmp = replaceAll(tmp,"\"", "\\\\\"");
+		tmp = replaceAll(tmp,"</script>", "\"+\"<\"+\"/script>\"+\"");
+		tmp = replaceAll(tmp,"</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"");
 
 		return tmp;
 	}
@@ -1086,7 +1086,7 @@ public class Format
 		return hexString.toString();
 	}
 
-	private static final Base64.Encoder ENBASE64URL = Base64.getUrlEncoder();
+	private static final Base64.Encoder ENBASE64URL = Base64.getUrlEncoder().withoutPadding();
 	private static final Base64.Decoder DEBASE64URL = Base64.getUrlDecoder();
 
 	private static final Base64.Encoder ENBASE64 = Base64.getEncoder();
@@ -1094,10 +1094,11 @@ public class Format
 
 	public static String encodeBase64Url(final byte[] buf)
 	{
-		byte[] encoded = ENBASE64URL.encode(buf);
-
-		// BASE64Encoder en = new sun.misc.BASE64Encoder();
-		return new String(encoded);
+//		byte[] encoded = ENBASE64URL.encode(buf);
+//
+//		// BASE64Encoder en = new sun.misc.BASE64Encoder();
+//		return new String(encoded);
+		return ENBASE64URL.encodeToString(buf);
 	}
 
 	public static byte[] decodeBase64Url(final String str)
