@@ -22,33 +22,29 @@ import java.util.TimeZone;
 public class EDate
 {
 	private Date date;
-	private Calendar calendar= Calendar.getInstance ();
+	private final Calendar calendar= Calendar.getInstance ();
 	private final static TimeZone TIMEZONE = TimeZone.getTimeZone(Config.getProperty("DEFTIMEZONE","GMT+8"));
 	private final static int[] MYWEEK = {7,1,2,3,4,5,6};
-	
+
 	static
 	{
 		TimeZone.setDefault(TIMEZONE);
 	}
-	
+
 	private final SimpleDateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final SimpleDateFormat LOGFORMAT = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 	private final SimpleDateFormat SQLDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	
-//	@Override
-//	protected void finalize() throws Throwable
-//	{
-//		super.finalize();
-//		//rowList.clear();
-//		date = null;
-//		calendar = null;
-//	}
-
 
 	public EDate ()
 	{
 		date=new Date();
 		calendar.setTime (date);
+	}
+
+	public EDate (long ts)
+	{
+		this();
+		date.setTime(ts);
 	}
 
 	public EDate (Date pdate)
@@ -105,7 +101,7 @@ public class EDate
 	{
 		return calendar.get (Calendar.DATE);
 	}
-	
+
 	public int getWeekOfYear()
 	{
 		return calendar.get (Calendar.WEEK_OF_YEAR);
@@ -165,7 +161,7 @@ public class EDate
 	{
 		return date;
 	}
-	
+
 	public static String getString()
 	{
 		return new EDate().DATEFORMAT.format (new Date());
@@ -175,7 +171,7 @@ public class EDate
 	{
 		return new EDate().DATEFORMAT.format (p_date);
 	}
-	
+
 	/**
 	 * 閿熸枻鎷烽敓鏂ゆ嫹SQL浣块敓鐭潻鎷峰紡yyyy-MM-dd
 	 * @param date
@@ -185,12 +181,12 @@ public class EDate
 	{
 		return new EDate().SQLDATEFORMAT.format (date);
 	}
-	
+
 	public String getSQLDate ()
 	{
 		return SQLDATEFORMAT.format (date);
 	}
-	
+
 	/**
 	 * 閿熸枻鎷烽敓鏂ゆ嫹LOG浣块敓鐭潻鎷峰紡yyyy_MM_dd_HH_mm_ss
 	 * @param date
@@ -200,7 +196,7 @@ public class EDate
 	{
 		return new EDate().LOGFORMAT.format(date);
 	}
-	
+
 	public static String getLogDate()
 	{
 		return new EDate().LOGFORMAT.format(new Date());
@@ -229,17 +225,17 @@ public class EDate
 	{
 		return date.getTime();
 	}
-	
+
 	public int getWeek()
 	{
 		return MYWEEK[calendar.get(Calendar.DAY_OF_WEEK)-1];
 	}
-	
+
 	public boolean equals (Date pdate)
 	{
 		return date.equals (pdate);
 	}
-	
+
 	public static String toString(final Date date,final String format)
 	{
 		 SimpleDateFormat myFmt=new SimpleDateFormat(format);
