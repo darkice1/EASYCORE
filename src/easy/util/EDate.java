@@ -43,8 +43,8 @@ public class EDate
 
 	public EDate (long ts)
 	{
-		this();
 		date.setTime(ts);
+		calendar.setTime (date);
 	}
 
 	public EDate (Date pdate)
