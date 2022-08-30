@@ -43,8 +43,7 @@ public class EDate
 
 	public EDate (long ts)
 	{
-		date=new Date();
-		date.setTime(ts);
+		date=new Date(ts);
 		calendar.setTime (date);
 	}
 
