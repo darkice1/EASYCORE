@@ -43,6 +43,7 @@ public class EDate
 
 	public EDate (long ts)
 	{
+		date=new Date();
 		date.setTime(ts);
 		calendar.setTime (date);
 	}
@@ -295,6 +296,6 @@ public class EDate
 
 	public static void main(String[] args)
 	{
-		System.out.println(isWorkday(new EDate("2020-01-01 00:00:00").getDate()));
+		System.out.println(new EDate(0));
 	}
 }
