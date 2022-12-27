@@ -1,228 +1,152 @@
-package easy.config;
+package easy.config
 
-import easy.io.JFile;
-import easy.util.Format;
-import easy.util.Log;
-
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import easy.io.JFile
+import easy.util.Format
+import easy.util.Log
+import java.io.File
+import java.io.FileNotFoundException
+import java.nio.file.Files
+import java.util.*
 
 /**
- * <p>
- * <i>Copyright: Esay (c) 2005-2005 <br>
- * Company: Esay </i>
- * </p>
- * 
+ *
+ *
+ * *Copyright: Easy (c) 2005-2005 <br></br>
+ * Company: Easy *
+ *
+ *
  * Config������
- * 
- * @version 1.0 ( <i>2005-7-4 neo </i>)
+ *
+ * @version 1.0 ( *2005-7-4 neo *)
  */
+class Config private constructor() {
+	private var properties: Properties = Properties()
 
-public class Config
-{
-	private static Config CFG = null;
+	companion object {
+		private var CFG: Config? = null
+		private val instance: Config?
+			get() {
+				if(CFG == null) {
+					CFG = Config()
+					load()
+				}
+				return CFG
+			}
 
-	private final Properties PPS;
-
-	private Config()
-	{
-		PPS = new Properties();
-	}
-
-	private static Config getInstance()
-	{
-		if (CFG == null)
-		{
-			CFG = new Config();
-			Config.load();
-		}
-		return CFG;
-	}
-	
-	public static void load(String filepath) throws FileNotFoundException
-	{
+		@Throws(FileNotFoundException::class)
+		fun load(filepath: String?) {
 //		System.out.println(filepath);
-		CFG = Config.getInstance();
-
-		InputStream is = new FileInputStream(new File(filepath));
-
-		try
-		{
-			CFG.PPS.load(is);
-			is.close();
-		}
-		catch (IOException ex)
-		{
-			Log.OutException(ex);
-		}
-	}
-
-	private static String getConfigPath(String startpath)
-	{
-		final String CONFIGNAME = "/config.txt";
-
-		String fpath = null;
-		File cf = new File(startpath);
-
-		while(true)
-		{
-			//			System.out.println(cf.getPath());
-			String tpath = cf.getPath();
-			if (JFile.exists(tpath+CONFIGNAME))
+			if (filepath!=null)
 			{
-				fpath = tpath+CONFIGNAME;
-				break;
-			}
-			if (JFile.exists(tpath+"/WEB-INF"+CONFIGNAME))
-			{
-				fpath = tpath+CONFIGNAME;
-				break;
-			}
+				val pps = Properties()
+				pps.load(Files.newInputStream(File(filepath).toPath()))
+				val loadclassname = pps.getProperty("CONFIGLOADCLASS")
+				if (loadclassname != null && loadclassname!="") {
 
-
-			if (tpath.equals("/"))
-			{
-				break;
+					val cl = try{
+						Class.forName(loadclassname).newInstance() as ConfigLoad
+					}
+					catch (e:Exception)
+					{
+						Log.OutException(e)
+						null
+					}
+					if (cl != null) {
+						CFG = instance
+						CFG!!.properties = cl.load(pps)
+					}
+				}
+				else
+				{
+					CFG = instance
+					CFG!!.properties = pps
+				}
 			}
 			else
 			{
-				cf = new File(cf.getParent());
+				println("Config.load:filepath is null")
 			}
 		}
 
-		return fpath;
-	}
-
-	public static void load()
-	{
-		String cpath=null,fpath=null;
-
-		try
-		{
-			CFG = new Config();
-			URL u = CFG.getClass().getResource("/");
-			if (u == null)
+		private fun getConfigPath(startpath: String?): String? {
+			if (startpath != null)
 			{
-				cpath = System.getProperty("user.dir");
+				val cfgname = "/config.txt"
+				var fpath: String? = null
+				var cf = File(startpath)
+				while (true) {
+					//			System.out.println(cf.getPath());
+					val tpath = cf.path
+					if(JFile.exists(tpath + cfgname)) {
+						fpath = tpath + cfgname
+						break
+					}
+					if(JFile.exists("$tpath/WEB-INF$cfgname")) {
+						fpath = tpath + cfgname
+						break
+					}
+					cf = if(tpath == "/") {
+						break
+					} else {
+						File(cf.parent)
+					}
+				}
+				return fpath
 			}
 			else
 			{
-				cpath = u.getPath();
-			}
-
-			if (cpath.indexOf("file:") == 0)
-			{
-				cpath = cpath.substring(5);
-			}
-			cpath = Format.replaceAll(cpath,"%20"," ");
-
-			//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
-
-			fpath = getConfigPath(cpath);
-			load(fpath);
-		}
-		catch (Exception ex)
-		{
-			System.out.println(String.format("载入配置文件错误[%s]->[%s]",cpath,fpath));
-//			ex.printStackTrace();
-		}
-	}
-
-	public static String getProperty(String key)
-	{
-		try
-		{
-			String tmp = Config.getInstance().PPS.getProperty(key);
-			if (tmp != null)
-			{
-				return new String(tmp.getBytes("latin1"), StandardCharsets.UTF_8);
-			}
-			else
-			{
-				return null;
+				println("Config.getConfigPath:path is null")
+				return null
 			}
 		}
-		catch (UnsupportedEncodingException e)
-		{
-			Log.OutException(e);
-			return "";
-		}
-	}
-	
 
-	public static String getProperty(String key,String defvalue)
-	{		
-		try
-		{
-			String tmp = Config.getInstance().PPS.getProperty(key,defvalue);
-			if (tmp != null)
-			{
-				return new String(tmp.getBytes("latin1"), StandardCharsets.UTF_8);
+		fun load() {
+			var cpath: String? = null
+			var fpath: String? = null
+			try {
+				CFG = Config()
+				val u = CFG!!.javaClass.getResource("/")
+				cpath = if(u == null) {
+					System.getProperty("user.dir")
+				} else {
+					u.path
+				}
+				if(cpath.indexOf("file:") == 0) {
+					cpath = cpath.substring(5)
+				}
+				cpath = Format.replaceAll(cpath, "%20", " ")
+
+				//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
+				fpath = getConfigPath(cpath)
+				load(fpath)
+			} catch (ex: Exception) {
+				System.out.printf("载入配置文件错误[%s]->[%s]%n", cpath, fpath)
+				//			ex.printStackTrace();
 			}
-			else
-			{
-				return null;
+		}
+
+		@JvmStatic
+		fun getProperty(key: String?): String? {
+			return instance!!.properties.getProperty(key)
+		}
+
+		@JvmStatic
+		fun getProperty(key: String?, defvalue: String?): String? {
+			return instance!!.properties.getProperty(key, defvalue)
+
+		}
+
+		@Suppress("unused")
+		fun setProperty(key: String?, newvalue: String?) {
+			instance!!.properties.setProperty(key, newvalue)
+		}
+
+		val string: String
+			get() {
+				if(CFG == null) {
+					instance
+				}
+				return CFG!!.properties.toString()
 			}
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			Log.OutException(e);
-			return "";
-		}
-	}
-	
-
-	public static void setProperty(String key,String newvalue)
-	{
-		Config.getInstance().PPS.setProperty(key,newvalue);
-
-//		File f = new File(CFG.getClass().getResource("Config.class").toString());
-//
-//		String path = f.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getPath();
-//		path = path.replaceAll("jar:", "");
-//		path = path.replaceAll("file\\:", "");
-//		path = path.replaceAll("file/:", "");
-//		path = path.replaceAll("%20", " ");
-//		path += "/config.txt";
-//
-//		String path1 = f.getParentFile().getParentFile().getParentFile().getParentFile().getPath();
-//		path1 = path1.replaceAll("jar:", "");
-//		path1 = path1.replaceAll("file\\:", "");
-//		path1 = path1.replaceAll("file/:", "");
-//		path1 = path1.replaceAll("%20", " ");
-//		path1 += "/config.txt";
-//
-//		CFG = Config.getInstance();
-//		FileOutputStream fos = null;
-//		try
-//		{
-//			fos = new FileOutputStream(path);
-//		}
-//		catch (Exception ex)
-//		{
-//			try
-//			{
-//				fos = new FileOutputStream(path1);
-//			}
-//			catch (Exception e)
-//			{
-//			}
-//		}
-//			
-//		Config.getInstance().PPS.setProperty(key,newvalue);
-//		Config.getInstance().PPS.store(fos,comment);
-//		fos.close();
-	}
-
-	
-	public static String getString()
-	{
-		if (CFG == null)
-		{
-			getInstance();
-		}
-		return CFG.PPS.toString();
 	}
 }
