@@ -33,6 +33,7 @@ class Config {
 				return CFG
 			}
 
+		@JvmStatic
 		@Throws(FileNotFoundException::class)
 		fun load(filepath: String?) {
 //		System.out.println(filepath);
@@ -100,6 +101,7 @@ class Config {
 			}
 		}
 
+		@JvmStatic
 		fun load() {
 			var cpath: String? = null
 			var fpath: String? = null
@@ -131,11 +133,11 @@ class Config {
 		}
 
 		@JvmStatic
-		fun getProperty(key: String?, defvalue: String?): String? {
+		fun getProperty(key: String?, defvalue: String?): String {
 			return instance!!.properties.getProperty(key, defvalue)
-
 		}
 
+		@JvmStatic
 		@Suppress("unused")
 		fun setProperty(key: String?, newvalue: String?) {
 			instance!!.properties.setProperty(key, newvalue)
