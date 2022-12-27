@@ -19,7 +19,7 @@ import java.util.*
  *
  * @version 1.0 ( *2005-7-4 neo *)
  */
-class Config private constructor() {
+class Config {
 	private var properties: Properties = Properties()
 
 	companion object {
