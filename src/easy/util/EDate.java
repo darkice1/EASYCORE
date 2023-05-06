@@ -6,9 +6,13 @@ import net.sf.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.Locale;
 
 /**
  * <p><i>Copyright: 9esoft.com (c) 2005-2006<br>
@@ -21,42 +25,30 @@ import java.util.TimeZone;
 
 public class EDate
 {
-	private Date date;
-	private final Calendar calendar= Calendar.getInstance ();
-	private final static TimeZone TIMEZONE = TimeZone.getTimeZone(Config.getProperty("DEFTIMEZONE","GMT+8"));
-	private final static int[] MYWEEK = {7,1,2,3,4,5,6};
+	private LocalDateTime localDateTime;
+	private final static ZoneId TIMEZONE = ZoneId.of(Config.getProperty("DEFTIMEZONE", "GMT+8"));
+//	private final static int[] MYWEEK = {7,1,2,3,4,5,6};
 
-	static
-	{
-		TimeZone.setDefault(TIMEZONE);
-	}
-
-	private final SimpleDateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private final SimpleDateFormat LOGFORMAT = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-	private final SimpleDateFormat SQLDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private final static DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private final static DateTimeFormatter LOGFORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
+	private final static DateTimeFormatter SQLDATEFORMAT =  DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	public EDate ()
 	{
-		date=new Date();
-		calendar.setTime (date);
+		localDateTime = LocalDateTime.now(TIMEZONE);
 	}
 
 	public EDate (long ts)
 	{
-		date=new Date(ts);
-		calendar.setTime (date);
+		localDateTime = LocalDateTime.ofInstant(new Date(ts).toInstant(), TIMEZONE);
 	}
 
 	public EDate (Date pdate)
 	{
-		date=pdate;
-		calendar.setTime (date);
+		localDateTime = pdate.toInstant().atZone(TIMEZONE).toLocalDateTime();
 	}
 
-	/**
-	 * 閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹閿熻鍑ゆ嫹yyyy-MM-dd HH:mm:ss
-	 * @param str
-	 */
+
 	public EDate (String str)
 	{
 		 this (str, "yyyy-MM-dd HH:mm:ss");
@@ -64,176 +56,151 @@ public class EDate
 
 	public EDate (String datestr,String formatestr)
 	{
-		SimpleDateFormat df = new SimpleDateFormat(formatestr);
-		try
-		{
-			date = df.parse(datestr);
-			calendar.setTime (date);
-		}
-		catch (Exception e)
-		{
-			Log.OutException(e);
-		}
+		DateTimeFormatter df = DateTimeFormatter.ofPattern(formatestr).withZone(TIMEZONE);
+		localDateTime = LocalDateTime.parse(datestr, df);
 	}
 	public int getYear()
 	{
-		return calendar.get (Calendar.YEAR);
+		return localDateTime.getYear();
 	}
 
 	public void setYear(int year)
 	{
-		calendar.set (Calendar.YEAR,year);
-		date = calendar.getTime ();
+		localDateTime = localDateTime.withYear(year);
 	}
 
 	public int getMonth()
 	{
-		return calendar.get (Calendar.MONTH)+1;
+		return localDateTime.getMonthValue();
 	}
 
 	public void setMonth(int month)
 	{
-		calendar.set (Calendar.MONTH,month-1);
-		date = calendar.getTime ();
+		localDateTime = localDateTime.withMonth(month);
 	}
 
 	public int getDay()
 	{
-		return calendar.get (Calendar.DATE);
+		return localDateTime.getDayOfMonth();
 	}
+
 
 	public int getWeekOfYear()
 	{
-		return calendar.get (Calendar.WEEK_OF_YEAR);
+		WeekFields weekFields = WeekFields.of(Locale.getDefault());
+		return localDateTime.get(weekFields.weekOfWeekBasedYear());
 	}
 
 	public void setDay(int day)
 	{
-		calendar.set (Calendar.DATE,day);
-		date = calendar.getTime ();
+		localDateTime = localDateTime.withDayOfMonth(day);
 	}
 
 	public int getHour()
 	{
-		return calendar.get (Calendar.HOUR_OF_DAY);
+		return localDateTime.getHour();
 	}
 
 	public void setHour(int hour)
 	{
-		calendar.set (Calendar.HOUR_OF_DAY,hour);
-		date = calendar.getTime ();
+		localDateTime = localDateTime.withHour(hour);
 	}
 
 	public int getMin()
 	{
-		return calendar.get (Calendar.MINUTE);
+		return localDateTime.getMinute();
 	}
 
 	public void setMin(int min)
 	{
-		calendar.set (Calendar.MINUTE,min);
-		date = calendar.getTime ();
+		localDateTime = localDateTime.withMinute(min);
 	}
 
 	public int getSec()
 	{
-		return calendar.get (Calendar.SECOND);
+		return localDateTime.getSecond();
 	}
 
 	public void setSec(int sec)
 	{
-		calendar.set (Calendar.SECOND,sec);
-		date = calendar.getTime ();
+		localDateTime = localDateTime.withSecond(sec);
 	}
 
 	public void setDate(Date pdate)
 	{
-		date=pdate;
-		calendar.setTime (date);
-	}
-
-	public Date getcalendarDate()
-	{
-		return calendar.getTime ();
+		localDateTime = pdate.toInstant().atZone(TIMEZONE).toLocalDateTime();
 	}
 
 	public Date getDate()
 	{
-		return date;
+		return Date.from(localDateTime.atZone(TIMEZONE).toInstant());
 	}
 
 	public static String getString()
 	{
-		return new EDate().DATEFORMAT.format (new Date());
+		return new EDate().toString();
 	}
 
 	public static String toString (Date p_date)
 	{
-		return new EDate().DATEFORMAT.format (p_date);
+		return new EDate(p_date).toString();
 	}
 
-	/**
-	 * 閿熸枻鎷烽敓鏂ゆ嫹SQL浣块敓鐭潻鎷峰紡yyyy-MM-dd
-	 * @param date
-	 * @return
-	 */
 	public static String getSQLDate (Date date)
 	{
-		return new EDate().SQLDATEFORMAT.format (date);
+		return SQLDATEFORMAT.format (date.toInstant().atZone(TIMEZONE).toLocalDateTime());
 	}
 
-	public String getSQLDate ()
+	public String getSQLDate()
 	{
-		return SQLDATEFORMAT.format (date);
+		return SQLDATEFORMAT.format(localDateTime);
 	}
 
-	/**
-	 * 閿熸枻鎷烽敓鏂ゆ嫹LOG浣块敓鐭潻鎷峰紡yyyy_MM_dd_HH_mm_ss
-	 * @param date
-	 * @return
-	 */
+
 	public static String getLogDate(Date date)
 	{
-		return new EDate().LOGFORMAT.format(date);
+		return new EDate(date).getSQLDate();
 	}
 
 	public static String getLogDate()
 	{
-		return new EDate().LOGFORMAT.format(new Date());
+		return LOGFORMAT.format(new EDate().localDateTime);
 	}
 
 	@Override
 	public String toString ()
 	{
-		return DATEFORMAT.format (date);
+		return DATEFORMAT.format(localDateTime.atZone(TIMEZONE));
 	}
 
-	public Date NextDay ()
+	public Date nextDay ()
 	{
-		Date pdate=new Date();
-		pdate.setTime(date.getTime ()+86400000);
-		return pdate;
+		LocalDateTime nextDay = localDateTime.plusDays(1);
+		return Date.from(nextDay.atZone(TIMEZONE).toInstant());
 	}
-	public Date LastDay ()
+	public Date lastDay ()
 	{
-		Date pdate=new Date();
-		pdate.setTime(date.getTime ()-86400000);
-		return pdate;
+		LocalDateTime lastDay = localDateTime.minusDays(1);
+		return Date.from(lastDay.atZone(TIMEZONE).toInstant());
 	}
 
 	public long getTime()
 	{
-		return date.getTime();
+		return localDateTime.atZone(TIMEZONE).toInstant().toEpochMilli();
 	}
 
 	public int getWeek()
 	{
-		return MYWEEK[calendar.get(Calendar.DAY_OF_WEEK)-1];
+//		int[] myWeek = {7, 1, 2, 3, 4, 5, 6};
+//		DayOfWeek dayOfWeek = localDateTime.getDayOfWeek();
+//		return MYWEEK[dayOfWeek.getValue() - 1];
+		return localDateTime.getDayOfWeek().getValue();
 	}
 
 	public boolean equals (Date pdate)
 	{
-		return date.equals (pdate);
+//		localDateTime = pdate.toInstant().atZone(TIMEZONE).toLocalDateTime();
+		return localDateTime.equals (pdate.toInstant().atZone(TIMEZONE).toLocalDateTime());
 	}
 
 	public static String toString(final Date date,final String format)
@@ -244,8 +211,8 @@ public class EDate
 
 	public void setTime(long time)
 	{
-		date.setTime(time);
-		calendar.setTime (date);
+		Instant instant = Instant.ofEpochMilli(time);
+		localDateTime = LocalDateTime.ofInstant(instant, TIMEZONE);
 	}
 
 	public static boolean isWorkday(Date d)
@@ -293,8 +260,31 @@ public class EDate
 		return isok;
 	}
 
-	public static void main(String[] args)
+	/*public static void main(String[] args)
 	{
-		System.out.println(new EDate(0));
-	}
+		EDate d = new EDate();
+		System.out.println(d);
+		System.out.println(d.getWeek());
+		EDate n = new EDate(d.nextDay());
+		System.out.println(n);
+		EDate tn = new EDate(n.getTime());
+
+		System.out.println(n +" "+ tn);
+		System.out.println(getLogDate());
+		System.out.println(getLogDate());
+		System.out.println(isWorkday(new Date()));
+
+		EDate strd = new EDate("2023-05-08 01:12:34");
+		System.out.println(strd);
+		System.out.println(strd.getWeek());
+		System.out.println(new EDate().getTime()+"  "+ System.currentTimeMillis());
+
+		System.out.println(strd.getWeekOfYear());
+		System.out.println(strd.getYear());
+		System.out.println(strd.getMonth());
+		System.out.println(strd.getDay());
+		System.out.println(strd.getHour());
+		System.out.println(strd.getMin());
+		System.out.println(strd.getSec());
+	}*/
 }
