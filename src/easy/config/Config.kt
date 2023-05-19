@@ -19,6 +19,7 @@ import java.util.*
  *
  * @version 1.0 ( *2005-7-4 neo *)
  */
+@Suppress("unused")
 class Config {
 	private var properties: Properties = Properties()
 
@@ -141,6 +142,12 @@ class Config {
 		@Suppress("unused")
 		fun setProperty(key: String?, newvalue: String?) {
 			instance!!.properties.setProperty(key, newvalue)
+		}
+
+
+		@JvmStatic
+		fun getProperties(): Properties {
+			return instance!!.properties
 		}
 
 		val string: String
