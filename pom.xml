@@ -14,7 +14,13 @@
 		<url>https://github.com/darkice1/EASYCORE</url>
 		<connection>https://github.com/darkice1/EASYCORE.git</connection>
 	</scm>
-
+	<pluginRepositories>
+		<pluginRepository>
+			<id>jcenter</id>
+			<name>JCenter</name>
+			<url>https://jcenter.bintray.com/</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<developers>
 		<developer>
 			<name>neo</name>
@@ -29,11 +35,12 @@
   <version>1.0.67</version>
   <packaging>jar</packaging>
         <properties>
-            <maven.compiler.source>1.8</maven.compiler.source>
-            <maven.compiler.target>1.8</maven.compiler.target>
-            <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+			<java.version>21</java.version>
+			<maven.compiler.source>${java.version}</maven.compiler.source>
+			<maven.compiler.target>${java.version}</maven.compiler.target>
+			<maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
 			<javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
-			<kotlin.version>1.6.0</kotlin.version>
+			<kotlin.version>1.9.20</kotlin.version>
 		</properties>
 	<distributionManagement>
 		<snapshotRepository>
@@ -65,18 +72,6 @@
 			</build>
 		</profile>
 	</profiles>
-<!--	<distributionManagement>
-		<repository>
-			<id>neogithub</id>
-			<name>neogithub</name>
-			<url>https://github.com/darkice1/EASYLIB</url>
-		</repository>
-&lt;!&ndash;		<site>
-			<id>neogithub</id>
-			<name>GitHub Project Pages</name>
-			<url>gitsite:git@github.com/darkice1/EASYLIB.git</url>
-		</site>&ndash;&gt;
-	</distributionManagement>-->
 
 	<dependencies>
 		<!--连接池的依赖-->
@@ -302,7 +297,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<jvmTarget>1.8</jvmTarget>
+					<jvmTarget>${java.version}</jvmTarget>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -326,41 +321,11 @@
 					</execution>
 				</executions>
 				<configuration>
-					<source>8</source> <!-- 源代码使用的开发版本 -->
-					<target>8</target> <!-- 需要生成的目标class文件的编译版本 -->
+					<source>${java.version}</source> <!-- 源代码使用的开发版本 -->
+					<target>${java.version}</target> <!-- 需要生成的目标class文件的编译版本 -->
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<!--			<plugin>
-                            <groupId>org.sonatype.plugins</groupId>
-                            <artifactId>nexus-staging-maven-plugin</artifactId>
-                            <version>1.6.3</version>
-                            <extensions>true</extensions>
-                            <configuration>
-                                <serverId>oss</serverId>
-                                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                                <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                            </configuration>
-                        </plugin>-->
-<!--			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${basedir}/web/WEB-INF/lib</outputDirectory>
-							<excludeTransitive>false</excludeTransitive>
-							<stripVersion>false</stripVersion>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
-
 		</plugins>
 	</build>
 </project>

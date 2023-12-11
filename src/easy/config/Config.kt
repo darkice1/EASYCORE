@@ -109,7 +109,7 @@ class Config {
 			try {
 				CFG = Config()
 				val u = CFG!!.javaClass.getResource("/")
-				cpath = if(u == null) {
+				cpath = if(u === null) {
 					System.getProperty("user.dir")
 				} else {
 					u.path
