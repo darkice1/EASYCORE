@@ -40,16 +40,23 @@
 			<maven.compiler.target>${java.version}</maven.compiler.target>
 			<maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
 			<javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
-			<kotlin.version>1.9.20</kotlin.version>
+			<kotlin.version>1.9.21</kotlin.version>
 		</properties>
+<!--	<distributionManagement>-->
+<!--		<snapshotRepository>-->
+<!--			<id>oss</id>-->
+<!--			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--		</snapshotRepository>-->
+<!--		<repository>-->
+<!--			<id>oss</id>-->
+<!--			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--		</repository>-->
+<!--	</distributionManagement>-->
 	<distributionManagement>
-		<snapshotRepository>
-			<id>oss</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</snapshotRepository>
 		<repository>
-			<id>oss</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>github</id>
+			<name>GitHub OWNER Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/darkice1/EASYCORE</url>
 		</repository>
 	</distributionManagement>
 	<profiles>
@@ -202,19 +209,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib-jdk8</artifactId>
+			<artifactId>kotlin-stdlib</artifactId>
 			<version>${kotlin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-test</artifactId>
-			<version>${kotlin.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<directory>${basedir}/web/WEB-INF/classes</directory>
 		<resources>
 			<resource>
@@ -280,51 +281,71 @@
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
 				<version>${kotlin.version}</version>
+				<extensions>true</extensions> <!-- You can set this option
+            to automatically take information about lifecycles -->
 				<executions>
 					<execution>
 						<id>compile</id>
-						<phase>compile</phase>
 						<goals>
-							<goal>compile</goal>
+							<goal>compile</goal> <!-- You can skip the <goals> element
+                        if you enable extensions for the plugin -->
 						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src</sourceDir>
+							</sourceDirs>
+						</configuration>
 					</execution>
 					<execution>
 						<id>test-compile</id>
-						<phase>test-compile</phase>
 						<goals>
-							<goal>test-compile</goal>
+							<goal>test-compile</goal> <!-- You can skip the <goals> element
+                    if you enable extensions for the plugin -->
 						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src</sourceDir>
+							</sourceDirs>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<jvmTarget>${java.version}</jvmTarget>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.8.1</version>
+				<configuration>
+					<release>${java.version}</release> <!-- 或您使用的 JDK 版本 -->
+					<compilerArgs>
+						<arg>--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+					</compilerArgs>
+				</configuration>
 				<executions>
+					<!-- Replacing default-compile as it is treated specially by Maven -->
 					<execution>
-						<id>compile</id>
+						<id>default-compile</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Replacing default-testCompile as it is treated specially by Maven -->
+					<execution>
+						<id>default-testCompile</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>java-compile</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>compile</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>testCompile</id>
+						<id>java-test-compile</id>
 						<phase>test-compile</phase>
 						<goals>
 							<goal>testCompile</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<source>${java.version}</source> <!-- 源代码使用的开发版本 -->
-					<target>${java.version}</target> <!-- 需要生成的目标class文件的编译版本 -->
-					<encoding>UTF-8</encoding>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
