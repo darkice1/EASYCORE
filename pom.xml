@@ -42,23 +42,23 @@
 			<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 			<kotlin.version>1.9.21</kotlin.version>
 		</properties>
-<!--	<distributionManagement>-->
-<!--		<snapshotRepository>-->
-<!--			<id>oss</id>-->
-<!--			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
-<!--		</snapshotRepository>-->
-<!--		<repository>-->
-<!--			<id>oss</id>-->
-<!--			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-<!--		</repository>-->
-<!--	</distributionManagement>-->
 	<distributionManagement>
+		<snapshotRepository>
+			<id>oss</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>oss</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+<!--	<distributionManagement>
 		<repository>
 			<id>github</id>
 			<name>GitHub OWNER Apache Maven Packages</name>
 			<url>https://maven.pkg.github.com/darkice1/EASYCORE</url>
 		</repository>
-	</distributionManagement>
+	</distributionManagement>-->
 	<profiles>
 		<profile>
 			<id>oss</id>
