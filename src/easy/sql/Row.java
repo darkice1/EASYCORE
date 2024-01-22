@@ -4,10 +4,10 @@ import easy.util.Log;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -27,7 +27,7 @@ public class Row implements Comparable<Row>,Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final Map<String, Col> row = new HashMap<>();
+	private final Map<String, Col> row = new ConcurrentHashMap<>();
 	protected String sortfield;
 
 
