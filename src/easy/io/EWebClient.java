@@ -1,11 +1,12 @@
 package easy.io;
 
-import com.gargoylesoftware.htmlunit.*;
-import com.gargoylesoftware.htmlunit.util.Cookie;
+
 import easy.model.WebAgent;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.htmlunit.*;
+import org.htmlunit.util.Cookie;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -16,7 +17,7 @@ import java.util.Date;
  */
 public class EWebClient implements  AutoCloseable
 {
-	private WebClient client;
+	private final WebClient client;
 	private final String AGENT = WebAgent.getRandAgent();
 //	private String proxyAuthorization = null;
 	
