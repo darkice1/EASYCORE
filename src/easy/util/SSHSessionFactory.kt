@@ -13,15 +13,36 @@ import java.util.*
 class SSHSessionFactory(private val prep:Properties) : BasePooledObjectFactory<SSHSession>() {
 	override fun create(): SSHSession {
 		val sshUser = prep.getProperty("SSHUSER") ?: throw NullPointerException("SSHUSER not found")
+		val sshPasswd = prep.getProperty("SSHPASSWORD") ?: ""
+
 		val sshHost = prep.getProperty("SSHHOST") ?: throw NullPointerException("SSHHOST not found")
 		val sshPort = prep.getProperty("SSHPORT")?.toInt() ?: throw NullPointerException("SSHPORT not found")
+
+
+		val sshlocalHost = prep.getProperty("SSHLOCALHOST")?:"127.0.0.1"
+		val sshlocalPort = prep.getProperty("SSHLOCALPORT")?.toInt() ?: findFreePort()
+
+		val sshRemoteHost = prep.getProperty("SSHREMOTEHOST")?: throw NullPointerException("SSHREMOTEHOST not found")
 		val sshRemotePort = prep.getProperty("SSHREMOTEPORT")?.toInt() ?: throw NullPointerException("SSHREMOTEPORT not found")
-		val sshKeyFilePath = prep.getProperty("SSHKEYFILE") ?: throw NullPointerException("SSHKEYFILE not found")
+		val sshKeyFilePath = prep.getProperty("SSHKEYFILE")
 
 		val jsch = JSch()
-		jsch.addIdentity(sshKeyFilePath)
-
 		val session = jsch.getSession(sshUser, sshHost, sshPort)
+		if (sshKeyFilePath.isNotBlank())
+		{
+			jsch.addIdentity(sshKeyFilePath)
+		}
+		else
+		{
+			if (sshPasswd.isNotBlank()) {
+				session.setPassword(sshPasswd)
+			}
+			else
+			{
+				throw NullPointerException("SSHPASSWORD and SSHKEYFILE not found")
+			}
+		}
+
 		val config = Properties()
 		config["StrictHostKeyChecking"] = "no"
 		config["compression.s2c"] = "zlib,none"
@@ -30,9 +51,8 @@ class SSHSessionFactory(private val prep:Properties) : BasePooledObjectFactory<S
 		session.setConfig(config)
 		session.connect()
 
-		val localPort = findFreePort()
-		session.setPortForwardingL(localPort, "localhost", sshRemotePort)
-		return SSHSession(session, localPort)
+		session.setPortForwardingL(sshlocalHost, sshlocalPort, sshRemoteHost, sshRemotePort)
+		return SSHSession(session, sshlocalPort)
 	}
 
 	override fun wrap(session: SSHSession): PooledObject<SSHSession> {
