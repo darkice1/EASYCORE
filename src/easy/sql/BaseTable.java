@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import java.util.Map.Entry;
  * @version 1.0 (<i>2005-7-5 neo</i>)
  */
 
+@SuppressWarnings("unused")
 public class BaseTable
 {
 	protected String tablename;
@@ -34,6 +36,16 @@ public class BaseTable
 	protected Map<String, String> proparams = new LinkedHashMap<>();
 
 	protected final static String LASTSQL = "SELECT LAST_INSERT_ID() id";
+
+	public BaseTable()
+	{
+	}
+
+	@SuppressWarnings("unused")
+	public BaseTable(String tableName)
+	{
+		this.tablename = tableName;
+	}
 
 	/**
 	 * 初始化数据
@@ -56,7 +68,7 @@ public class BaseTable
 	{
 		params.put(field, value);
 	}
-	
+
 	public void Add(String field, int value)
 	{
 		params.put(field, ""+value);
@@ -422,6 +434,53 @@ public class BaseTable
 	{
 		return getInsertUpdateOnDuplAll(false);
 	}
+
+	public String getInsertUpdateOnConflict(String keys) {
+		Iterator<Entry<String, String>> paramsfields = params.entrySet().iterator();
+		Iterator<Entry<String, String>> profields = proparams.entrySet().iterator();
+
+		StringBuilder sqlbuf = new StringBuilder();
+		StringJoiner columns = new StringJoiner(", ");
+		StringJoiner values = new StringJoiner(", ");
+
+		// 一般属性
+		while (paramsfields.hasNext()) {
+			Entry<String, String> entry = paramsfields.next();
+			String field = entry.getKey();
+
+			columns.add(field);
+			values.add(escapeSql(entry.getValue()));  // 使用 escapeSql 方法来处理值
+
+			sqlbuf.append(field);
+			sqlbuf.append(" = EXCLUDED.");
+			sqlbuf.append(field);
+			sqlbuf.append(',');
+		}
+
+		// 存储过程等
+		while (profields.hasNext()) {
+			Entry<String, String> entry = profields.next();
+			String field = entry.getKey();
+
+			columns.add(field);
+			values.add(escapeSql(proparams.get(field)));  // 使用 escapeSql 方法来处理值
+
+			sqlbuf.append(field);
+			sqlbuf.append(" = EXCLUDED.");
+			sqlbuf.append(field);
+			sqlbuf.append(',');
+		}
+
+		// 删除最后一个多余的逗号
+		if (!sqlbuf.isEmpty()) {
+			sqlbuf.setCharAt(sqlbuf.length() - 1, ' ');
+		}
+
+		return String.format("INSERT INTO %s (%s) VALUES (%s) " +
+						"ON CONFLICT (%s) DO UPDATE SET %s",
+				tablename, columns, values, keys, sqlbuf);
+	}
+
 	
 	public String getInsertUpdateOnDuplAll(boolean isdelayed)
 	{
@@ -616,9 +675,17 @@ public class BaseTable
 		return ds;
 	}
 
+	private String escapeSql(String value) {
+		if (value == null || value.isEmpty())
+		{
+			return "''";
+		}
+		return "'" + value.replace("'", "''") + "'";
+	}
+
 	public static String doValue(String value)
 	{
-		if (value == null || value.length() == 0)
+		if (value == null || value.isEmpty())
 		{
 			return "''";
 		}
@@ -691,30 +758,4 @@ public class BaseTable
 	{
 		return !params.isEmpty() || !proparams.isEmpty();
 	}
-/*
-	public static void main(String[] args)
-	{
-		BaseTable bt = new BaseTable();
-		bt.setTablename("test");
-		bt.Add("aa", "1");
-		bt.Add("bb", "2");
-		
-		System.out.println(bt.getInsertUpdateOnDuplPro("aa,bb", "+,-"));
-		
-	}
-*/
-//	@Override
-//	protected void finalize() throws Throwable
-//	{
-//		super.finalize();
-//		//clear();
-//		
-//		tablename = null;
-//		viewname = null;
-//		order = null;
-//		fieldlist = null;
-//		where = null;
-//		params = null;
-//		proparams  = null;
-//	}
 }

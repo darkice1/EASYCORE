@@ -32,7 +32,7 @@
 	<groupId>com.neo</groupId>
 -->
 	<artifactId>easy</artifactId>
-  <version>1.0.68</version>
+  <version>1.0.69</version>
   <packaging>jar</packaging>
         <properties>
 			<java.version>21</java.version>
@@ -160,11 +160,19 @@
 		<classifier>jdk15</classifier>
 	</dependency>
 
-	<dependency>
-	    <groupId>mysql</groupId>
-	    <artifactId>mysql-connector-java</artifactId>
-	    <version>8.0.28</version>
-	</dependency>
+		<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.55</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.12.0</version>
+		</dependency>
 
 	<dependency>
 	    <groupId>javax.jdo</groupId>
