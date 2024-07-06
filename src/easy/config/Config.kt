@@ -20,142 +20,128 @@ import java.util.*
  * @version 1.0 ( *2005-7-4 neo *)
  */
 @Suppress("unused")
-class Config {
+object Config {
 	private var properties: Properties = Properties()
 
-	companion object {
-		private var CFG: Config? = null
-		private val instance: Config?
-			get() {
-				if(CFG == null) {
-					CFG = Config()
-					load()
-				}
-				return CFG
-			}
+/*	private val CFG: Config = Config()
+		val cfg = Config()
+		load()
+		cfg
+	}*/
+	init {
+		load()
+	}
 
-		@JvmStatic
-		@Throws(FileNotFoundException::class)
-		fun load(filepath: String?) {
+	@JvmStatic
+	@Throws(FileNotFoundException::class)
+	fun load(filepath: String?) {
 //		System.out.println(filepath);
-			if (filepath!=null)
-			{
-				val pps = Properties()
-				pps.load(Files.newInputStream(File(filepath).toPath()))
-				val loadclassname = pps.getProperty("CONFIGLOADCLASS")
-				if (loadclassname != null && loadclassname!="") {
+		if (filepath!=null)
+		{
+			val pps = Properties()
+			pps.load(Files.newInputStream(File(filepath).toPath()))
+			val loadclassname = pps.getProperty("CONFIGLOADCLASS")
+			if (loadclassname != null && loadclassname!="") {
 
-					val cl = try{
-						Class.forName(loadclassname).newInstance() as ConfigLoad
-					}
-					catch (e:Exception)
-					{
-						Log.OutException(e)
-						null
-					}
-					if (cl != null) {
-						CFG = instance
-						CFG!!.properties = cl.load(pps)
-					}
+				val cl = try{
+					Class.forName(loadclassname).getConstructor().newInstance() as ConfigLoad
 				}
-				else
+				catch (e:Exception)
 				{
-					CFG = instance
-					CFG!!.properties = pps
+					Log.OutException(e)
+					null
+				}
+				if (cl != null) {
+					properties = cl.load(pps)
 				}
 			}
 			else
 			{
-				println("Config.load:filepath is null")
+				properties = pps
 			}
 		}
-
-		private fun getConfigPath(startpath: String?): String? {
-			if (startpath != null)
-			{
-				val cfgname = "/config.txt"
-				var fpath: String? = null
-				var cf = File(startpath)
-				while (true) {
-					//			System.out.println(cf.getPath());
-					val tpath = cf.path
-					if(JFile.exists(tpath + cfgname)) {
-						fpath = tpath + cfgname
-						break
-					}
-					if(JFile.exists("$tpath/WEB-INF$cfgname")) {
-						fpath = tpath + cfgname
-						break
-					}
-					cf = if(tpath == "/") {
-						break
-					} else {
-						File(cf.parent)
-					}
-				}
-				return fpath
-			}
-			else
-			{
-				println("Config.getConfigPath:path is null")
-				return null
-			}
+		else
+		{
+			println("Config.load:filepath is null")
 		}
+	}
 
-		@JvmStatic
-		fun load() {
-			var cpath: String? = null
+	private fun getConfigPath(startpath: String?): String? {
+		if (startpath != null)
+		{
+			val cfgname = "/config.txt"
 			var fpath: String? = null
-			try {
-				CFG = Config()
-				val u = CFG!!.javaClass.getResource("/")
-				cpath = if(u === null) {
-					System.getProperty("user.dir")
+			var cf = File(startpath)
+			while (true) {
+				//			System.out.println(cf.getPath());
+				val tpath = cf.path
+				if(JFile.exists(tpath + cfgname)) {
+					fpath = tpath + cfgname
+					break
+				}
+				if(JFile.exists("$tpath/WEB-INF$cfgname")) {
+					fpath = tpath + cfgname
+					break
+				}
+				cf = if(tpath == "/") {
+					break
 				} else {
-					u.path
+					File(cf.parent)
 				}
-				if(cpath.indexOf("file:") == 0) {
-					cpath = cpath.substring(5)
-				}
-				cpath = Format.replaceAll(cpath, "%20", " ")
-
-				//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
-				fpath = getConfigPath(cpath)
-				load(fpath)
-			} catch (ex: Exception) {
-				System.out.printf("载入配置文件错误[%s]->[%s]%n", cpath, fpath)
-				//			ex.printStackTrace();
 			}
+			return fpath
 		}
-
-		@JvmStatic
-		fun getProperty(key: String?): String? {
-			return instance!!.properties.getProperty(key)
+		else
+		{
+			println("Config.getConfigPath:path is null")
+			return null
 		}
+	}
 
-		@JvmStatic
-		fun getProperty(key: String?, defvalue: String?): String {
-			return instance!!.properties.getProperty(key, defvalue)
-		}
-
-		@JvmStatic
-		@Suppress("unused")
-		fun setProperty(key: String?, newvalue: String?) {
-			instance!!.properties.setProperty(key, newvalue)
-		}
-
-
-		@JvmStatic
-		fun getProperties(): Properties {
-			return instance!!.properties
-		}
-
-		val string: String
-			get() {
-				if(CFG == null) {
-					instance
-				}
-				return CFG!!.properties.toString()
+	@JvmStatic
+	fun load() {
+		var cpath: String? = null
+		var fpath: String? = null
+		try {
+			val u = javaClass.getResource("/")
+			cpath = if(u === null) {
+				System.getProperty("user.dir")
+			} else {
+				u.path
 			}
+			if(cpath.indexOf("file:") == 0) {
+				cpath = cpath.substring(5)
+			}
+			cpath = Format.replaceAll(cpath, "%20", " ")
+
+			//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
+			fpath = getConfigPath(cpath)
+			load(fpath)
+		} catch (ex: Exception) {
+			System.out.printf("载入配置文件错误[%s]->[%s]%n", cpath, fpath)
+			//			ex.printStackTrace();
+		}
+	}
+
+	@JvmStatic
+	fun getProperty(key: String?): String? {
+		return properties.getProperty(key)
+	}
+
+	@JvmStatic
+	fun getProperty(key: String?, defvalue: String?): String {
+		return properties.getProperty(key, defvalue)
+	}
+
+	@JvmStatic
+	@Suppress("unused")
+	fun setProperty(key: String?, newvalue: String?) {
+		properties.setProperty(key, newvalue)
+	}
+
+
+	@JvmStatic
+	fun getProperties(): Properties {
+		return properties
 	}
 }
