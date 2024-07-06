@@ -8,8 +8,10 @@ import java.util.*
 @Suppress("unused")
 object SSHSessionManager {
 	private var session: Session? = null
-	@Suppress("MemberVisibilityCanBePrivate")
-	var localPort: Int = -1
+	private var pLocalPort: Int = -1
+
+	val localPort: Int
+		get() = pLocalPort
 
 	@Suppress("MemberVisibilityCanBePrivate")
 	fun getSession(prep: Properties): Session? {
@@ -20,10 +22,10 @@ object SSHSessionManager {
 	}
 
 	fun getLocalPort(prep: Properties): Int {
-		if (localPort == -1) {
+		if (pLocalPort == -1) {
 			getSession(prep) // Ensure session is created
 		}
-		return localPort
+		return pLocalPort
 	}
 
 	fun createSession(prep: Properties): Session {
@@ -34,7 +36,7 @@ object SSHSessionManager {
 		val sshPort = prep.getProperty("SSHPORT")?.toInt() ?: throw NullPointerException("SSHPORT not found")
 
 		val sshLocalHost = prep.getProperty("SSHLOCALHOST") ?: "127.0.0.1"
-		localPort = if (prep.getProperty("SSHLOCALPORT").isNullOrBlank()) {
+		pLocalPort = if (prep.getProperty("SSHLOCALPORT").isNullOrBlank()) {
 			findFreePort()
 		} else {
 			prep.getProperty("SSHLOCALPORT")?.toInt() ?: findFreePort()
@@ -65,7 +67,7 @@ object SSHSessionManager {
 		}
 		session.setConfig(config)
 		session.connect()
-		session.setPortForwardingL(sshLocalHost, localPort, sshRemoteHost, sshRemotePort)
+		session.setPortForwardingL(sshLocalHost, pLocalPort, sshRemoteHost, sshRemotePort)
 
 		return session
 	}
@@ -80,6 +82,6 @@ object SSHSessionManager {
 	fun closeSession() {
 		session?.disconnect()
 		session = null
-		localPort = -1
+		pLocalPort = -1
 	}
 }
