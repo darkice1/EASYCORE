@@ -810,9 +810,11 @@ class BaseTable {
 			statement.execute("USE $database")
 			val resultSet = statement.executeQuery("SHOW CREATE TABLE `$table`")
 			resultSet.next()
-			val createTableSQL = resultSet.getString(2)
+			// 使用正则表达式移除 AUTO_INCREMENT 部分
+			val createTableSQL = resultSet.getString(2).replace(Regex("AUTO_INCREMENT=\\d+"), "")
 			resultSet.close()
 			statement.close()
+
 			return "$createTableSQL;\n\n"
 		}
 
