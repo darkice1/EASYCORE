@@ -10,6 +10,13 @@ object SSHSessionManager {
 	private var session: Session? = null
 	private var pLocalPort: Int = -1
 
+	init {
+		// Register a shutdown hook to close the SSH session on JVM exit
+		Runtime.getRuntime().addShutdownHook(Thread {
+			closeSession()
+		})
+	}
+
 	val localPort: Int
 		get() = pLocalPort
 
@@ -28,6 +35,7 @@ object SSHSessionManager {
 		return pLocalPort
 	}
 
+	@Suppress("MemberVisibilityCanBePrivate")
 	fun createSession(prep: Properties): Session {
 		val sshUser = prep.getProperty("SSHUSER") ?: throw NullPointerException("SSHUSER not found")
 		val sshPasswd = prep.getProperty("SSHPASSWORD") ?: ""
@@ -79,6 +87,7 @@ object SSHSessionManager {
 		}
 	}
 
+	@Suppress("MemberVisibilityCanBePrivate")
 	fun closeSession() {
 		session?.disconnect()
 		session = null

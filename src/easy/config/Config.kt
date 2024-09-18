@@ -118,8 +118,8 @@ object Config {
 			fpath = getConfigPath(cpath)
 			load(fpath)
 		} catch (ex: Exception) {
-			System.out.printf("载入配置文件错误[%s]->[%s]%n", cpath, fpath)
-			//			ex.printStackTrace();
+			System.out.printf("载入配置文件错误[$cpath]->[$fpath]%n")
+			ex.printStackTrace()
 		}
 	}
 
