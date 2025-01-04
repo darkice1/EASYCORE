@@ -1,5 +1,6 @@
 package easy.sql
 
+import easy.sql.enums.ConflictAction
 import java.io.File
 import java.sql.Connection
 import java.sql.ResultSet
@@ -374,7 +375,10 @@ class BaseTable {
 		 */
 		get() = getInsertUpdateOnDuplAll(false)
 
-	fun getInsertUpdateOnConflict(keys: String?): String {
+	fun getInsertUpdateOnConflict(
+		keys: String?,
+		conflictAction: ConflictAction = ConflictAction.UPDATE // 默认还是 DO UPDATE
+	                             ): String {
 		val paramsfields: Iterator<Map.Entry<String, String>> = params.entries.iterator()
 		val profields: Iterator<Map.Entry<String, String>> = proparams.entries.iterator()
 
@@ -390,10 +394,13 @@ class BaseTable {
 			columns.add(field)
 			values.add(escapeSql(entry.value)) // 使用 escapeSql 方法来处理值
 
-			sqlbuf.append(field)
-			sqlbuf.append(" = EXCLUDED.")
-			sqlbuf.append(field)
-			sqlbuf.append(',')
+			// 只有在需要做 UPDATE 时才需要拼装字段
+			if (conflictAction == ConflictAction.UPDATE) {
+				sqlbuf.append(field)
+				sqlbuf.append(" = EXCLUDED.")
+				sqlbuf.append(field)
+				sqlbuf.append(',')
+			}
 		}
 
 		// 存储过程等
@@ -402,26 +409,35 @@ class BaseTable {
 			val field = entry.key
 
 			columns.add(field)
-			values.add(escapeSql(proparams[field])) // 使用 escapeSql 方法来处理值
+			values.add(escapeSql(entry.value)) // 使用 escapeSql 方法来处理值
 
-			sqlbuf.append(field)
-			sqlbuf.append(" = EXCLUDED.")
-			sqlbuf.append(field)
-			sqlbuf.append(',')
+			// 只有在需要做 UPDATE 时才需要拼装字段
+			if (conflictAction == ConflictAction.UPDATE) {
+				sqlbuf.append(field)
+				sqlbuf.append(" = EXCLUDED.")
+				sqlbuf.append(field)
+				sqlbuf.append(',')
+			}
 		}
 
-		// 删除最后一个多余的逗号
-		if(sqlbuf.isNotEmpty()) {
+		// 如果是 UPDATE 模式，需要去掉最后一个多余的逗号
+		if (conflictAction == ConflictAction.UPDATE && sqlbuf.isNotEmpty()) {
 			sqlbuf.setCharAt(sqlbuf.length - 1, ' ')
 		}
 
+		// 根据不同的 ConflictAction 生成对应的子句
+		val conflictClause = when (conflictAction) {
+			ConflictAction.UPDATE -> "DO UPDATE SET $sqlbuf"
+			ConflictAction.DO_NOTHING -> "DO NOTHING"
+		}
+
 		return String.format(
-			"INSERT INTO %s (%s) VALUES (%s) " + "ON CONFLICT (%s) DO UPDATE SET %s",
+			"INSERT INTO %s (%s) VALUES (%s) ON CONFLICT (%s) %s",
 			tablename,
 			columns,
 			values,
 			keys,
-			sqlbuf
+			conflictClause
 		                    )
 	}
 

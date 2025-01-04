@@ -32,7 +32,7 @@
 	<groupId>com.neo</groupId>
 -->
 	<artifactId>easy</artifactId>
-  <version>1.0.71</version>
+  <version>1.0.72</version>
   <packaging>jar</packaging>
         <properties>
 			<java.version>21</java.version>
