@@ -45,9 +45,9 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("deprecation")
 public class EHttpClient
 {
-	private BasicCookieStore cookieStore = new BasicCookieStore();
+	private final BasicCookieStore cookieStore = new BasicCookieStore();
 
-	private HttpClientBuilder httpbuilder = HttpClients.custom();
+	private final HttpClientBuilder httpbuilder = HttpClients.custom();
 
 	private CloseableHttpClient client;
 	// private CloseableHttpClient client = HttpClients.custom().build();
@@ -65,6 +65,7 @@ public class EHttpClient
 		init(null, null);
 	}
 
+	@SuppressWarnings("unused")
 	public EHttpClient(final String host, final Integer port)
 	{
 		init(host, port);
@@ -72,7 +73,7 @@ public class EHttpClient
 
 	public void setProxy(final String host, final Integer port)
 	{
-		if (host != null && !"".equals(host) && port != null)
+		if (host != null && !host.isEmpty() && port != null)
 		{
 			// System.out.println(host+"##"+port);
 			HttpHost proxy = new HttpHost(host, port);
@@ -81,7 +82,6 @@ public class EHttpClient
 			httpbuilder.setRoutePlanner(routePlanner);
 			client = httpbuilder.build();
 
-			proxy = null;
 		}
 	}
 
@@ -273,12 +273,7 @@ public class EHttpClient
 		return null;
 	}
 
-	/**
-	 * 打印页面
-	 * 
-	 * @param entity
-	 * @throws IOException
-	 */
+
 	public String dump(HttpEntity entity, String charset) throws IOException
 	{
 		String html = null;
@@ -407,8 +402,8 @@ public class EHttpClient
 	}
 
 	public HashMap<String, String> post(final String url,
-			final HashMap<String, String> request,
-			final HashMap<String, String> header)
+			final Map<String, String> request,
+			final Map<String, String> header)
 			throws IOException
 	{
 		return post(url, request, header, null, null);
@@ -424,9 +419,9 @@ public class EHttpClient
 	}
 
 	public HashMap<String, String> post(final String url,
-			final HashMap<String, String> request,
-			final HashMap<String, String> header,
-			final HashMap<String, String> files, final String localpath)
+			final Map<String, String> request,
+			final Map<String, String> header,
+			final Map<String, String> files, final String localpath)
 			throws IOException
 	{
 		return post(url, request, header, files, localpath, null);
@@ -560,7 +555,7 @@ public class EHttpClient
 			FileOutputStream output = new FileOutputStream(storeFile);
 			InputStream input = entity.getContent();
 			byte[] b = new byte[1024];
-			int j = 0;
+			int j;
 			while ((j = input.read(b)) != -1)
 			{
 				output.write(b, 0, j);
@@ -630,7 +625,7 @@ public class EHttpClient
 		return get(url, head, null);
 	}
 
-	public String get(final String url, HashMap<String, String> head,
+	public String get(final String url, Map<String, String> head,
 			final String chartset) throws IOException
 	{
 		return getPro(url, head, chartset).get("html");
