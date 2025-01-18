@@ -47,7 +47,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class Format
 {
-	private static Map<String, String> PINYINMAP = new HashMap<>();
+	private static Map<String, String> PINYINMAP = null;
 
 	private final static Format FORMAT = new Format();
 
@@ -98,30 +98,18 @@ public class Format
 	public static String getGaeURL(String u)
 	{
 		int idx = ThreadLocalRandom.current().nextInt(GURLLIST.size());
-		String url = null;
-		try
-		{
-			url = String.format(GURLLIST.get(idx), "n",
-					java.net.URLEncoder.encode(u, "utf-8"));
-		}
-		catch (UnsupportedEncodingException ignored)
-		{
-		}
+		String url;
+		url = String.format(GURLLIST.get(idx), "n",
+				java.net.URLEncoder.encode(u, StandardCharsets.UTF_8));
 		return url;
 	}
 
 	public static String getGaeZipURL(String u)
 	{
 		int idx = (int) (Math.random() * GURLLIST.size());
-		String url = null;
-		try
-		{
-			url = String.format(GURLLIST.get(idx), "y",
-					java.net.URLEncoder.encode(u, "utf-8"));
-		}
-		catch (UnsupportedEncodingException ignored)
-		{
-		}
+		String url;
+		url = String.format(GURLLIST.get(idx), "y",
+				java.net.URLEncoder.encode(u, StandardCharsets.UTF_8));
 		return url;
 	}
 
@@ -149,7 +137,7 @@ public class Format
 	 */
 	public static boolean isEmpty(String str)
 	{
-		return str == null || "".equals(str);
+		return str == null || str.isEmpty();
 	}
 
 	public static String replaceAll(String source, String searchString, String replaceString)
@@ -159,7 +147,7 @@ public class Format
 			return null;
 		}
 
-		if ("".equals(source))
+		if (source.isEmpty())
 		{
 			return source;
 		}
@@ -345,6 +333,7 @@ public class Format
 		return buf.toString();
 	}
 
+	@SuppressWarnings("unused")
 	public static <E> String toListString(E[] array)
 	{
 		return toListString(array, ",");
@@ -380,6 +369,7 @@ public class Format
 	 * @param list
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public static String toListString(List<?> list)
 	{
 		return toListString(list, ",");
@@ -402,7 +392,7 @@ public class Format
 			buf.append(o.toString());
 			buf.append(splitstr);
 		}
-		if (list.size() > 0)
+		if (!list.isEmpty())
 		{
 			buf.setLength(buf.length() - splitstr.length());
 		}
@@ -446,25 +436,38 @@ public class Format
 		}
 	}
 
-	private static Map<String, String> getPinYinMap()
-	{
-
-		if (PINYINMAP == null)
-		{
+	private static Map<String, String> getPinYinMap() {
+		if (PINYINMAP == null) {
 			PINYINMAP = new HashMap<>();
-			JFile file = new JFile(
-					FORMAT.getClass().getResourceAsStream("pinyin.txt"));
-			List<String> list = file.getLineList();
-			for (String t : list)
-			{
-				String[] s = t.split(" ", 2);
-				if (s.length >= 2)
-				{
-					PINYINMAP.put(s[0], s[1]);
+
+			// 1) 通过 getResourceAsStream，读取与 FORMAT 类同包下的 pinyin.txt
+			//    如果 pinyin.txt 位于同包下，参数不用加前缀 “/”。
+			//    如果位于资源根目录或其他路径，请参见后续说明。
+			try (InputStream is = FORMAT.getClass().getResourceAsStream("pinyin.txt")) {
+
+				if (is == null) {
+					// 如果为 null，说明无法找到资源
+					throw new RuntimeException("Cannot find resource pinyin.txt relative to "
+							+ FORMAT.getClass().getName());
 				}
+
+				// 2) 用你的自定义 JFile 类，从 InputStream 中读内容
+				JFile file = new JFile(is);
+
+				// 3) 逐行读取，将前两个空格分割的字段放入 PINYINMAP
+				List<String> lines = file.getLineList();
+				for (String line : lines) {
+					String[] parts = line.split(" ", 2);
+					if (parts.length >= 2) {
+						PINYINMAP.put(parts[0], parts[1]);
+					}
+				}
+
+			} catch (IOException e) {
+				// 如果需要处理流异常，可以在这里捕获
+				throw new RuntimeException("Error reading pinyin.txt resource", e);
 			}
 		}
-
 		return PINYINMAP;
 	}
 
@@ -481,14 +484,7 @@ public class Format
 		{
 			String k = str.substring(i, i + 1);
 			String t = getPinYinMap().get(k);
-			if (t == null)
-			{
-				buf.append(k);
-			}
-			else
-			{
-				buf.append(t);
-			}
+			buf.append(Objects.requireNonNullElse(t, k));
 		}
 
 		return buf.toString();
@@ -740,12 +736,8 @@ public class Format
 		return min;
 	}
 
-	/**
-	 * ip地址转成整数.
-	 *
-	 * @param ip
-	 * @return
-	 */
+
+	@SuppressWarnings("unused")
 	public static long ip2long(String ip)
 	{
 		long num = 0;
@@ -793,6 +785,7 @@ public class Format
 	 * @param ipLong
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public static String long2ip(long ipLong)
 	{
 		// long ipLong = 1037591503;
@@ -1016,12 +1009,6 @@ public class Format
 		return DigestUtils.md5Hex(str);
 	}
 
-	/**
-	 * 返回文件扩展名
-	 *
-	 * @param filename
-	 * @return
-	 */
 	public static String getFileExtName(String filename)
 	{
 		int idx = filename.lastIndexOf(".") + 1;
@@ -1418,7 +1405,7 @@ public class Format
 		String cstr = "";
 		try
 		{
-			if (str != null && str.length() > 0)
+			if (str != null && !str.isEmpty())
 			{
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				GZIPOutputStream gzip = new GZIPOutputStream(out);

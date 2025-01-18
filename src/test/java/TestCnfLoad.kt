@@ -1,5 +1,6 @@
 import easy.config.Config
 import easy.config.ConfigLoad
+import easy.util.Format
 import java.util.*
 
 class TestCnfLoad:ConfigLoad() {
@@ -20,6 +21,8 @@ class TestCnfLoad:ConfigLoad() {
 			set.forEach { key ->
 				println("$key: ${Config.getProperty(key)}")
 			}
+
+			println(Format.getPinyin("你好"))
 		}
 	}
 
