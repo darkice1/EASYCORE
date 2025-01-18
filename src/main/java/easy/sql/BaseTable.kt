@@ -634,8 +634,7 @@ class BaseTable {
 				return "''"
 			}
 
-			value = value.replace("\\\\".toRegex(), "\\\\\\\\")
-			value = value.replace("'".toRegex(), "\\\\'")
+			value = value.replace("'", "''")
 			value = "'$value'"
 
 			return value
