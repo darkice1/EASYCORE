@@ -5,8 +5,7 @@ import net.sf.json.JSONArray
 import net.sf.json.JSONObject
 
 @Suppress("unused")
-class OpenWebUI(private val apiurl: String, private val token: String) {
-	private val client = EHttpClient()
+class OpenWebUI(private val apiurl: String, private val token: String,private val client:EHttpClient=EHttpClient()) {
 
 	@Suppress("MemberVisibilityCanBePrivate")
 	fun api(func: String, postjson: JSONObject? = null): JSONObject {
@@ -56,30 +55,10 @@ class OpenWebUI(private val apiurl: String, private val token: String) {
 		return api("/api/chat/completions", postjson)
 	}
 
-/*	companion object {
+	companion object{
 		@JvmStatic
-		fun main(args: Array<String>) {
-			val openwebui = OpenWebUI(
-				"http://101.226.173.140:7432",
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ2OTYyNWU1LWRlNzMtNGI4ZS1hODhkLWMyZTYyNTRhMjg1MiJ9.Rmn_O-o5ZMOuhJOXUFcqKREwWp7dCwMFrAy9AG5uREg"
-			                         )
-
-			// 构造一条消息
-			val messages = JSONArray()
-			val userMessage = JSONObject()
-			userMessage["role"] = "user"
-			userMessage["content"] = "请详细解释什么是生命?"
-			messages.add(userMessage)
-
-			// 调用时使用可变参数，添加任意数量的键值对
-			val result = openwebui.getChatCompletions(
-				model = "arena-model",
-				messages = messages,
-				"temperature" to 0.1,
-				"top_p" to 0.9,
-				"max_tokens" to 1000
-			)
-			println(result)
+		fun getContent(jsonObject: JSONObject):String{
+			return jsonObject.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
 		}
-	}*/
+	}
 }
