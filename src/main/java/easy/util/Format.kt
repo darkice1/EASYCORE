@@ -1,116 +1,115 @@
-package easy.util;
+package easy.util
 
-import easy.io.JFile;
-import easy.servlet.PageInfo;
-import easy.sql.CPSql;
-import easy.sql.DataSet;
-import easy.sql.Row;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
-import org.mozilla.universalchardet.UniversalDetector;
-
-import javax.crypto.*;
-import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import easy.io.JFile
+import easy.servlet.PageInfo
+import easy.sql.CPSql
+import easy.sql.DataSet
+import easy.sql.Row
+import net.sf.json.JSONArray
+import net.sf.json.JSONObject
+import net.sf.json.JsonConfig
+import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.io.IOUtils
+import org.mozilla.universalchardet.UniversalDetector
+import java.io.*
+import java.lang.reflect.Field
+import java.math.BigInteger
+import java.net.MalformedURLException
+import java.net.URL
+import java.net.URLEncoder
+import java.nio.channels.FileChannel
+import java.nio.charset.StandardCharsets
+import java.security.InvalidKeyException
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.KeySpec
+import java.sql.SQLException
+import java.util.*
+import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
+import javax.crypto.*
+import javax.crypto.spec.DESKeySpec
+import javax.crypto.spec.SecretKeySpec
+import javax.servlet.http.HttpServletRequest
+import kotlin.math.max
 
 /**
- * <p>
- * </p>
+ *
+ *
+ *
  * 格式化处理
  *
- * @version 1.0 (<i>2005-8-17 Neo</i>)
+ * @version 1.0 (*2005-8-17 Neo*)
  */
+object Format {
+	private var PINYINMAP: MutableMap<String, String>? = null
 
-public class Format
-{
-	private static Map<String, String> PINYINMAP = null;
+	private const val LOWSTRING = "abcdefghijklmnopqrstuvwxyz"
+	private const val NUMLOWSTRING = "abcdefghijklmnopqrstuvwxyz1234567890"
+	private const val ALLSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
 
-	private final static Format FORMAT = new Format();
+	private const val HEXSTRING = "01234567890abcdef"
 
-	private final static String LOWSTRING = "abcdefghijklmnopqrstuvwxyz";
-	private final static String NUMLOWSTRING = "abcdefghijklmnopqrstuvwxyz1234567890";
-	private final static String ALLSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+	private const val HMAC_SHA1 = "HmacSHA1"
 
-	private final static String HEXSTRING = "01234567890abcdef";
-
-	private static final String HMAC_SHA1 = "HmacSHA1";
-
-	private static final String HMAC_SHA256 = "HmacSHA256";
+	private const val HMAC_SHA256 = "HmacSHA256"
 
 	// private final static Pattern URLPAT
 	// =Pattern.compile("(http://|https://)[^\\s]*");
-	protected final static List<String> GURLLIST = new ArrayList<>();
-	public final static List<String> GAELIST = new ArrayList<>();
-	static
-	{
-		GAELIST.add("hwosoproxy1.appspot.com");
-		GAELIST.add("hwosoproxy2.appspot.com");
-		GAELIST.add("hwosoproxy3.appspot.com");
-		GAELIST.add("hwosoproxy4.appspot.com");
-		GAELIST.add("hwosoproxy5.appspot.com");
-		GAELIST.add("hwosoproxy6.appspot.com");
-		GAELIST.add("hwosoproxy7.appspot.com");
-		GAELIST.add("hwosoproxy8.appspot.com");
-		GAELIST.add("hwosoproxy9.appspot.com");
-		GAELIST.add("hwosoproxy10.appspot.com");
-		GAELIST.add("hwosoproxy11.appspot.com");
-		GAELIST.add("hwosoproxy12.appspot.com");
-		GAELIST.add("hwosoproxy13.appspot.com");
-		GAELIST.add("hwosoproxy14.appspot.com");
-		GAELIST.add("hwosoproxy15.appspot.com");
-		GAELIST.add("hwosoproxy16.appspot.com");
-		GAELIST.add("hwosoproxy17.appspot.com");
+	internal val GURLLIST: MutableList<String> = ArrayList()
+	val GAELIST: MutableList<String> = ArrayList()
 
-		for (String host : GAELIST)
-		{
-			GURLLIST.add(String.format("http://%s/c?action=GetUrl&z=%%s&u=%%s",
-					host));
+	init {
+		GAELIST.add("hwosoproxy1.appspot.com")
+		GAELIST.add("hwosoproxy2.appspot.com")
+		GAELIST.add("hwosoproxy3.appspot.com")
+		GAELIST.add("hwosoproxy4.appspot.com")
+		GAELIST.add("hwosoproxy5.appspot.com")
+		GAELIST.add("hwosoproxy6.appspot.com")
+		GAELIST.add("hwosoproxy7.appspot.com")
+		GAELIST.add("hwosoproxy8.appspot.com")
+		GAELIST.add("hwosoproxy9.appspot.com")
+		GAELIST.add("hwosoproxy10.appspot.com")
+		GAELIST.add("hwosoproxy11.appspot.com")
+		GAELIST.add("hwosoproxy12.appspot.com")
+		GAELIST.add("hwosoproxy13.appspot.com")
+		GAELIST.add("hwosoproxy14.appspot.com")
+		GAELIST.add("hwosoproxy15.appspot.com")
+		GAELIST.add("hwosoproxy16.appspot.com")
+		GAELIST.add("hwosoproxy17.appspot.com")
+
+		for (host in GAELIST) {
+			GURLLIST.add(
+				String.format(
+					"http://%s/c?action=GetUrl&z=%%s&u=%%s", host
+				             )
+			            )
 		}
 		// GURLLIST.add("http://wosoproxy1.appspot.com/c?action=GetUrl&z=%s&u=%s");
 		// GURLLIST.add("http://wosoproxy2.appspot.com/c?action=GetUrl&z=%s&u=%s");
 		// GURLLIST.add("http://wosoproxy3.appspot.com/c?action=GetUrl&z=%s&u=%s");
 	}
 
-	public static String getGaeURL(String u)
-	{
-		int idx = ThreadLocalRandom.current().nextInt(GURLLIST.size());
-		String url;
-		url = String.format(GURLLIST.get(idx), "n",
-				java.net.URLEncoder.encode(u, StandardCharsets.UTF_8));
-		return url;
+	@JvmStatic
+	fun getGaeURL(u: String): String {
+		val idx = ThreadLocalRandom.current().nextInt(GURLLIST.size)
+		val url = String.format(
+			GURLLIST[idx], "n", URLEncoder.encode(u, StandardCharsets.UTF_8)
+		                       )
+		return url
 	}
 
-	public static String getGaeZipURL(String u)
-	{
-		int idx = (int) (Math.random() * GURLLIST.size());
-		String url;
-		url = String.format(GURLLIST.get(idx), "y",
-				java.net.URLEncoder.encode(u, StandardCharsets.UTF_8));
-		return url;
+	@JvmStatic
+	fun getGaeZipURL(u: String): String {
+		val idx = (Math.random() * GURLLIST.size).toInt()
+		val url = String.format(
+			GURLLIST[idx], "y", URLEncoder.encode(u, StandardCharsets.UTF_8)
+		                       )
+		return url
 	}
 
 	/**
@@ -119,15 +118,15 @@ public class Format
 	 * @param src
 	 * @return
 	 */
-	public static String toScriptString(String src)
-	{
-		String tmp = src;
-		tmp = replaceAll(tmp,"\r|\n", "");
-		tmp = replaceAll(tmp,"\"", "\\\\\"");
-		tmp = replaceAll(tmp,"</script>", "\"+\"<\"+\"/script>\"+\"");
-		tmp = replaceAll(tmp,"</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"");
+	@JvmStatic
+	fun toScriptString(src: String?): String? {
+		var tmp = src
+		tmp = replaceAll(tmp, "\r|\n", "")
+		tmp = replaceAll(tmp, "\"", "\\\\\"")
+		tmp = replaceAll(tmp, "</script>", "\"+\"<\"+\"/script>\"+\"")
+		tmp = replaceAll(tmp, "</SCRIPT>", "\"+\"<\"+\"/SCRIPT>\"+\"")
 
-		return tmp;
+		return tmp
 	}
 
 	/**
@@ -135,73 +134,64 @@ public class Format
 	 * @param str
 	 * @return
 	 */
-	public static boolean isEmpty(String str)
-	{
-		return str == null || str.isEmpty();
+	@JvmStatic
+	fun isEmpty(str: String?): Boolean {
+		return str.isNullOrEmpty()
 	}
 
-	public static String replaceAll(String source, String searchString, String replaceString)
-	{
-		if (source == null)
-		{
-			return null;
+	@JvmStatic
+	fun replaceAll(source: String?, searchString: String, replaceString: String?): String? {
+		var replaceString = replaceString
+		if(source == null) {
+			return null
 		}
 
-		if (source.isEmpty())
-		{
-			return source;
+		if(source.isEmpty()) {
+			return source
 		}
 
-		if (isEmpty(searchString))
-		{
-			return source;
+		if(isEmpty(searchString)) {
+			return source
 		}
 
-		if (replaceString == null)
-		{
-			replaceString = "";
+		if(replaceString == null) {
+			replaceString = ""
 		}
-		int len = source.length();
-		int sl = searchString.length();
-		int rl = replaceString.length();
-		int length;
-		if (sl == rl)
-		{
-			length = len;
-		}
-		else
-		{
-			int c = 0;
-			int s = 0;
-			int e;
-			while ((e = source.indexOf(searchString, s)) != -1)
-			{
-				c++;
-				s = e + sl;
+		val len = source.length
+		val sl = searchString.length
+		val rl = replaceString.length
+		val length: Int
+		if(sl == rl) {
+			length = len
+		} else {
+			var c = 0
+			var s = 0
+			var e: Int
+			while ((source.indexOf(searchString, s).also { e = it }) != -1) {
+				c++
+				s = e + sl
 			}
-			if (c == 0) {
-				return source;
+			if(c == 0) {
+				return source
 			}
-			length = len - (c * (sl - rl));
+			length = len - (c * (sl - rl))
 		}
 
-		int s = 0;
-		int e = source.indexOf(searchString, s);
-		if (e == -1)
-		{
-			return source;
+		var s = 0
+		var e = source.indexOf(searchString, s)
+		if(e == -1) {
+			return source
 		}
-		StringBuilder sb = new StringBuilder(length);
-		while (e != -1)
-		{
-			sb.append(source, s, e);
-			sb.append(replaceString);
-			s = e + sl;
-			e = source.indexOf(searchString, s);
+		val sb = StringBuilder(length)
+		while (e != -1) {
+			sb.append(source, s, e)
+			sb.append(replaceString)
+			s = e + sl
+			e = source.indexOf(searchString, s)
 		}
-		e = len;
-		sb.append(source, s, e);
-		return sb.toString();
+		e = len
+		sb.append(source, s, e)
+		return sb.toString()
 	}
 
 	/**
@@ -210,23 +200,21 @@ public class Format
 	 * @param src
 	 * @return
 	 */
-	public static String toHTMLString(String src, boolean isnoquotes)
-	{
-		if (src == null)
-		{
-			return "";
+	@JvmStatic
+	fun toHTMLString(src: String?, isnoquotes: Boolean): String? {
+		if(src == null) {
+			return ""
 		}
-		String tmp = src;
-		tmp = Format.replaceAll(tmp,"&", "&amp;");
-		if (isnoquotes)
-		{
-			tmp = Format.replaceAll(tmp,"\"", "&quot;");
-			tmp = Format.replaceAll(tmp,"'", "&#039;");
+		var tmp = src
+		tmp = replaceAll(tmp, "&", "&amp;")
+		if(isnoquotes) {
+			tmp = replaceAll(tmp, "\"", "&quot;")
+			tmp = replaceAll(tmp, "'", "&#039;")
 		}
-		tmp = Format.replaceAll(tmp,"<", "&lt;");
-		tmp = Format.replaceAll(tmp,">", "&gt;");
+		tmp = replaceAll(tmp, "<", "&lt;")
+		tmp = replaceAll(tmp, ">", "&gt;")
 
-		return tmp;
+		return tmp
 	}
 
 	/**
@@ -235,33 +223,22 @@ public class Format
 	 * @param src
 	 * @return
 	 */
-	public static String toHTMLString(String src)
-	{
-		return toHTMLString(src, false);
+	@JvmStatic
+	fun toHTMLString(src: String?): String? {
+		return toHTMLString(src, false)
 	}
 
-	public static String toXMLString(DataSet ds)
-	{
-		PageInfo pi = new PageInfo();
-		pi.setStartIndex(0);
-		pi.setRecordCount(ds.getCount());
-		pi.setPageSize(ds.getCount());
+	@JvmStatic
+	fun toXMLString(ds: DataSet): String {
+		val pi = PageInfo()
+		pi.startIndex = 0
+		pi.recordCount = ds.count
+		pi.pageSize = ds.count
 
-		pi.setPageNumber(1);
-		pi.setTotalPage(1);
+		pi.pageNumber = 1
+		pi.totalPage = 1
 
-		return toXMLString(ds, pi, -1);
-	}
-
-	/**
-	 * list转json.
-	 *
-	 * @param list
-	 * @return
-	 */
-	public static String listToJsonString(List<Row> list)
-	{
-		return listToJsonString(list, null);
+		return toXMLString(ds, pi, -1)
 	}
 
 	/**
@@ -269,98 +246,108 @@ public class Format
 	 *
 	 * @param list
 	 * @param addjson
-	 *            新增json属性
+	 * 新增json属性
 	 * @return
 	 */
-	public static String listToJsonString(List<Row> list, JSONObject addjson)
-	{
-		JSONObject json = new JSONObject();
+	/**
+	 * list转json.
+	 *
+	 * @param list
+	 * @return
+	 */
+	@JvmOverloads
+	@JvmStatic
+	fun listToJsonString(list: List<Row>, addjson: JSONObject? = null): String {
+		val json = JSONObject()
 
-		JSONArray array = new JSONArray();
+		val array = JSONArray()
 
-		for (Row r : list)
-		{
-			HashMap<String, String> map = new HashMap<>();
-			for (String col : r.getColsNameList())
-			{
-				map.put(col, r.getString(col));
+		for (r in list) {
+			val map = HashMap<String, String>()
+			for (col in r.colsNameList) {
+				map[col] = r.getString(col)
 			}
-			array.add(map);
+			array.add(map)
 		}
 
-		if (addjson != null)
-		{// Iterator<Entry<String, String>> paramsfields =
+		if(addjson != null) { // Iterator<Entry<String, String>> paramsfields =
 			// params.entrySet().iterator();
 
-			@SuppressWarnings("rawtypes")
-			Iterator iter = addjson.keys();
-			while (iter.hasNext())
-			{
-				String key = (String) iter.next();
-				json.put(key, addjson.get(key));
+			val iter = addjson.keys()
+			while (iter.hasNext()) {
+				val key = iter.next() as String
+				json[key] = addjson[key]
 			}
 		}
-		json.put("total", list.size());
-		json.put("result", array);
+		json["total"] = list.size
+		json["result"] = array
 
-		return json.toString();
+		return json.toString()
 	}
 
-	public static String toXMLString(DataSet ds, PageInfo pi, long use_time)
-	{
-		StringBuilder buf = new StringBuilder();
-		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		buf.append(String.format(
+	@JvmStatic
+	fun toXMLString(ds: DataSet, pi: PageInfo, use_time: Long): String {
+		val buf = StringBuilder()
+		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+		buf.append(
+			String.format(
 				"<rs count=\"%s\" pageSize=\"%s\" pageCount=\"%s\" pageNum=\"%s\" use_time=\"%s\">",
-				pi.getRecordCount(), pi.getPageSize(), pi.getTotalPage(),
-				pi.getPageNumber(), use_time));
+				pi.recordCount,
+				pi.pageSize,
+				pi.totalPage,
+				pi.pageNumber,
+				use_time
+			             )
+		          )
 
-		for (int i = pi.getStartIndex(), k = 1; i < pi.getRecordCount()
-				&& k <= pi.getPageSize(); i++, k++)
-		{
-			Row r = ds.getRow(i);
-			buf.append("<r");
-			for (String str : r.getColsNameList())
-			{
-				buf.append(String.format(" %s=\"%s\"", toHTMLString(str, true),
-						toHTMLString(r.getString(str), true)));
+		var i = pi.startIndex
+		var k = 1
+		while (i < pi.recordCount && k <= pi.pageSize) {
+			val r = ds.getRow(i)
+			buf.append("<r")
+			for (str in r.colsNameList) {
+				buf.append(
+					String.format(
+						" %s=\"%s\"", toHTMLString(str, true), toHTMLString(r.getString(str), true)
+					             )
+				          )
 			}
-			buf.append("/>");
+			buf.append("/>")
+			i++
+			k++
 		}
 
-		buf.append("</rs>");
+		buf.append("</rs>")
 
-		return buf.toString();
+		return buf.toString()
 	}
 
-	@SuppressWarnings("unused")
-	public static <E> String toListString(E[] array)
-	{
-		return toListString(array, ",");
+	@Suppress("unused")
+	@JvmStatic
+	fun <E> toListString(array: Array<E>): String {
+		return toListString(array, ",")
 	}
 
-	public static <E> String toListString(E[] array, String splitstr)
-	{
-		StringBuilder buf = new StringBuilder();
-		for (E e : array)
-		{
-			buf.append(e);
-			buf.append(splitstr);
+	@JvmStatic
+	fun <E> toListString(array: Array<E>, splitstr: String): String {
+		val buf = StringBuilder()
+		for (e in array) {
+			buf.append(e)
+			buf.append(splitstr)
 		}
-		int len = buf.length();
-		if (len > 0)
-		{
-			buf.setLength(len - splitstr.length());
+		val len = buf.length
+		if(len > 0) {
+			buf.setLength(len - splitstr.length)
 		}
 
-		return buf.toString();
+		return buf.toString()
 	}
 
-	public static String toListString(String[] strs)
-	{
-		List<String> list = new ArrayList<>(Arrays.asList(strs));
+	@JvmStatic
+	fun toListString(strs: Array<String?>): String {
+		val list: List<String> = ArrayList(Arrays.asList(*strs))
 
-		return toListString(list, ",");
+		return toListString(list, ",")
 	}
 
 	/**
@@ -369,107 +356,100 @@ public class Format
 	 * @param list
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	public static String toListString(List<?> list)
-	{
-		return toListString(list, ",");
+	@Suppress("unused")
+	fun toListString(list: List<*>): String {
+		return toListString(list, ",")
 	}
 
 	/**
 	 * 返回list输出字符串
 	 *
 	 * @param list
-	 *            对应list
+	 * 对应list
 	 * @param splitstr
-	 *            分割字符
+	 * 分割字符
 	 * @return
 	 */
-	public static String toListString(List<?> list, String splitstr)
-	{
-		StringBuilder buf = new StringBuilder();
-		for (Object o : list)
-		{
-			buf.append(o.toString());
-			buf.append(splitstr);
+	@JvmStatic
+	fun toListString(list: List<*>, splitstr: String): String {
+		val buf = StringBuilder()
+		for (o in list) {
+			buf.append(o.toString())
+			buf.append(splitstr)
 		}
-		if (!list.isEmpty())
-		{
-			buf.setLength(buf.length() - splitstr.length());
+		if(!list.isEmpty()) {
+			buf.setLength(buf.length - splitstr.length)
 		}
-		return buf.toString();
+		return buf.toString()
 	}
 
-	public static String getContent(String str, String start, String end)
-	{
-		try
-		{
-			int si = str.indexOf(start);
-			if (si < 0)
-			{
-				return null;
+	@JvmStatic
+	fun getContent(str: String, start: String, end: String): String? {
+		try {
+			val si = str.indexOf(start)
+			if(si < 0) {
+				return null
 			}
-			int ssi = si + start.length();
-			int ei = str.indexOf(end, ssi);
-			return str.substring(ssi, ei);
-		}
-		catch (Exception e)
-		{
-			return null;
+			val ssi = si + start.length
+			val ei = str.indexOf(end, ssi)
+			return str.substring(ssi, ei)
+		} catch (e: Exception) {
+			return null
 		}
 	}
 
-	public static String replaceContent(String str, String start, String end,
-			String newstring)
-	{
-		try
-		{
-			int si = str.indexOf(start);
-			int ssi = si + start.length();
-			int ei = str.indexOf(end, ssi);
+	@JvmStatic
+	fun replaceContent(
+		str: String, start: String, end: String, newstring: String?
+	                  ): String? {
+		try {
+			val si = str.indexOf(start)
+			val ssi = si + start.length
+			val ei = str.indexOf(end, ssi)
 
-			return String.format("%s%s%s", str.substring(0, ssi), newstring,
-					str.substring(ei));
-		}
-		catch (Exception e)
-		{
-			return null;
+			return String.format(
+				"%s%s%s", str.substring(0, ssi), newstring, str.substring(ei)
+			                    )
+		} catch (e: Exception) {
+			return null
 		}
 	}
 
-	private static Map<String, String> getPinYinMap() {
-		if (PINYINMAP == null) {
-			PINYINMAP = new HashMap<>();
+	private val pinYinMap: Map<String, String>?
+		get() {
+			if(PINYINMAP == null) {
+				PINYINMAP = HashMap()
 
-			// 1) 通过 getResourceAsStream，读取与 FORMAT 类同包下的 pinyin.txt
-			//    如果 pinyin.txt 位于同包下，参数不用加前缀 “/”。
-			//    如果位于资源根目录或其他路径，请参见后续说明。
-			try (InputStream is = FORMAT.getClass().getResourceAsStream("pinyin.txt")) {
+				// 1) 通过 getResourceAsStream，读取与 FORMAT 类同包下的 pinyin.txt
+				//    如果 pinyin.txt 位于同包下，参数不用加前缀 “/”。
+				//    如果位于资源根目录或其他路径，请参见后续说明。
+				try {
+					javaClass.getResourceAsStream("pinyin.txt").use { `is` ->
+						if(`is` == null) {
+							// 如果为 null，说明无法找到资源
+							throw RuntimeException(
+								"Cannot find resource pinyin.txt relative to " + javaClass.name
+							                      )
+						}
+						// 2) 用你的自定义 JFile 类，从 InputStream 中读内容
+						val file = JFile(`is`)
 
-				if (is == null) {
-					// 如果为 null，说明无法找到资源
-					throw new RuntimeException("Cannot find resource pinyin.txt relative to "
-							+ FORMAT.getClass().getName());
-				}
-
-				// 2) 用你的自定义 JFile 类，从 InputStream 中读内容
-				JFile file = new JFile(is);
-
-				// 3) 逐行读取，将前两个空格分割的字段放入 PINYINMAP
-				List<String> lines = file.getLineList();
-				for (String line : lines) {
-					String[] parts = line.split(" ", 2);
-					if (parts.length >= 2) {
-						PINYINMAP.put(parts[0], parts[1]);
+						// 3) 逐行读取，将前两个空格分割的字段放入 PINYINMAP
+						val lines = file.lineList
+						for (line in lines) {
+							val parts = line.split(" ".toRegex(), limit = 2).toTypedArray()
+							if(parts.size >= 2) {
+								PINYINMAP!![parts[0]] = parts[1]
+							}
+						}
 					}
+				} catch (e: IOException) {
+					// 如果需要处理流异常，可以在这里捕获
+					throw RuntimeException("Error reading pinyin.txt resource", e)
 				}
-
-			} catch (IOException e) {
-				// 如果需要处理流异常，可以在这里捕获
-				throw new RuntimeException("Error reading pinyin.txt resource", e);
 			}
+			return PINYINMAP
 		}
-		return PINYINMAP;
-	}
 
 	/**
 	 * 汉字转拼音
@@ -477,17 +457,16 @@ public class Format
 	 * @param str
 	 * @return
 	 */
-	public static String getPinyin(String str)
-	{
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < str.length(); i++)
-		{
-			String k = str.substring(i, i + 1);
-			String t = getPinYinMap().get(k);
-			buf.append(Objects.requireNonNullElse(t, k));
+	@JvmStatic
+	fun getPinyin(str: String): String {
+		val buf = StringBuilder()
+		for (i in 0..<str.length) {
+			val k = str.substring(i, i + 1)
+			val t = pinYinMap!![k]
+			buf.append(Objects.requireNonNullElse(t, k))
 		}
 
-		return buf.toString();
+		return buf.toString()
 	}
 
 	/**
@@ -496,74 +475,59 @@ public class Format
 	 * @param str
 	 * @return
 	 */
-	public static String getFirstPinyin(String str)
-	{
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < str.length(); i++)
-		{
-			String k = str.substring(i, i + 1);
-			String t = getPinYinMap().get(k);
-			if (t == null)
-			{
-				buf.append(k);
-			}
-			else
-			{
-				buf.append(t, 0, 1);
+	@JvmStatic
+	fun getFirstPinyin(str: String): String {
+		val buf = StringBuilder()
+		for (i in 0..<str.length) {
+			val k = str.substring(i, i + 1)
+			val t = pinYinMap!![k]
+			if(t == null) {
+				buf.append(k)
+			} else {
+				buf.append(t, 0, 1)
 			}
 		}
 
-		return buf.toString();
+		return buf.toString()
 	}
-
-	public static List<Field> getAllField(Object obj, boolean getsuper)
-	{
-		return getAllField(obj.getClass(),getsuper);
+	@JvmStatic
+	fun getAllField(obj: Any, getsuper: Boolean): List<Field> {
+		return getAllField(obj.javaClass, getsuper)
 	}
+	@JvmStatic
+	fun getAllField(c: Class<*>, getsuper: Boolean): List<Field> {
+		val list: MutableList<Field> = ArrayList()
 
-	public static List<Field> getAllField(Class<?> c, boolean getsuper)
-	{
-		List<Field> list = new ArrayList<>();
+		//		Class<?> c =  obj.getClass();
+		if(getsuper) {
+			val supername = c.superclass.name
 
-//		Class<?> c =  obj.getClass();
-		if (getsuper)
-		{
-			String supername = c.getSuperclass().getName();
 			// System.out.println("@@@@@@@@@"+c.getName()+" "+supername);
-
-			if (!"java.lang.Object".equals(supername))
-			{
-				list.addAll(getAllField(c.getSuperclass(), true));
+			if("java.lang.Object" != supername) {
+				list.addAll(getAllField(c.superclass, true))
 			}
 		}
 
 		// System.out.println("#########"+c.getName());
-		Field[] fs = c.getDeclaredFields();
-		for (Field f : fs)
-		{
+		val fs = c.declaredFields
+		for (f in fs) {
 			// System.out.println(f+" "+f.getGenericType().getTypeName()+"
 			// "+f.getName());
 			// f.toString();
-			if (!f.toString().contains(" transient ") && !f.getGenericType().getTypeName().contains("java.lang.Class."))
-			{
-				list.add(f);
+			if(!f.toString().contains(" transient ") && !f.genericType.typeName.contains("java.lang.Class.")) {
+				list.add(f)
 			}
 		}
 
-		return list;
+		return list
 	}
 
-	public static List<Field> getAllField(String classname, boolean getsuper)
-			throws ClassNotFoundException
-	{
-		Class<?> c = Class.forName(classname);
+	@Throws(ClassNotFoundException::class)
+	@JvmStatic
+	fun getAllField(classname: String?, getsuper: Boolean): List<Field> {
+		val c = Class.forName(classname)
 
-		return getAllField(c,getsuper);
-	}
-
-	public static String beanToString(Object o)
-	{
-		return beanToString(o, false);
+		return getAllField(c, getsuper)
 	}
 
 	/**
@@ -572,84 +536,70 @@ public class Format
 	 * @param o
 	 * @return
 	 */
-	public static String beanToString(Object o, boolean getsuper)
-	{
-
+	@JvmOverloads
+	@JvmStatic
+	fun beanToString(o: Any, getsuper: Boolean = false): String {
 		// StringBuffer buf = new StringBuffer();
 		// Field[] fields = o.getClass().getDeclaredFields();
-		JsonConfig jsonconfig = new JsonConfig();
-		jsonconfig.setAllowNonStringKeys(true);
 
-		JSONObject json = JSONObject.fromObject("{}", jsonconfig);
-		List<Field> fields = getAllField(o, getsuper);
+		val jsonconfig = JsonConfig()
+		jsonconfig.isAllowNonStringKeys = true
 
-		for (Field f : fields)
-		{
-			boolean accessFlag = f.isAccessible();
-			f.setAccessible(true);
-			try
-			{
-				Object po = f.get(o);
+		val json = JSONObject.fromObject("{}", jsonconfig)
+		val fields = getAllField(o, getsuper)
+
+		for (f in fields) {
+			val accessFlag = f.isAccessible
+			f.isAccessible = true
+			try {
+				val po = f[o]
 				// System.out.println(f.getName()+"
 				// "+po.getClass().isArray()+" "+po);
-				if (po != null && (po.getClass().isArray()
-						|| po instanceof List))
-				{
-					JSONArray arr = JSONArray.fromObject("[]", jsonconfig);
+				if(po != null && (po.javaClass.isArray || po is List<*>)) {
+					val arr = JSONArray.fromObject("[]", jsonconfig)
 					// buf.append(f.getName());
 					// buf.append(":[");
-					if (po.getClass().isArray())
-					{
-						arr.add(po);
-					}
-					else if (po instanceof List)
-					{
+					if(po.javaClass.isArray) {
+						arr.add(po)
+					} else if(po is List<*>) {
 						// System.out.println("####"+f.getName());
-						for (Object ppo : (List<?>) po)
-						{
-							arr.add(ppo.toString());
+						for (ppo in po) {
+							arr.add(ppo.toString())
 						}
 						// arr.add(po);
 					}
 
-					json.put(f.getName(), arr);
-				}
-				else
-				{
+					json[f.name] = arr
+				} else {
 					// System.out.println("#"+f.getName()+"#"+po);
-					json.put(f.getName(), po);
+					json[f.name] = po
 					// buf.append(String.format("%s:[%s]\n", f.getName(),
 					// po));
 				}
-			}
-			catch (IllegalArgumentException e)
-			{
+			} catch (e: IllegalArgumentException) {
 				// e.printStackTrace();
+			} catch (e: IllegalAccessException) {
+				e.printStackTrace()
 			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
-			f.setAccessible(accessFlag);
+			f.isAccessible = accessFlag
 		}
-		// System.out.println(toListString(fields));
 
-		return json.toString();
+		// System.out.println(toListString(fields));
+		return json.toString()
 	}
 
-	public static String getRequestUrl(HttpServletRequest req)
-	{
-		StringBuilder buf = new StringBuilder(req.getServerName());
-		buf.append("/");
-		buf.append(req.getServletPath());
+	@JvmStatic
+	fun getRequestUrl(req: HttpServletRequest): String {
+		val buf = StringBuilder(req.serverName)
+		buf.append("/")
+		buf.append(req.servletPath)
 
-		String q = req.getQueryString();
-		if (q != null)
-		{
-			buf.append("?").append(q);
+		val q = req.queryString
+		if(q != null) {
+			buf.append("?").append(q)
 		}
 
-		return buf.toString();
+		return buf.toString()
 	}
 
 	/**
@@ -659,54 +609,56 @@ public class Format
 	 * @param str2
 	 * @return
 	 */
-	public static int ld(String str1, String str2)
-	{
-		int[][] d; // 矩阵
-		int n = str1.length();
-		int m = str2.length();
-		int i; // 遍历str1的
-		int j; // 遍历str2的
-		char ch1; // str1的
-		char ch2; // str2的
-		int temp; // 记录相同字符,在某个矩阵位置值的增量,不是0就是1
-		if (n == 0)
-		{
-			return m;
+	@JvmStatic
+	fun ld(str1: String, str2: String): Int {
+		val d: Array<IntArray> // 矩阵
+		val n = str1.length
+		val m = str2.length
+		var j: Int // 遍历str2的
+		var ch1: Char // str1的
+		var ch2: Char // str2的
+		var temp: Int // 记录相同字符,在某个矩阵位置值的增量,不是0就是1
+		if(n == 0) {
+			return m
 		}
-		if (m == 0)
-		{
-			return n;
+		if(m == 0) {
+			return n
 		}
-		d = new int[n + 1][m + 1];
-		for (i = 0; i <= n; i++)
-		{ // 初始化第一列
-			d[i][0] = i;
+		d = Array(n + 1) { IntArray(m + 1) }
+		var i = 0 // 遍历str1的
+		while (i <= n) {
+			// 初始化第一列
+			d[i][0] = i
+			i++
 		}
-		for (j = 0; j <= m; j++)
-		{ // 初始化第一行
-			d[0][j] = j;
+		j = 0
+		while (j <= m) {
+			// 初始化第一行
+			d[0][j] = j
+			j++
 		}
-		for (i = 1; i <= n; i++)
-		{ // 遍历str1
-			ch1 = str1.charAt(i - 1);
+		i = 1
+		while (i <= n) {
+			// 遍历str1
+			ch1 = str1[i - 1]
 			// 去匹配str2
-			for (j = 1; j <= m; j++)
-			{
-				ch2 = str2.charAt(j - 1);
-				if (ch1 == ch2)
-				{
-					temp = 0;
-				}
-				else
-				{
-					temp = 1;
+			j = 1
+			while (j <= m) {
+				ch2 = str2[j - 1]
+				temp = if(ch1 == ch2) {
+					0
+				} else {
+					1
 				}
 				// 左边+1,上边+1, 左上角+temp取最小
-				d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1,
-						d[i - 1][j - 1] + temp);
+				d[i][j] = min(
+					d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + temp
+				             )
+				j++
 			}
+			i++
 		}
-		return d[n][m];
+		return d[n][m]
 	}
 
 	/**
@@ -716,51 +668,45 @@ public class Format
 	 * @param str2
 	 * @return
 	 */
-	public static double sim(String str1, String str2)
-	{
-		int ld = ld(str1, str2);
-		return 1 - (double) ld / Math.max(str1.length(), str2.length());
+	@JvmStatic
+	fun sim(str1: String, str2: String): Double {
+		val ld = ld(str1, str2)
+		return 1 - ld.toDouble() / max(str1.length.toDouble(), str2.length.toDouble())
 	}
 
-	private static int min(int one, int two, int three)
-	{
-		int min = one;
-		if (two < min)
-		{
-			min = two;
+	private fun min(one: Int, two: Int, three: Int): Int {
+		var min = one
+		if(two < min) {
+			min = two
 		}
-		if (three < min)
-		{
-			min = three;
+		if(three < min) {
+			min = three
 		}
-		return min;
+		return min
 	}
 
 
-	@SuppressWarnings("unused")
-	public static long ip2long(String ip)
-	{
-		long num = 0;
+	@Suppress("unused")
+	@JvmStatic
+	fun ip2long(ip: String?): Long {
+		var num: Long = 0
 
-		if (ip != null)
-		{
-			String[] ips = ip.split("[.]", 4);
-			try
-			{
-				for (int i = 0, len = ips.length; i < len; i++)
-				{
-					String s = ips[i].trim();
-					long l = 0;
-					try
-					{
-						l = Long.parseLong(s);
-					}
-					catch (Exception e)
-					{
+		if(ip != null) {
+			val ips = ip.split("[.]".toRegex(), limit = 4).toTypedArray()
+			try {
+				var i = 0
+				val len = ips.size
+				while (i < len) {
+					val s = ips[i].trim { it <= ' ' }
+					var l: Long = 0
+					try {
+						l = s.toLong()
+					} catch (e: Exception) {
 						// Log.OutException(e);
 					}
 
-					num += l << ((3L - i) * 8);
+					num += l shl ((3L - i) * 8).toInt()
+					i++
 				}
 
 				/*
@@ -768,15 +714,12 @@ public class Format
 				 * Long.parseLong(ips[1]) + 256 * Long.parseLong(ips[2]) +
 				 * Long.parseLong(ips[3]);
 				 */
+			} catch (e: Exception) {
+				Log.OutException(e, ip)
 			}
-			catch (Exception e)
-			{
-				Log.OutException(e, ip);
-			}
-
 		}
 
-		return num;
+		return num
 	}
 
 	/**
@@ -785,21 +728,19 @@ public class Format
 	 * @param ipLong
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	public static String long2ip(long ipLong)
-	{
+	@Suppress("unused")
+	@JvmStatic
+	fun long2ip(ipLong: Long): String {
 		// long ipLong = 1037591503;
-		long[] mask = {0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000};
-		long num;
-		StringBuilder ipInfo = new StringBuilder();
-		for (int i = 0; i < 4; i++)
-		{
-			num = (ipLong & mask[i]) >> (i * 8);
-			if (i > 0)
-				ipInfo.insert(0, ".");
-			ipInfo.insert(0, Long.toString(num, 10));
+		val mask = longArrayOf(0x000000FF, 0x0000FF00, 0x00FF0000, -0x1000000)
+		var num: Long
+		val ipInfo = StringBuilder()
+		for (i in 0..3) {
+			num = (ipLong and mask[i]) shr (i * 8)
+			if(i > 0) ipInfo.insert(0, ".")
+			ipInfo.insert(0, num.toString(10))
 		}
-		return ipInfo.toString();
+		return ipInfo.toString()
 	}
 
 	/**
@@ -808,70 +749,66 @@ public class Format
 	 * @param num
 	 * @return
 	 */
-	public static String getRandStringNum(int num)
-	{
-		StringBuilder buf = new StringBuilder();
-		int len = NUMLOWSTRING.length();
+	@JvmStatic
+	fun getRandStringNum(num: Int): String {
+		val buf = StringBuilder()
+		val len = NUMLOWSTRING.length
 		// LOWSTRING
-		for (int i = 0; i < num; i++)
-		{
-			int pos = ThreadLocalRandom.current().nextInt(len);
-			buf.append(NUMLOWSTRING, pos, pos + 1);
+		for (i in 0..<num) {
+			val pos = ThreadLocalRandom.current().nextInt(len)
+			buf.append(NUMLOWSTRING, pos, pos + 1)
 		}
-		return buf.toString();
+		return buf.toString()
 	}
 
-	public static String getRandHex(int num)
-	{
-		StringBuilder buf = new StringBuilder();
-		int len = HEXSTRING.length();
+	@JvmStatic
+	fun getRandHex(num: Int): String {
+		val buf = StringBuilder()
+		val len = HEXSTRING.length
 		// LOWSTRING
-		for (int i = 0; i < num; i++)
-		{
-			int pos = (int) (Math.random() * len);
-			buf.append(HEXSTRING, pos, pos + 1);
+		for (i in 0..<num) {
+			val pos = (Math.random() * len).toInt()
+			buf.append(HEXSTRING, pos, pos + 1)
 		}
-		return buf.toString();
+		return buf.toString()
 	}
 
 	/**
 	 * 返回随机字符串 只有小写字母
 	 *
 	 * @param num
-	 *            生成字母数量
+	 * 生成字母数量
 	 * @return
 	 */
-	public static String getRandString(int num)
-	{
-		StringBuilder buf = new StringBuilder();
-		int len = LOWSTRING.length();
+	@JvmStatic
+	fun getRandString(num: Int): String {
+		val buf = StringBuilder()
+		val len = LOWSTRING.length
 		// LOWSTRING
-		for (int i = 0; i < num; i++)
-		{
-			int pos = ThreadLocalRandom.current().nextInt(len);
-			buf.append(LOWSTRING, pos, pos + 1);
+		for (i in 0..<num) {
+			val pos = ThreadLocalRandom.current().nextInt(len)
+			buf.append(LOWSTRING, pos, pos + 1)
 		}
-		return buf.toString();
+		return buf.toString()
 	}
 
 	/**
 	 * 返回随机字符串 大小写与数字
 	 *
 	 * @param num
-	 *            生成字母数量
+	 * 生成字母数量
 	 * @return
 	 */
-	public static String getRandAllString(int num)
-	{
-		StringBuilder buf = new StringBuilder();
-		int len = ALLSTRING.length();
+	@JvmStatic
+	fun getRandAllString(num: Int): String {
+		val buf = StringBuilder()
+		val len = ALLSTRING.length
 		// LOWSTRING
-		for (int i = 0; i < num; i++)
-		{
-			int pos = ThreadLocalRandom.current().nextInt(len);
-			buf.append(ALLSTRING, pos, pos + 1);
+		for (i in 0..<num) {
+			val pos = ThreadLocalRandom.current().nextInt(len)
+			buf.append(ALLSTRING, pos, pos + 1)
 		}
-		return buf.toString();
+		return buf.toString()
 	}
 
 	/**
@@ -880,355 +817,342 @@ public class Format
 	 * @param str
 	 * @return 编码
 	 */
-	public static String getDecoderChartset(String str)
-	{
+	@JvmStatic
+	fun getDecoderChartset(str: String): String {
 		// utf8中汉字是 %E4%B8%80 到 %E9%BE%A5 gbk中汉字是 %D2%BB 到 %FD%9B
-		str = str.toUpperCase();
-		String charset = "UTF-8";
+		var str = str
+		str = str.uppercase(Locale.getDefault())
+		var charset = "UTF-8"
 
-		Pattern RESULTPAT = Pattern.compile("%[0-9A-F]{2}");
-		Matcher msc = RESULTPAT.matcher(str);
-		out: while (msc.find())
-		{
-			String r = msc.group(0);
-			String f = r.substring(1, 2);
-			if ("E".equals(f))
-			{
-				for (int i = 0; i < 2; i++)
-				{
-					if (!msc.find())
-					{
-						charset = "GBK";
-						break out;
+		val RESULTPAT = Pattern.compile("%[0-9A-F]{2}")
+		val msc = RESULTPAT.matcher(str)
+		out@ while (msc.find()) {
+			val r = msc.group(0)
+			val f = r.substring(1, 2)
+			if("E" == f) {
+				for (i in 0..1) {
+					if(!msc.find()) {
+						charset = "GBK"
+						break@out
 					}
 				}
-			}
-			else
-			{
-				if ("D".equals(f) || "F".equals(f))
-				{
-					charset = "GBK";
-					break;
+			} else {
+				if("D" == f || "F" == f) {
+					charset = "GBK"
+					break
 				}
 			}
 		}
-		return charset;
+		return charset
 	}
 
-	public static String Sha256(String str)
-	{
+	@JvmStatic
+	fun Sha256(str: String?): String {
 //		return MessageDigest("sha-256", str);
-		return DigestUtils.sha256Hex(str);
+		return DigestUtils.sha256Hex(str)
 	}
 
-	public static String Sha1(String str)
-	{
+	@JvmStatic
+	fun Sha1(str: String?): String {
 //		return MessageDigest("sha-1", str);
-		return DigestUtils.sha1Hex(str);
+		return DigestUtils.sha1Hex(str)
 	}
 
-	public static String Md2(String str)
-	{
+	@JvmStatic
+	fun Md2(str: String?): String {
 //		return MessageDigest("md2", str);
-		return DigestUtils.md2Hex(str);
+		return DigestUtils.md2Hex(str)
 	}
 
-	public static byte[] HMACSha1(byte[] key, byte[] data)
-			throws NoSuchAlgorithmException, InvalidKeyException
-	{
-		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
-		Mac mac = Mac.getInstance(HMAC_SHA1);
-		mac.init(signingKey);
+	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
+	@JvmStatic
+	fun HMACSha1(key: ByteArray, data: ByteArray?): ByteArray {
+		val signingKey = SecretKeySpec(key, HMAC_SHA1)
+		val mac = Mac.getInstance(HMAC_SHA1)
+		mac.init(signingKey)
 
-		return mac.doFinal(data);
+		return mac.doFinal(data)
 	}
 
-	public static byte[] HMACSha1(String key, String data)
-			throws NoSuchAlgorithmException, InvalidKeyException
-	{
-		return HMACSha1(key.getBytes(), data.getBytes());
+	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
+	@JvmStatic
+	fun HMACSha1(key: String, data: String): ByteArray {
+		return HMACSha1(key.toByteArray(), data.toByteArray())
 	}
 
-	public static byte[] HMACSha256(byte[] key, byte[] data)
-			throws NoSuchAlgorithmException, InvalidKeyException
-	{
-		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256);
-		Mac mac = Mac.getInstance(HMAC_SHA256);
-		mac.init(signingKey);
+	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
+	@JvmStatic
+	fun HMACSha256(key: ByteArray, data: ByteArray?): ByteArray {
+		val signingKey = SecretKeySpec(key, HMAC_SHA256)
+		val mac = Mac.getInstance(HMAC_SHA256)
+		mac.init(signingKey)
 
-		return mac.doFinal(data);
+		return mac.doFinal(data)
 	}
 
-	public static byte[] HMACSha256(String key, String data)
-			throws NoSuchAlgorithmException, InvalidKeyException
-	{
-		return HMACSha256(key.getBytes(), data.getBytes());
+	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
+	@JvmStatic
+	fun HMACSha256(key: String, data: String): ByteArray {
+		return HMACSha256(key.toByteArray(), data.toByteArray())
 	}
 
-	public static String fileMd5(final String inputFile) throws IOException
-	{
-		File file = new File(inputFile);
-		String value = null;
-		FileInputStream filein = new FileInputStream(file);
-		MappedByteBuffer byteBuffer = filein.getChannel()
-				.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-		MessageDigest md5;
-		try
-		{
-			md5 = MessageDigest.getInstance("MD5");
-			md5.update(byteBuffer);
+	@Throws(IOException::class)
+	@JvmStatic
+	fun fileMd5(inputFile: String): String? {
+		val file = File(inputFile)
+		var value: String? = null
+		val filein = FileInputStream(file)
+		val byteBuffer = filein.channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length())
+		val md5: MessageDigest
+		try {
+			md5 = MessageDigest.getInstance("MD5")
+			md5.update(byteBuffer)
 
-			BigInteger bi = new BigInteger(1, md5.digest());
-			value = bi.toString(16);
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			Log.OutException(e);
+			val bi = BigInteger(1, md5.digest())
+			value = bi.toString(16)
+		} catch (e: NoSuchAlgorithmException) {
+			Log.OutException(e)
 		}
 
-		filein.close();
+		filein.close()
 
-		return value;
-
+		return value
 	}
 
-	public static byte[] Md5(byte[] bytes)
-	{
-		return DigestUtils.md5( bytes);
+	@JvmStatic
+	fun Md5(bytes: ByteArray?): ByteArray {
+		return DigestUtils.md5(bytes)
 	}
 
-	public static String Md5Str(byte[] bytes)
-	{
+	@JvmStatic
+	fun Md5Str(bytes: ByteArray?): String {
 //		return byte2hex(MessageDigest("md5", bytes));
-		return DigestUtils.md5Hex(bytes);
+		return DigestUtils.md5Hex(bytes)
 	}
 
-	public static String Md5(String str)
-	{
+	@JvmStatic
+	fun Md5(str: String?): String {
 //		return MessageDigest("md5", str);
-		return DigestUtils.md5Hex(str);
+		return DigestUtils.md5Hex(str)
 	}
 
-	public static String getFileExtName(String filename)
-	{
-		int idx = filename.lastIndexOf(".") + 1;
+	@JvmStatic
+	fun getFileExtName(filename: String): String {
+		val idx = filename.lastIndexOf(".") + 1
 
-		return filename.substring(idx);
+		return filename.substring(idx)
 	}
 
-	public static Long getNumber(String str)
-	{
-		String number = "0123456789";
-		StringBuilder buf = new StringBuilder("0");
+	@JvmStatic
+	fun getNumber(str: String): Long {
+		val number = "0123456789"
+		val buf = StringBuilder("0")
 
-		for (char t : str.toCharArray())
-		{
-			for (int i = 0, len = number.length(); i < len; i++)
-			{
-				char nt = number.charAt(i);
-				if (nt == t)
-				{
-					buf.append(t);
-					break;
+		for (t in str.toCharArray()) {
+			var i = 0
+			val len = number.length
+			while (i < len) {
+				val nt = number[i]
+				if(nt == t) {
+					buf.append(t)
+					break
 				}
+				i++
 			}
 		}
 
-		return Long.parseLong(buf.toString());
+		return buf.toString().toLong()
 	}
 
-/*	public static String MessageDigest(String m, String str)
+	/*	public static String MessageDigest(String m, String str)
 	{
 		String mstr;
 		mstr = byte2hex(MessageDigest(m, str.getBytes()));
 
 		return mstr;
 	}*/
-
-	public static byte[] hex2byte(String s)
-	{
-		String s2;
-		byte[] b = new byte[s.length() / 2];
-		int i;
-		for (i = 0; i < s.length() / 2; i++)
-		{
-			s2 = s.substring(i * 2, i * 2 + 2);
-			b[i] = (byte) (Integer.parseInt(s2, 16) & 0xff);
+	@JvmStatic
+	fun hex2byte(s: String): ByteArray {
+		var s2: String
+		val b = ByteArray(s.length / 2)
+		var i = 0
+		while (i < s.length / 2) {
+			s2 = s.substring(i * 2, i * 2 + 2)
+			b[i] = (s2.toInt(16) and 0xff).toByte()
+			i++
 		}
-		return b;
+		return b
 	}
 
-	public static String byte2hex(byte[] b) // 二行制转字符串
+	@JvmStatic
+	fun byte2hex(b: ByteArray): String // 二行制转字符串
 	{
-		StringBuilder hexString = new StringBuilder();
-		for (byte value : b)
-		{
-			String hex = Integer.toHexString(0xff & value);
-			if (hex.length() == 1)
-			{
-				hexString.append('0');
+		val hexString = StringBuilder()
+		for (value in b) {
+			val hex = Integer.toHexString(0xff and value.toInt())
+			if(hex.length == 1) {
+				hexString.append('0')
 			}
-			hexString.append(hex);
+			hexString.append(hex)
 		}
-		return hexString.toString();
+		return hexString.toString()
 	}
 
-	private static final Base64.Encoder ENBASE64URL = Base64.getUrlEncoder().withoutPadding();
-	private static final Base64.Decoder DEBASE64URL = Base64.getUrlDecoder();
+	private val ENBASE64URL: Base64.Encoder = Base64.getUrlEncoder().withoutPadding()
+	private val DEBASE64URL: Base64.Decoder = Base64.getUrlDecoder()
 
-	private static final Base64.Encoder ENBASE64 = Base64.getEncoder();
-	private static final Base64.Decoder DEBASE64 = Base64.getDecoder();
+	private val ENBASE64: Base64.Encoder = Base64.getEncoder()
+	private val DEBASE64: Base64.Decoder = Base64.getDecoder()
 
-	public static String encodeBase64Url(final byte[] buf)
-	{
+	@JvmStatic
+	fun encodeBase64Url(buf: ByteArray?): String {
 //		byte[] encoded = ENBASE64URL.encode(buf);
 //
 //		// BASE64Encoder en = new sun.misc.BASE64Encoder();
 //		return new String(encoded);
-		return ENBASE64URL.encodeToString(buf);
+		return ENBASE64URL.encodeToString(buf)
 	}
 
-	public static byte[] decodeBase64Url(final String str)
-	{
+	@JvmStatic
+	fun decodeBase64Url(str: String?): ByteArray {
 		// BASE64Decoder decoder = new BASE64Decoder();
 		// return decoder.decodeBuffer(str);
-		return DEBASE64URL.decode(str);
+		return DEBASE64URL.decode(str)
 	}
 
-	public static String encodeBase64(final byte[] buf)
-	{
-		byte[] encoded = ENBASE64.encode(buf);
+	@JvmStatic
+	fun encodeBase64(buf: ByteArray?): String {
+		val encoded = ENBASE64.encode(buf)
 
 		// BASE64Encoder en = new sun.misc.BASE64Encoder();
-		return new String(encoded);
+		return String(encoded)
 	}
 
-	public static byte[] decodeBase64(final String str)
-	{
+	@JvmStatic
+	fun decodeBase64(str: String?): ByteArray {
 		// BASE64Decoder decoder = new BASE64Decoder();
 		// return decoder.decodeBuffer(str);
-		return DEBASE64.decode(str);
+		return DEBASE64.decode(str)
 	}
 
-	public static String encodeDes(String mykey, String encryptedString)
-			throws InvalidKeyException,
-			NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeySpecException
-	{
-		byte[] keyAsBytes = mykey.getBytes(StandardCharsets.UTF_8);
-		DESKeySpec myKeySpec = new DESKeySpec(keyAsBytes);
-		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
-				.getInstance("DES");
-		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
+	@Throws(
+		InvalidKeyException::class,
+		NoSuchAlgorithmException::class,
+		NoSuchPaddingException::class,
+		InvalidKeySpecException::class
+	       )
+	@JvmStatic
+	fun encodeDes(mykey: String, encryptedString: String): String? {
+		val keyAsBytes = mykey.toByteArray(StandardCharsets.UTF_8)
+		val myKeySpec = DESKeySpec(keyAsBytes)
+		val mySecretKeyFactory = SecretKeyFactory.getInstance("DES")
+		val key = mySecretKeyFactory.generateSecret(myKeySpec)
 
-		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
+		val cipher = Cipher.getInstance("DES/ecb/pkcs5padding")
 
-		String encryptedText = null;
-		try
-		{
-			cipher.init(Cipher.ENCRYPT_MODE, key);
-			byte[] plainText = cipher.doFinal(encryptedString.getBytes());
+		var encryptedText: String? = null
+		try {
+			cipher.init(Cipher.ENCRYPT_MODE, key)
+			val plainText = cipher.doFinal(encryptedString.toByteArray())
 
-			encryptedText = Base64UrlSafe.encodeBase64(plainText);
+			encryptedText = Base64UrlSafe.encodeBase64(plainText)
+		} catch (e: Exception) {
+			e.printStackTrace()
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return encryptedText;
+		return encryptedText
 	}
 
-	public static String decodeDes(String mykey, String encryptedString)
-			throws InvalidKeyException,
-			NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeySpecException
-	{
-		byte[] keyAsBytes = mykey.getBytes(StandardCharsets.UTF_8);
-		KeySpec myKeySpec = new DESKeySpec(keyAsBytes);
-		SecretKeyFactory mySecretKeyFactory = SecretKeyFactory
-				.getInstance("DES");
-		Cipher cipher = Cipher.getInstance("DES/ecb/pkcs5padding");
-		SecretKey key = mySecretKeyFactory.generateSecret(myKeySpec);
+	@Throws(
+		InvalidKeyException::class,
+		NoSuchAlgorithmException::class,
+		NoSuchPaddingException::class,
+		InvalidKeySpecException::class
+	       )
+	@JvmStatic
+	fun decodeDes(mykey: String, encryptedString: String): String? {
+		val keyAsBytes = mykey.toByteArray(StandardCharsets.UTF_8)
+		val myKeySpec: KeySpec = DESKeySpec(keyAsBytes)
+		val mySecretKeyFactory = SecretKeyFactory.getInstance("DES")
+		val cipher = Cipher.getInstance("DES/ecb/pkcs5padding")
+		val key = mySecretKeyFactory.generateSecret(myKeySpec)
 
-		String decryptedText = null;
-		try
-		{
-			cipher.init(Cipher.DECRYPT_MODE, key);
-			byte[] encryptedText = Base64UrlSafe.decodeBase64(encryptedString);
-			byte[] plainText = cipher.doFinal(encryptedText);
-			decryptedText = new String(plainText);
+		var decryptedText: String? = null
+		try {
+			cipher.init(Cipher.DECRYPT_MODE, key)
+			val encryptedText = Base64UrlSafe.decodeBase64(encryptedString)
+			val plainText = cipher.doFinal(encryptedText)
+			decryptedText = String(plainText)
+		} catch (e: Exception) {
+			e.printStackTrace()
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return decryptedText;
+		return decryptedText
 	}
 
 	/**
 	 * 返回svm字符串
 	 *
 	 * @param type
-	 *            类别字段
+	 * 类别字段
 	 * @param fields
-	 *            特征字段（,分割）
+	 * 特征字段（,分割）
 	 * @return
 	 */
-	public static String sqlToSvm(String sqlstr, String type, String fields)
-	{
-		StringBuilder buf = new StringBuilder();
+	@JvmStatic
+	fun sqlToSvm(sqlstr: String?, type: String?, fields: String): String {
+		val buf = StringBuilder()
 
-		String[] fs = fields.split(",");
-		for (int i = 0, len = fs.length; i < len; i++)
-		{
-			fs[i] = fs[i].trim();
+		val fs = fields.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+		var i = 0
+		val len = fs.size
+		while (i < len) {
+			fs[i] = fs[i].trim { it <= ' ' }
+			i++
 		}
 
-		CPSql sql = new CPSql();
-		try
-		{
-			DataSet ds = sql.executeQuery(sqlstr);
-			while (ds.next())
-			{
+		val sql = CPSql()
+		try {
+			val ds = sql.executeQuery(sqlstr)
+			while (ds.next()) {
 				// buf.append(String.format("", arg1));
-				buf.append(ds.getFloat(type));
-				for (int i = 0, len = fs.length; i < len; i++)
-				{
-					buf.append(String.format(" %d:%f", i + 1,
-							ds.getDouble(fs[i])));
+				buf.append(ds.getFloat(type))
+				var i = 0
+				val len = fs.size
+				while (i < len) {
+					buf.append(
+						String.format(
+							" %d:%f", i + 1, ds.getDouble(fs[i])
+						             )
+					          )
+					i++
 				}
-				buf.append("\n");
+				buf.append("\n")
 			}
+		} catch (e: SQLException) {
+			Log.OutException(e)
 		}
-		catch (SQLException e)
-		{
-			Log.OutException(e);
-		}
-		sql.close();
+		sql.close()
 
-		return buf.toString();
+		return buf.toString()
 	}
 
-	public static List<String> getUrls(final String str)
-	{
+	@JvmStatic
+	fun getUrls(str: String): List<String> {
 		// final Pattern URLPAT =
 		// Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
-		final Pattern URLPAT = Pattern
-				.compile("((http(|s):)?//[-a-zA-Z0-9@:%_" +
-						"+.~,#?&/=]+)");
+		val URLPAT = Pattern.compile(
+			"((http(|s):)?//[-a-zA-Z0-9@:%_" + "+.~,#?&/=]+)"
+		                            )
 
-		List<String> list = new LinkedList<>();
-		Matcher matcher = URLPAT.matcher(str);
-		while (matcher.find())
-		{
-			String url = matcher.group();
-			if (url.indexOf("//") == 0)
-			{
-				url = "https:" + url;
+		val list: MutableList<String> = LinkedList()
+		val matcher = URLPAT.matcher(str)
+		while (matcher.find()) {
+			var url = matcher.group()
+			if(url.indexOf("//") == 0) {
+				url = "https:$url"
 			}
-			list.add(url);
+			list.add(url)
 		}
-		return list;
+		return list
 	}
 
 	// public static void main(String[] args)
@@ -1241,109 +1165,97 @@ public class Format
 	// src=\"//www.nkscdn.com/smu0/o.js\"></\"></script>"));
 	//
 	// }
+	@JvmStatic
+	fun getAts(str: String?): List<String> {
+		val list: MutableList<String> = LinkedList()
 
-	public static List<String> getAts(final String str)
-	{
-		List<String> list = new LinkedList<>();
-
-		if (str != null)
-		{
-			final Pattern ATPAT = Pattern.compile(String.format(
+		if(str != null) {
+			val ATPAT = Pattern.compile(
+				String.format(
 					"@[[^@\\s%s]0-9]{1,20}",
-					"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"));
-			Matcher matcher = ATPAT.matcher(str);
-			while (matcher.find())
-			{
-				list.add(matcher.group());
+					"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"
+				             )
+			                           )
+			val matcher = ATPAT.matcher(str)
+			while (matcher.find()) {
+				list.add(matcher.group())
 			}
 		}
 
-		return list;
+		return list
 	}
 
-	public static String getMapString(Map<?, ?> map)
-	{
-		StringBuilder buf = new StringBuilder();
+	@JvmStatic
+	fun getMapString(map: Map<*, *>): String {
+		val buf = StringBuilder()
 
-		for (Map.Entry<?, ?> entry : map.entrySet())
-		{
-			String key = entry.getKey().toString();
-			String val = entry.getValue().toString();
+		for ((key1, value) in map) {
+			val key = key1.toString()
+			val `val` = value.toString()
 
-			buf.append(String.format("[%s]:[%s]\n", key, val));
+			buf.append(String.format("[%s]:[%s]\n", key, `val`))
 		}
 
-		return buf.toString();
+		return buf.toString()
 	}
 
-	public static Map<String, String> getMyIpAll()
-	{
-		Map<String, String> all = new HashMap<>();
+	val myIpAll: Map<String, String?>
+		get() {
+			val all: MutableMap<String, String?> = HashMap()
 
-		try
-		{
-			String content = JFile.loadHttpFile(
-					"http://iframe.ip138.com/ic.asp", null, null, "gbk",
-					"http://ip138.com/");
-			String ip = Format.getContent(content, "[", "]");
-			String area = Format.getContent(content, "来自：", "</center>");
-			all.put("ip", ip);
-			all.put("area", area);
-		}
-		catch (IOException e)
-		{
-			Log.OutException(e);
-		}
+			try {
+				val content = JFile.loadHttpFile(
+					"http://iframe.ip138.com/ic.asp", null, null, "gbk", "http://ip138.com/"
+				                                )
+				val ip = getContent(content, "[", "]")
+				val area = getContent(content, "来自：", "</center>")
+				all["ip"] = ip
+				all["area"] = area
+			} catch (e: IOException) {
+				Log.OutException(e)
+			}
 
-		return all;
-	}
+			return all
+		}
 
 	/**
 	 * 通过字符串返回key
 	 * @param key
 	 * @return
 	 */
-	public static String getKey(String key)
-	{
-		if (key.length() >= 32)
-		{
-			return Format.Md5(key);
+	@JvmStatic
+	fun getKey(key: String): String {
+		if(key.length >= 32) {
+			return Md5(key)
 		}
-		return key;
+		return key
 	}
 
-	public static String getMyIp()
-	{
-		return getMyIpAll().get("ip");
+	val myIp: String?
+		get() = myIpAll["ip"]
+
+	@JvmStatic
+	fun getDomain(urlstr: String): String {
+		try {
+			val url = URL(urlstr)
+			return url.host
+		} catch (ignored: MalformedURLException) {
+		}
+		return ""
 	}
 
-	public static String getDomain(final String urlstr)
-	{
-		try
-		{
-			URL url = new URL(urlstr);
-			return  url.getHost();
-		}
-		catch (MalformedURLException ignored)
-		{
-		}
-		return "";
-	}
+	@JvmStatic
+	fun getChartset(bytes: ByteArray): String {
+		var code: String
 
-	public static String getChartset(byte[] bytes)
-	{
-		String code;
-
-		UniversalDetector detector = new UniversalDetector(null);
-		detector.handleData(bytes, 0, bytes.length);
-		detector.dataEnd();
-		code = detector.getDetectedCharset();
-		detector.reset();
-		if (code == null)
-		{
-			code = "utf-8";
-		}
-		/*
+		val detector = UniversalDetector(null)
+		detector.handleData(bytes, 0, bytes.size)
+		detector.dataEnd()
+		code = detector.detectedCharset
+		detector.reset()
+		if(code == null) {
+			code = "utf-8"
+		}        /*
 		 * if (bytes == null || bytes.length < 2) { return code; }
 		 *
 		 * int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
@@ -1351,77 +1263,87 @@ public class Format
 		 * "Unicode"; break; case 0xfeff: code = "UTF-16BE"; break; default:
 		 * code = "GBK"; }
 		 */
-		return code;
-
+		return code
 	}
 
-	public static InputStream getStringStream(String sInputString)
-	{
-		if (sInputString != null)
-		{
-			return new ByteArrayInputStream(
-					sInputString.getBytes());
+	@JvmStatic
+	fun getStringStream(sInputString: String?): InputStream? {
+		if(sInputString != null) {
+			return ByteArrayInputStream(
+				sInputString.toByteArray()
+			                           )
 		}
-		return null;
-
+		return null
 	}
 
-	public static String getStringLen(String str,int len)
-	{
-		if (str==null || str.length() <= len)
-		{
-			return str;
+	@JvmStatic
+	fun getStringLen(str: String?, len: Int): String? {
+		if(str == null || str.length <= len) {
+			return str
 		}
-		return str.substring(0,len);
+		return str.substring(0, len)
 	}
 
 
-	public static String decompressStr(String str)
-	{
-		String dstr = "";
+	@JvmStatic
+	fun decompressStr(str: String?): String {
+		var dstr = ""
 
-		try
-		{
-			if (str != null && str.length() > 0)
-			{
-				byte[] bytes =  Format.decodeBase64Url(str);
+		try {
+			if(str != null && str.length > 0) {
+				val bytes = decodeBase64Url(str)
 
-				ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-				GZIPInputStream gis = new GZIPInputStream(bis);
-				dstr = new String(IOUtils.toByteArray(gis), StandardCharsets.UTF_8);
+				val bis = ByteArrayInputStream(bytes)
+				val gis = GZIPInputStream(bis)
+				dstr = String(IOUtils.toByteArray(gis), StandardCharsets.UTF_8)
 			}
-		}
-		catch (Exception e)
-		{
-			Log.OutException(e);
+		} catch (e: Exception) {
+			Log.OutException(e)
 		}
 
 
-		return dstr;
+		return dstr
 	}
 
-	public static String compressStr(String str)
-	{
-		String cstr = "";
-		try
-		{
-			if (str != null && !str.isEmpty())
-			{
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				GZIPOutputStream gzip = new GZIPOutputStream(out);
-				gzip.write(str.getBytes());
-				gzip.close();
-				cstr = Format.encodeBase64Url(out.toByteArray());
+	@JvmStatic
+	fun compressStr(str: String?): String {
+		var cstr = ""
+		try {
+			if(str != null && !str.isEmpty()) {
+				val out = ByteArrayOutputStream()
+				val gzip = GZIPOutputStream(out)
+				gzip.write(str.toByteArray())
+				gzip.close()
+				cstr = encodeBase64Url(out.toByteArray())
 			}
+		} catch (e: Exception) {
+			Log.OutException(e)
 		}
-		catch (Exception e)
-		{
-			Log.OutException(e);
-		}
-		return cstr;
+		return cstr
 	}
 
-/*	public static void main(String[] args)
+	/**
+	 * 将毫秒数转换为可读格式
+	 * @param durationMillis 持续时间（毫秒）
+	 * @return 可读格式的持续时间
+	 */
+	@JvmStatic
+	fun tsToHumanString(durationMillis: Long): String {
+		val days = TimeUnit.MILLISECONDS.toDays(durationMillis)
+		val hours = TimeUnit.MILLISECONDS.toHours(durationMillis) % 24
+		val minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60
+		val seconds = TimeUnit.MILLISECONDS.toSeconds(durationMillis) % 60
+		val millis = durationMillis % 1000
+
+		return buildString {
+			if (days > 0) append("${days}天")
+			if (hours > 0) append("${hours}小时")
+			if (minutes > 0) append("{$minutes}分")
+			if (seconds > 0 || (days == 0L && hours == 0L && minutes == 0L)) append("{$seconds}秒")
+			if (millis > 0) append("${millis}毫秒")
+		}
+	}
+	/*	public static void main(String[] args)
 	{
 		String test = "aaabbcc";
 		System.out.println(Format.Md2(test));

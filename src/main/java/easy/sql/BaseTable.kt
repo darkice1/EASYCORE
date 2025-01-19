@@ -377,68 +377,70 @@ class BaseTable {
 
 	fun getInsertUpdateOnConflict(
 		keys: String?,
-		conflictAction: ConflictAction = ConflictAction.UPDATE // 默认还是 DO UPDATE
+		conflictAction: ConflictAction = ConflictAction.UPDATE,
+		// 仍然是 (String) -> String, 可以在表达式中显式引用旧值 tableName.fieldName 或新值 EXCLUDED.fieldName
+		vararg customUpdateHandlers: Pair<String, (String) -> String>
 	                             ): String {
-		val paramsfields: Iterator<Map.Entry<String, String>> = params.entries.iterator()
-		val profields: Iterator<Map.Entry<String, String>> = proparams.entries.iterator()
+		// 将 vararg 转换为 Map
+		val customHandlerMap = mapOf(*customUpdateHandlers)
 
-		val sqlbuf = StringBuilder()
+		// 收集要 INSERT 的字段与值
 		val columns = StringJoiner(", ")
 		val values = StringJoiner(", ")
 
-		// 一般属性
-		while (paramsfields.hasNext()) {
-			val entry = paramsfields.next()
-			val field = entry.key
+		// 生成 SET 子句的字符串
+		val updateBuf = StringBuilder()
 
-			columns.add(field)
-			values.add(escapeSql(entry.value)) // 使用 escapeSql 方法来处理值
+		// (1) 遍历 params (普通字段, 需要引号)
+		for ((fieldName, fieldValue) in params) {
+			columns.add(fieldName)
+			// 对普通字段进行转义并加引号
+			values.add(escapeSql(fieldValue))
 
-			// 只有在需要做 UPDATE 时才需要拼装字段
 			if (conflictAction == ConflictAction.UPDATE) {
-				sqlbuf.append(field)
-				sqlbuf.append(" = EXCLUDED.")
-				sqlbuf.append(field)
-				sqlbuf.append(',')
+				val handler = customHandlerMap[fieldName]
+				if (handler != null) {
+					// handler(fieldName) 只生成“右侧表达式”，例如 "keyword.num + 1" 或 "EXCLUDED.num + 1"
+					// 左侧必须是裸列名 -> "$fieldName = ..."
+					updateBuf.append("$fieldName = ${handler(fieldName)},")
+				} else {
+					// 默认用 EXCLUDED 覆盖 -> "fieldName = EXCLUDED.fieldName"
+					updateBuf.append("$fieldName = EXCLUDED.$fieldName,")
+				}
 			}
 		}
 
-		// 存储过程等
-		while (profields.hasNext()) {
-			val entry = profields.next()
-			val field = entry.key
+		// (2) 遍历 proparams (数据库函数或表达式, 不需要引号)
+		for ((fieldName, fieldValue) in proparams) {
+			columns.add(fieldName)
+			// 直接拼接, 不加引号
+			values.add(fieldValue)
 
-			columns.add(field)
-			values.add(escapeSql(entry.value)) // 使用 escapeSql 方法来处理值
-
-			// 只有在需要做 UPDATE 时才需要拼装字段
 			if (conflictAction == ConflictAction.UPDATE) {
-				sqlbuf.append(field)
-				sqlbuf.append(" = EXCLUDED.")
-				sqlbuf.append(field)
-				sqlbuf.append(',')
+				val handler = customHandlerMap[fieldName]
+				if (handler != null) {
+					updateBuf.append("$fieldName = ${handler(fieldName)},")
+				} else {
+					updateBuf.append("$fieldName = EXCLUDED.$fieldName,")
+				}
 			}
 		}
 
-		// 如果是 UPDATE 模式，需要去掉最后一个多余的逗号
-		if (conflictAction == ConflictAction.UPDATE && sqlbuf.isNotEmpty()) {
-			sqlbuf.setCharAt(sqlbuf.length - 1, ' ')
+		// 如果是 UPDATE，需要去掉最后一个逗号
+		if (conflictAction == ConflictAction.UPDATE && updateBuf.isNotEmpty()) {
+			updateBuf.setLength(updateBuf.length - 1) // 截掉最后一个逗号
 		}
 
-		// 根据不同的 ConflictAction 生成对应的子句
+		// 构造冲突子句
 		val conflictClause = when (conflictAction) {
-			ConflictAction.UPDATE -> "DO UPDATE SET $sqlbuf"
+			// 当需要引用旧值时，需要 FROM xxx WHERE xxx.key = EXCLUDED.key
+			// 如果你确定逻辑一定用到旧值，就可以一直附加
+			ConflictAction.UPDATE -> "DO UPDATE SET $updateBuf"
 			ConflictAction.DO_NOTHING -> "DO NOTHING"
 		}
 
-		return String.format(
-			"INSERT INTO %s (%s) VALUES (%s) ON CONFLICT (%s) %s",
-			tablename,
-			columns,
-			values,
-			keys,
-			conflictClause
-		                    )
+		// 最终拼接SQL
+		return "INSERT INTO $tablename (${columns}) VALUES (${values}) ON CONFLICT ($keys) $conflictClause"
 	}
 
 
