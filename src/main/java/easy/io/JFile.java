@@ -44,8 +44,6 @@ import java.util.zip.InflaterInputStream;
 
 public class JFile
 {
-	// Reader r = new InputStreamReader(new
-	// BufferedInputStream(uc.getInputStream ()));
 	private String filename;
 	private InputStream in;
 	private BufferedWriter out;
@@ -73,13 +71,14 @@ public class JFile
 		return f.delete();
 	}
 
+	@SuppressWarnings("unused")
 	public static byte[] getFileBytes(String filename) throws IOException
 	{
-		byte[] result;
-		FileChannel fc = null;
-		try
+		try(RandomAccessFile rf = new RandomAccessFile(filename,"r"))
 		{
-			fc = new RandomAccessFile(filename,"r").getChannel();
+			byte[] result;
+//			fc = new RandomAccessFile(filename,"r").getChannel();
+			FileChannel fc = rf.getChannel();
 			MappedByteBuffer byteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size()).load();
 //			System.out.println(byteBuffer.isLoaded());
 			result = new byte[(int)fc.size()];
@@ -89,20 +88,6 @@ public class JFile
 				byteBuffer.get(result, 0, byteBuffer.remaining());
 			}
 			return result;
-		}
-		finally
-		{
-			try
-			{
-				if (fc != null)
-				{
-					fc.close();
-				}
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -266,6 +251,7 @@ public class JFile
 		return con;
 	}
 
+	@SuppressWarnings("unused")
 	public static void writeObject(String file, Object obj) throws IOException
 	{
 		FileOutputStream fs = new FileOutputStream(file);
@@ -286,6 +272,7 @@ public class JFile
 		os.close();
 	}
 
+	@SuppressWarnings("unused")
 	public static void writeGZipObject(String file, Object obj)
 					throws IOException
 	{
@@ -323,6 +310,7 @@ public class JFile
 		return o;
 	}
 
+	@SuppressWarnings("unused")
 	public static Object readObject(String file) throws ClassNotFoundException,
 					IOException
 	{
@@ -381,8 +369,6 @@ public class JFile
 			{
 				try
 				{
-					// p_in = new BufferedReader(new InputStreamReader(in,
-					// chartset));
 					BufferedWriter out;
 					if (chartset == null)
 					{
@@ -432,6 +418,7 @@ public class JFile
 		return loadHttpFile(url, null, null, null, null);
 	}
 
+	@SuppressWarnings("unused")
 	public static Object loadHttpObject(String url) throws IOException
 	{
 		return loadHttpObject(url, null, null);
@@ -450,14 +437,7 @@ public class JFile
 			uc.setHostnameVerifier((arg0, arg1) -> true);
 			
 			uc.setDoOutput(true);// POST
-			if (useragent == null)
-			{
-				uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
-			}
-			else
-			{
-				uc.setRequestProperty(USER_AGENT, useragent);
-			}
+			uc.setRequestProperty(USER_AGENT, Objects.requireNonNullElse(useragent, USER_AGENT_VALUE));
 
 			if (cookie != null)
 			{
@@ -483,6 +463,7 @@ public class JFile
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public static Object loadHttpGZipObject(String url)
 					throws IOException
 	{
@@ -506,14 +487,7 @@ public class JFile
 
 			HttpURLConnection uc = (HttpURLConnection) u.openConnection();
 			uc.setDoOutput(true);// POST
-			if (useragent == null)
-			{
-				uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
-			}
-			else
-			{
-				uc.setRequestProperty(USER_AGENT, useragent);
-			}
+			uc.setRequestProperty(USER_AGENT, Objects.requireNonNullElse(useragent, USER_AGENT_VALUE));
 
 			if (ref != null)
 			{
@@ -594,8 +568,6 @@ public class JFile
 			URL u = new URL(url);
 
 			HttpURLConnection uc = (HttpURLConnection) u.openConnection();
-			// System.out.println(timeout);
-			// uc.setReadTimeout(timeout);
 			uc.setConnectTimeout(timeout);
 			uc.setReadTimeout(timeout);
 
@@ -833,6 +805,7 @@ public class JFile
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public static long getFileSize(String file)
 	{
 		File f = new File(file);
@@ -845,13 +818,7 @@ public class JFile
 		return f.mkdirs();
 	}
 
-	/**
-	 * 改名或移动文件
-	 * 
-	 * @param oldname
-	 * @param newname
-	 * @return
-	 */
+
 	public static boolean renameTo(String oldname, String newname)
 	{
 		File file = new File(oldname);
@@ -904,7 +871,7 @@ public class JFile
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			result = false;
+//			result = false;
 		}
 		return result;
 	}
@@ -923,21 +890,25 @@ public class JFile
 			}
 			catch (DirectoryNotEmptyException e)
 			{
-				Files.walkFileTree(target, new SimpleFileVisitor<Path>() {
-	                @Override
-	                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-	                    Files.delete(file);
-	                    return FileVisitResult.CONTINUE;
-	                }
-	                @Override
-	                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-	                    Files.delete(dir);
-	                    return super.postVisitDirectory(dir, exc);
-	                }
-	            });
+				Files.walkFileTree(target, new SimpleFileVisitor<>()
+				{
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
+					{
+						Files.delete(file);
+						return FileVisitResult.CONTINUE;
+					}
+
+					@Override
+					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
+					{
+						Files.delete(dir);
+						return super.postVisitDirectory(dir, exc);
+					}
+				});
 			}
 
-			SimpleFileVisitor<Path> finder = new SimpleFileVisitor<Path>()
+			SimpleFileVisitor<Path> finder = new SimpleFileVisitor<>()
 			{
 				@Override
 				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
@@ -953,7 +924,7 @@ public class JFile
 				}
 
 				@Override
-				public FileVisitResult visitFile(Path file,BasicFileAttributes attrs) throws IOException
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
 				{
 					String t = file.toAbsolutePath().toString().replace(sourcepath, targetpath);
 					// 
@@ -965,7 +936,7 @@ public class JFile
 				}
 			};
 
-			Files.walkFileTree(Paths.get(sourcepath), finder);
+			Files.walkFileTree(source, finder);
 		}
 	}
 	
@@ -1025,18 +996,7 @@ public class JFile
 			{
 				kryo = getKryo();
 			}
-//			Input input = new Input(bytes,0,bytes.length);
-//			InputStream cin = new InflaterInputStream(input);
 			Input input = new Input(new InflaterInputStream(new ByteArrayInputStream(bytes)));
-//			Input input = null;
-//			try
-//			{
-//				input = new Input(new GZIPInputStream(new ByteArrayInputStream(bytes)));
-//			}
-//			catch (IOException e)
-//			{
-//				Log.OutException(e);
-//			}
 
 			obj = kryo.readClassAndObject(input);
 			input.close();
@@ -1060,9 +1020,6 @@ public class JFile
 		try
 		{
 			DeflaterOutputStream cout = new DeflaterOutputStream(baos);
-//			GZIPOutputStream cout = new GZIPOutputStream(baos);
-
-			//			bytes = baos.toByteArray();
 
 			kryoSerialize(kryo,object,cout);
 			cout.finish();
@@ -1089,24 +1046,12 @@ public class JFile
 
 			Input input = new Input(bytes,0,bytes.length);
 			return kryo.readClassAndObject(input);
-
-			//		      ByteArrayInputStream bais = null;
-			//		      try
-			//		      {
-			//		        // 反序列化
-			//		        bais = new ByteArrayInputStream(bytes);
-			//		        ObjectInputStream ois = new ObjectInputStream(bais);
-			//		        return kryoUnserialize(ois);
-			//		      }
-			//		      catch (Exception e)
-			//		      {
-			//		        Log.OutException(e);
-			//		      }
 		}
 
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	public static Object kryoBytesUnSerialize(byte[] bytes)
 	{
 		return kryoBytesUnSerialize(null,bytes);
@@ -1135,6 +1080,7 @@ public class JFile
 		return bytes;
 	}
 
+	@SuppressWarnings("unused")
 	public static byte[] kryoSerializeToBytes(Object object)
 	{
 		return kryoSerializeToBytes(null,object);
@@ -1154,12 +1100,14 @@ public class JFile
 		//		output.close();
 	}
 
-	
+
+	@SuppressWarnings("unused")
 	public static void kryoSerialize(Object object,OutputStream out)
 	{
 		kryoSerialize(null, object, out);
 	}
-	
+
+	@SuppressWarnings("unused")
 	public static Object kryoUnserialize(InputStream in)
 	{
 		Kryo kryo = getKryo();
@@ -1167,7 +1115,8 @@ public class JFile
 		Input input = new Input(in,4*1024);
 		return kryo.readClassAndObject(input);
 	}
-	
+
+	@SuppressWarnings("unused")
 	public static byte[] serialize(Object object)
 	{
 		ObjectOutputStream oos;
@@ -1192,6 +1141,7 @@ public class JFile
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	public static Object unserialize(byte[] bytes)
 	{
 		if (bytes != null)
@@ -1213,31 +1163,9 @@ public class JFile
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	public static Object cloneObject(Object obj)
 	{
 		return JFile.kryoCompressBytesUnSerialize(JFile.kryoSerializeToCompressBytes(obj));
 	}
-
-	/*public static void main(String[] args)
-	{
-//		byte[] bs = JFile.getFileBytes("/Users/Neo/Desktop/f.txt");
-		byte[] bs = null;
-		try
-		{
-			bs = JFile.getFileBytes("/Users/Neo/Desktop/f.txt");
-		}
-		catch (IOException e)
-		{
-			Log.OutException(e);
-		}
-
-		System.out.println(bs);
-
-		if (bs!= null)
-		{
-			System.out.println(new String(bs));
-		}
-
-		System.out.println("over");
-	}*/
 }
