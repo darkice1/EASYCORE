@@ -180,7 +180,7 @@ public abstract class Sql implements  AutoCloseable
 			dbclass = Config.getProperty("DBCLASS");
 			*/
 
-			String md5 = Format.Md5(String.format("%s %s %s %s %s",user,password,jdbcurl,jdbcurl, sql));
+			String md5 = Format.md5(String.format("%s %s %s %s %s",user,password,jdbcurl,jdbcurl, sql));
 			String path = String.format("%s/%s.db", getDBCachePath(),md5);
 			//System.out.println(path);
 

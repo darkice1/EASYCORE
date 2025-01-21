@@ -4,7 +4,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers;
-import easy.config.Config;
 import easy.net.Proxy;
 import easy.sql.Col;
 import easy.sql.DataSet;
@@ -56,9 +55,6 @@ public class JFile
 
 	private final static String COOKIE = "cookie";
 	private final static String USER_AGENT_VALUE = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; Tablet PC 2.0)";
-
-	private final static boolean GAEOPEN = "Y".equals(Config.getProperty(
-					"GAEOPEN", "Y"));
 
 	public JFile(String p_filename)
 	{
@@ -270,15 +266,6 @@ public class JFile
 		return con;
 	}
 
-	/**
-	 * 写入对象
-	 * 
-	 * @param file
-	 *            写入文件名
-	 * @param obj
-	 *            写入对象
-	 * @throws IOException
-	 */
 	public static void writeObject(String file, Object obj) throws IOException
 	{
 		FileOutputStream fs = new FileOutputStream(file);
@@ -439,45 +426,6 @@ public class JFile
 		this.in = in;
 	}
 
-	public static String loadGaeFile(String url) throws IOException
-	{
-		return loadGaeFile(url, null, null, null, null);
-	}
-
-	public static String loadGaeFile(String url, String cookie,
-					String useragent, String chartset, String ref)
-					throws IOException
-	{
-		String u;
-		if (GAEOPEN)
-		{
-			u = Format.getGaeURL(url);
-		}
-		else
-		{
-			u = url;
-		}
-		return loadHttpFile(u, cookie, useragent, chartset, ref);
-	}
-
-	public static String loadGaeZipFile(String url, String cookie,
-					String useragent, String ref) throws IOException
-	{
-		String u = url;
-		String html;
-
-		if (GAEOPEN)
-		{
-			u = Format.getGaeURL(url);
-			html = (String) loadHttpGZipObject(u, cookie, useragent, ref);
-		}
-		else
-		{
-			html = loadHttpFile(u, cookie, useragent, null, ref);
-		}
-
-		return html;
-	}
 
 	public static String loadHttpFile(String url) throws IOException
 	{
@@ -831,20 +779,18 @@ public class JFile
 
 		HttpURLConnection uc = (HttpURLConnection) u.openConnection();
 		uc.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
-		if (ref!= null && !"".equals(ref))
+		if (ref!= null && !ref.isEmpty())
 		{
 			uc.setRequestProperty(REFERER, ref);
 		}
 
-		if (cookie!= null && !"".equals(cookie))
+		if (cookie!= null && !cookie.isEmpty())
 		{
 			uc.setRequestProperty(COOKIE, cookie);
 		}
 
 		uc.setConnectTimeout(timeout);
 		uc.setReadTimeout(timeout);
-
-		int byteread;
 
 		InputStream inStream = uc.getInputStream();
 
@@ -996,8 +942,6 @@ public class JFile
 				@Override
 				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
 				{
-					//System.out.println("post visit directory: " + dir);
-					//return preVisitDirectory(dir, attrs);
 					String t = dir.toAbsolutePath().toString().replace(sourcepath, targetpath);
 
 					Path pt = Paths.get(t);

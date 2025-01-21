@@ -24,7 +24,7 @@ public class FileCache implements FileFilter
 	
 	private static String getFileName(String key)
 	{
-		return String.format("%s/%s.%s", PATH,Format.Md5(key),EXT);
+		return String.format("%s/%s.%s", PATH,Format.md5(key),EXT);
 	}
 	
 	public static void setTxt(String key,String value)

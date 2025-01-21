@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package easy.util
 
 import easy.io.JFile
@@ -15,8 +17,7 @@ import java.io.*
 import java.lang.reflect.Field
 import java.math.BigInteger
 import java.net.MalformedURLException
-import java.net.URL
-import java.net.URLEncoder
+import java.net.URI
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
 import java.security.InvalidKeyException
@@ -60,57 +61,6 @@ object Format {
 
 	// private final static Pattern URLPAT
 	// =Pattern.compile("(http://|https://)[^\\s]*");
-	internal val GURLLIST: MutableList<String> = ArrayList()
-	val GAELIST: MutableList<String> = ArrayList()
-
-	init {
-		GAELIST.add("hwosoproxy1.appspot.com")
-		GAELIST.add("hwosoproxy2.appspot.com")
-		GAELIST.add("hwosoproxy3.appspot.com")
-		GAELIST.add("hwosoproxy4.appspot.com")
-		GAELIST.add("hwosoproxy5.appspot.com")
-		GAELIST.add("hwosoproxy6.appspot.com")
-		GAELIST.add("hwosoproxy7.appspot.com")
-		GAELIST.add("hwosoproxy8.appspot.com")
-		GAELIST.add("hwosoproxy9.appspot.com")
-		GAELIST.add("hwosoproxy10.appspot.com")
-		GAELIST.add("hwosoproxy11.appspot.com")
-		GAELIST.add("hwosoproxy12.appspot.com")
-		GAELIST.add("hwosoproxy13.appspot.com")
-		GAELIST.add("hwosoproxy14.appspot.com")
-		GAELIST.add("hwosoproxy15.appspot.com")
-		GAELIST.add("hwosoproxy16.appspot.com")
-		GAELIST.add("hwosoproxy17.appspot.com")
-
-		for (host in GAELIST) {
-			GURLLIST.add(
-				String.format(
-					"http://%s/c?action=GetUrl&z=%%s&u=%%s", host
-				             )
-			            )
-		}
-		// GURLLIST.add("http://wosoproxy1.appspot.com/c?action=GetUrl&z=%s&u=%s");
-		// GURLLIST.add("http://wosoproxy2.appspot.com/c?action=GetUrl&z=%s&u=%s");
-		// GURLLIST.add("http://wosoproxy3.appspot.com/c?action=GetUrl&z=%s&u=%s");
-	}
-
-	@JvmStatic
-	fun getGaeURL(u: String): String {
-		val idx = ThreadLocalRandom.current().nextInt(GURLLIST.size)
-		val url = String.format(
-			GURLLIST[idx], "n", URLEncoder.encode(u, StandardCharsets.UTF_8)
-		                       )
-		return url
-	}
-
-	@JvmStatic
-	fun getGaeZipURL(u: String): String {
-		val idx = (Math.random() * GURLLIST.size).toInt()
-		val url = String.format(
-			GURLLIST[idx], "y", URLEncoder.encode(u, StandardCharsets.UTF_8)
-		                       )
-		return url
-	}
 
 	/**
 	 * 转换成script输出使用字符串
@@ -272,7 +222,7 @@ object Format {
 	}
 
 	@JvmStatic
-	fun toXMLString(ds: DataSet, pi: PageInfo, use_time: Long): String {
+	fun toXMLString(ds: DataSet, pi: PageInfo, useTime: Long): String {
 		val buf = StringBuilder()
 		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
 		buf.append(
@@ -282,7 +232,7 @@ object Format {
 				pi.pageSize,
 				pi.totalPage,
 				pi.pageNumber,
-				use_time
+				useTime
 			             )
 		          )
 
@@ -331,7 +281,7 @@ object Format {
 
 	@JvmStatic
 	fun toListString(strs: Array<String?>): String {
-		val list: List<String> = ArrayList(Arrays.asList(*strs))
+		val list: List<String> = ArrayList(mutableListOf(*strs))
 
 		return toListString(list, ",")
 	}
@@ -363,7 +313,7 @@ object Format {
 			buf.append(o.toString())
 			buf.append(splitstr)
 		}
-		if(!list.isEmpty()) {
+		if(list.isNotEmpty()) {
 			buf.setLength(buf.length - splitstr.length)
 		}
 		return buf.toString()
@@ -446,7 +396,7 @@ object Format {
 	@JvmStatic
 	fun getPinyin(str: String): String {
 		val buf = StringBuilder()
-		for (i in 0..<str.length) {
+		for (i in str.indices) {
 			val k = str.substring(i, i + 1)
 			val t = pinYinMap!![k]
 			buf.append(Objects.requireNonNullElse(t, k))
@@ -464,7 +414,7 @@ object Format {
 	@JvmStatic
 	fun getFirstPinyin(str: String): String {
 		val buf = StringBuilder()
-		for (i in 0..<str.length) {
+		for (i in str.indices) {
 			val k = str.substring(i, i + 1)
 			val t = pinYinMap!![k]
 			if(t == null) {
@@ -525,9 +475,6 @@ object Format {
 	@JvmOverloads
 	@JvmStatic
 	fun beanToString(o: Any, getsuper: Boolean = false): String {
-		// StringBuffer buf = new StringBuffer();
-		// Field[] fields = o.getClass().getDeclaredFields();
-
 		val jsonconfig = JsonConfig()
 		jsonconfig.isAllowNonStringKeys = true
 
@@ -535,42 +482,41 @@ object Format {
 		val fields = getAllField(o, getsuper)
 
 		for (f in fields) {
-			val accessFlag = f.isAccessible
-			f.isAccessible = true
+			// 判断该字段对当前实例是否可访问
+			val wasAccessible = f.canAccess(o)
+			// 如果不可访问，则尝试设置为可访问
+			if (!wasAccessible) {
+				// trySetAccessible() 在模块封装或安全限制下可能返回 false
+				f.trySetAccessible()
+			}
+
 			try {
-				val po = f[o]
-				// System.out.println(f.getName()+"
-				// "+po.getClass().isArray()+" "+po);
-				if(po != null && (po.javaClass.isArray || po is List<*>)) {
+				// 读取字段值
+				val po = f.get(o)
+
+				if (po != null && (po.javaClass.isArray || po is List<*>)) {
 					val arr = JSONArray.fromObject("[]", jsonconfig)
-					// buf.append(f.getName());
-					// buf.append(":[");
-					if(po.javaClass.isArray) {
+					if (po.javaClass.isArray) {
 						arr.add(po)
-					} else if(po is List<*>) {
-						// System.out.println("####"+f.getName());
+					} else if (po is List<*>) {
 						for (ppo in po) {
 							arr.add(ppo.toString())
 						}
-						// arr.add(po);
 					}
-
 					json[f.name] = arr
 				} else {
-					// System.out.println("#"+f.getName()+"#"+po);
 					json[f.name] = po
-					// buf.append(String.format("%s:[%s]\n", f.getName(),
-					// po));
 				}
 			} catch (e: IllegalArgumentException) {
-				// e.printStackTrace();
+				// 根据需要处理
 			} catch (e: IllegalAccessException) {
 				e.printStackTrace()
 			}
-			f.isAccessible = accessFlag
+
+			// 如果一定需要恢复到原有可访问性，需根据自身逻辑再做处理
+			// 但 Java 9+ 没有“撤销” trySetAccessible() 的内置办法，一般场景也不再必需恢复
 		}
 
-		// System.out.println(toListString(fields));
 		return json.toString()
 	}
 
@@ -797,12 +743,7 @@ object Format {
 		return buf.toString()
 	}
 
-	/**
-	 * 获取URLEncoder.encode编码的原始字符串编码类型
-	 *
-	 * @param str
-	 * @return 编码
-	 */
+
 	@Suppress("unused")
 	@JvmStatic
 	fun getDecoderChartset(pstr: String): String {
@@ -834,26 +775,26 @@ object Format {
 	}
 
 	@JvmStatic
-	fun Sha256(str: String?): String {
+	fun sha256(str: String?): String {
 //		return MessageDigest("sha-256", str);
 		return DigestUtils.sha256Hex(str)
 	}
 
 	@JvmStatic
-	fun Sha1(str: String?): String {
+	fun sha1(str: String?): String {
 //		return MessageDigest("sha-1", str);
 		return DigestUtils.sha1Hex(str)
 	}
 
 	@JvmStatic
-	fun Md2(str: String?): String {
+	fun md2(str: String?): String {
 //		return MessageDigest("md2", str);
 		return DigestUtils.md2Hex(str)
 	}
 
 	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
 	@JvmStatic
-	fun HMACSha1(key: ByteArray, data: ByteArray?): ByteArray {
+	fun hmacSha1(key: ByteArray, data: ByteArray?): ByteArray {
 		val signingKey = SecretKeySpec(key, HMAC_SHA1)
 		val mac = Mac.getInstance(HMAC_SHA1)
 		mac.init(signingKey)
@@ -863,13 +804,13 @@ object Format {
 
 	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
 	@JvmStatic
-	fun HMACSha1(key: String, data: String): ByteArray {
-		return HMACSha1(key.toByteArray(), data.toByteArray())
+	fun hmacSha1(key: String, data: String): ByteArray {
+		return hmacSha1(key.toByteArray(), data.toByteArray())
 	}
 
 	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
 	@JvmStatic
-	fun HMACSha256(key: ByteArray, data: ByteArray?): ByteArray {
+	fun hmacSha256(key: ByteArray, data: ByteArray?): ByteArray {
 		val signingKey = SecretKeySpec(key, HMAC_SHA256)
 		val mac = Mac.getInstance(HMAC_SHA256)
 		mac.init(signingKey)
@@ -879,8 +820,8 @@ object Format {
 
 	@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
 	@JvmStatic
-	fun HMACSha256(key: String, data: String): ByteArray {
-		return HMACSha256(key.toByteArray(), data.toByteArray())
+	fun hmacSha256(key: String, data: String): ByteArray {
+		return hmacSha256(key.toByteArray(), data.toByteArray())
 	}
 
 	@Throws(IOException::class)
@@ -907,18 +848,18 @@ object Format {
 	}
 
 	@JvmStatic
-	fun Md5(bytes: ByteArray?): ByteArray {
+	fun md5(bytes: ByteArray?): ByteArray {
 		return DigestUtils.md5(bytes)
 	}
 
 	@JvmStatic
-	fun Md5Str(bytes: ByteArray?): String {
+	fun md5Str(bytes: ByteArray?): String {
 //		return byte2hex(MessageDigest("md5", bytes));
 		return DigestUtils.md5Hex(bytes)
 	}
 
 	@JvmStatic
-	fun Md5(str: String?): String {
+	fun md5(str: String?): String {
 //		return MessageDigest("md5", str);
 		return DigestUtils.md5Hex(str)
 	}
@@ -1089,11 +1030,11 @@ object Format {
 		val buf = StringBuilder()
 
 		val fs = fields.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-		var i = 0
-		val len = fs.size
-		while (i < len) {
-			fs[i] = fs[i].trim { it <= ' ' }
-			i++
+		var fi = 0
+		val flen = fs.size
+		while (fi < flen) {
+			fs[fi] = fs[fi].trim { it <= ' ' }
+			fi++
 		}
 
 		val sql = CPSql()
@@ -1126,12 +1067,12 @@ object Format {
 	fun getUrls(str: String): List<String> {
 		// final Pattern URLPAT =
 		// Pattern.compile("(http(|s)://[-a-zA-Z0-9@:%_\\+.~,#?&//=]+)");
-		val URLPAT = Pattern.compile(
+		val pattern = Pattern.compile(
 			"((http(|s):)?//[-a-zA-Z0-9@:%_" + "+.~,#?&/=]+)"
-		                            )
+		                             )
 
 		val list: MutableList<String> = LinkedList()
-		val matcher = URLPAT.matcher(str)
+		val matcher = pattern.matcher(str)
 		while (matcher.find()) {
 			var url = matcher.group()
 			if(url.indexOf("//") == 0) {
@@ -1157,13 +1098,13 @@ object Format {
 		val list: MutableList<String> = LinkedList()
 
 		if(str != null) {
-			val ATPAT = Pattern.compile(
+			val pattern = Pattern.compile(
 				String.format(
 					"@[[^@\\s%s]0-9]{1,20}",
 					"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"
 				             )
-			                           )
-			val matcher = ATPAT.matcher(str)
+			                             )
+			val matcher = pattern.matcher(str)
 			while (matcher.find()) {
 				list.add(matcher.group())
 			}
@@ -1186,7 +1127,7 @@ object Format {
 		return buf.toString()
 	}
 
-	val myIpAll: Map<String, String?>
+	private val myIpAll: Map<String, String?>
 		get() {
 			val all: MutableMap<String, String?> = HashMap()
 
@@ -1213,7 +1154,7 @@ object Format {
 	@JvmStatic
 	fun getKey(key: String): String {
 		if(key.length >= 32) {
-			return Md5(key)
+			return md5(key)
 		}
 		return key
 	}
@@ -1224,7 +1165,7 @@ object Format {
 	@JvmStatic
 	fun getDomain(urlstr: String): String {
 		try {
-			val url = URL(urlstr)
+			val url = URI(urlstr)
 			return url.host
 		} catch (ignored: MalformedURLException) {
 		}
@@ -1233,16 +1174,17 @@ object Format {
 
 	@JvmStatic
 	fun getChartset(bytes: ByteArray): String {
-		var code: String
+		val code: String
 
 		val detector = UniversalDetector(null)
 		detector.handleData(bytes, 0, bytes.size)
 		detector.dataEnd()
 		code = detector.detectedCharset
 		detector.reset()
-		if(code == null) {
+/*		if(code == null) {
 			code = "utf-8"
-		}        /*
+		}   */
+		/*
 		 * if (bytes == null || bytes.length < 2) { return code; }
 		 *
 		 * int p = ((int) bytes[0] & 0x00ff) << 8 | ((int) bytes[1] & 0x00ff);
@@ -1277,7 +1219,7 @@ object Format {
 		var dstr = ""
 
 		try {
-			if(str != null && str.length > 0) {
+			if(!str.isNullOrEmpty()) {
 				val bytes = decodeBase64Url(str)
 
 				val bis = ByteArrayInputStream(bytes)
@@ -1296,7 +1238,7 @@ object Format {
 	fun compressStr(str: String?): String {
 		var cstr = ""
 		try {
-			if(str != null && !str.isEmpty()) {
+			if(!str.isNullOrEmpty()) {
 				val out = ByteArrayOutputStream()
 				val gzip = GZIPOutputStream(out)
 				gzip.write(str.toByteArray())

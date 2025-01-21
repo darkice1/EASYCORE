@@ -128,7 +128,7 @@ public abstract class Licence
 			buf.append(str);
 		}
 
-		return Format.Md5(buf.toString());
+		return Format.md5(buf.toString());
 	}
 	
 	public String getLicence()
