@@ -140,8 +140,8 @@ object Format {
 	}
 
 	@JvmStatic
-	fun replaceAll(source: String?, searchString: String, replaceString: String?): String? {
-		var replaceString = replaceString
+	fun replaceAll(source: String?, searchString: String, preplaceString: String?): String? {
+		var replaceString = preplaceString
 		if(source == null) {
 			return null
 		}
@@ -241,20 +241,6 @@ object Format {
 		return toXMLString(ds, pi, -1)
 	}
 
-	/**
-	 * 讲row list转成json
-	 *
-	 * @param list
-	 * @param addjson
-	 * 新增json属性
-	 * @return
-	 */
-	/**
-	 * list转json.
-	 *
-	 * @param list
-	 * @return
-	 */
 	@JvmOverloads
 	@JvmStatic
 	fun listToJsonString(list: List<Row>, addjson: JSONObject? = null): String {
@@ -817,15 +803,16 @@ object Format {
 	 * @param str
 	 * @return 编码
 	 */
+	@Suppress("unused")
 	@JvmStatic
-	fun getDecoderChartset(str: String): String {
+	fun getDecoderChartset(pstr: String): String {
 		// utf8中汉字是 %E4%B8%80 到 %E9%BE%A5 gbk中汉字是 %D2%BB 到 %FD%9B
-		var str = str
+		var str = pstr
 		str = str.uppercase(Locale.getDefault())
 		var charset = "UTF-8"
 
-		val RESULTPAT = Pattern.compile("%[0-9A-F]{2}")
-		val msc = RESULTPAT.matcher(str)
+		val pattern = Pattern.compile("%[0-9A-F]{2}")
+		val msc = pattern.matcher(str)
 		out@ while (msc.find()) {
 			val r = msc.group(0)
 			val f = r.substring(1, 2)
@@ -1338,8 +1325,8 @@ object Format {
 		return buildString {
 			if (days > 0) append("${days}天")
 			if (hours > 0) append("${hours}小时")
-			if (minutes > 0) append("{$minutes}分")
-			if (seconds > 0 || (days == 0L && hours == 0L && minutes == 0L)) append("{$seconds}秒")
+			if (minutes > 0) append("${minutes}分")
+			if (seconds > 0 || (days == 0L && hours == 0L && minutes == 0L)) append("${seconds}秒")
 			if (millis > 0) append("${millis}毫秒")
 		}
 	}
