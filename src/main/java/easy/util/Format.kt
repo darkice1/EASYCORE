@@ -293,6 +293,7 @@ object Format {
 	 * @return
 	 */
 	@Suppress("unused")
+	@JvmStatic
 	fun toListString(list: List<*>): String {
 		return toListString(list, ",")
 	}
@@ -1179,11 +1180,11 @@ object Format {
 		val detector = UniversalDetector(null)
 		detector.handleData(bytes, 0, bytes.size)
 		detector.dataEnd()
-		code = detector.detectedCharset
+		code = detector.detectedCharset?:"utf-8"
 		detector.reset()
-/*		if(code == null) {
-			code = "utf-8"
-		}   */
+//		if(code == null) {
+//			code = "utf-8"
+//		}
 		/*
 		 * if (bytes == null || bytes.length < 2) { return code; }
 		 *

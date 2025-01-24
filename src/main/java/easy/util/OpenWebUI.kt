@@ -27,7 +27,7 @@ class OpenWebUI(private val apiurl: String, private val token: String,private va
 	}
 
 	fun getModels(): JSONObject {
-		return api("/api/models")
+		return api("/models")
 	}
 
 	/**
@@ -52,13 +52,20 @@ class OpenWebUI(private val apiurl: String, private val token: String,private va
 			postjson[key] = value
 		}
 
-		return api("/api/chat/completions", postjson)
+		return api("/chat/completions", postjson)
 	}
 
 	companion object{
 		@JvmStatic
 		fun getContent(jsonObject: JSONObject):String{
-			return jsonObject.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+			return try {
+				jsonObject.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+			}
+			catch (e:Throwable)
+			{
+				Log.OutLog("OpenWebUI.getContent Error:[${jsonObject}]")
+				throw e
+			}
 		}
 	}
 }
