@@ -160,12 +160,13 @@
 		<classifier>jdk15</classifier>
 	</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+		<!-- https://mvnrepository.com/artifact/com.github.mwiede/jsch -->
 		<dependency>
-			<groupId>com.jcraft</groupId>
+			<groupId>com.github.mwiede</groupId>
 			<artifactId>jsch</artifactId>
-			<version>0.1.55</version>
+			<version>0.2.22</version>
 		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
 		<dependency>
