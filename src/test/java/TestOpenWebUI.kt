@@ -7,14 +7,15 @@ object TestOpenWebUI {
 	@JvmStatic
 	fun main(args: Array<String>) {
 		val client = EHttpClient()
-		client.setConnectionTimeout(10000)
+		client.setConnectionTimeout(180000)
 
 		val openwebui = OpenWebUI(
-			"http://101.226.173.140:7432",
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ2OTYyNWU1LWRlNzMtNGI4ZS1hODhkLWMyZTYyNTRhMjg1MiJ9.Rmn_O-o5ZMOuhJOXUFcqKREwWp7dCwMFrAy9AG5uREg",
+			"__OPENWEBUI_API_URL__",
+			"__REDACTED_OPENWEBUI_TOKEN__",
 			client)
 
 		// 构造一条消息
+		println(openwebui.getModels())
 		val messages = JSONArray()
 		val userMessage = JSONObject()
 		userMessage["role"] = "user"
@@ -22,13 +23,14 @@ object TestOpenWebUI {
 		messages.add(userMessage)
 
 		// 调用时使用可变参数，添加任意数量的键值对
-		val result = openwebui.getChatCompletions(
-			model = "arena-model",
-			messages = messages,
-//			"temperature" to 0.1,
-//			"top_p" to 0.9,
-//			"max_tokens" to 1000
-		                                         )
-		println(result)
+//		val result = openwebui.getChatCompletions(
+//			model = "gpt-4o",
+//			messages = messages,
+////			"temperature" to 0.1,
+////			"top_p" to 0.9,
+////			"max_tokens" to 1000
+//		                                         )
+//		println(result)
+		println(openwebui.uploadFile("/Users/Neo/Desktop/174.txt"))
 	}
 }
