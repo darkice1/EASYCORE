@@ -17,7 +17,7 @@ plugins {
 //    }
 //}
 
-group = "io.github.darkice1"
+group = "com.github.darkice1"
 version = "1.0.80"
 val projectName = "easy"
 val projectDesc = "Neo easy code."
@@ -139,12 +139,24 @@ publishing {
 }
 
 // ---------------- 快捷任务：上传并立即 Close ----------------
-tasks.register("my_publishAndCloseSonatype") {
-	group = "publishing"
+tasks.register("publishAndCloseSonatype") {
+	group = "mypublishing"
 	description =
 		"Publish artifacts to Sonatype OSSRH, then close the staging repository."
-	dependsOn("publishToSonatype")
-	finalizedBy("closeSonatypeStagingRepository")   // 上传完成后再执行 close
+	dependsOn("publishToSonatype","closeSonatypeStagingRepository")
+//	finalizedBy("closeSonatypeStagingRepository")   // 上传完成后再执行 close
+	doLast {
+		println("close:[$group:$projectName:$version]")
+	}
+}
+
+tasks.register("release") {
+	group = "mypublishing"
+	description = "Close & release Sonatype staging repo, then print coordinates."
+	dependsOn("publishToSonatype","closeAndReleaseSonatypeStagingRepository")
+	doLast {
+		println("release:[${project.group}:${project.name}:${project.version}]")
+	}
 }
 
 nexusPublishing {
@@ -155,6 +167,8 @@ nexusPublishing {
 			username.set(providers.gradleProperty("centralUsername"))
 			password.set(providers.gradleProperty("centralPassword"))
 		}
+//		repositoryDescription = "$group:$projectName:$version"
+//		description = "$group:$projectName:$version"
 	}
 }
 
