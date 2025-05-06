@@ -150,6 +150,15 @@ tasks.register("publishAndCloseSonatype") {
 	}
 }
 
+tasks.register("publiclocal") {
+	group = "mypublishing"
+	description = "Close & release Sonatype staging repo, then print coordinates."
+	dependsOn("publishMavenJavaPublicationToMavenLocal")
+	doLast {
+		println("public local:[${project.group}:${project.name}:${project.version}]")
+	}
+}
+
 tasks.register("release") {
 	group = "mypublishing"
 	description = "Close & release Sonatype staging repo, then print coordinates."
