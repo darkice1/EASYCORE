@@ -1,7 +1,7 @@
 package easy.sql;
 
 import easy.util.Log;
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Iterator;

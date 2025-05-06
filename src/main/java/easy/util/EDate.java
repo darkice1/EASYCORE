@@ -2,7 +2,7 @@ package easy.util;
 
 import easy.config.Config;
 import easy.io.JFile;
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -244,7 +244,7 @@ public class EDate
 		try
 		{
 			String html = JFile.loadHttpFile(url);
-			JSONObject json = JSONObject.fromObject(html);
+			JSONObject json = new JSONObject(html);
 //			System.out.println(html);
 			if ("N".equals(json.getJSONObject("data").getString("shouldWork")))
 			{

@@ -15,9 +15,6 @@ import java.io.PrintWriter;
 
 public class AjaxCommitDemoAction extends Action
 {
-	/**
-	 * @see easy.servlet.Action#Perform()
-	 */
 	@Override
 	public void Perform() throws Exception
 	{

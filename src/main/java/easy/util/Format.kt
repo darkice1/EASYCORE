@@ -7,11 +7,10 @@ import easy.servlet.PageInfo
 import easy.sql.CPSql
 import easy.sql.DataSet
 import easy.sql.Row
-import net.sf.json.JSONArray
-import net.sf.json.JSONObject
-import net.sf.json.JsonConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.json.JSONArray
+import org.json.JSONObject
 import org.mozilla.universalchardet.UniversalDetector
 import java.io.*
 import java.lang.reflect.Field
@@ -26,13 +25,17 @@ import java.security.NoSuchAlgorithmException
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.KeySpec
 import java.sql.SQLException
+import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-import javax.crypto.*
+import javax.crypto.Cipher
+import javax.crypto.Mac
+import javax.crypto.NoSuchPaddingException
+import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.servlet.http.HttpServletRequest
@@ -203,7 +206,7 @@ object Format {
 			for (col in r.colsNameList) {
 				map[col] = r.getString(col)
 			}
-			array.add(map)
+			array.put(map)
 		}
 
 		if(addjson != null) { // Iterator<Entry<String, String>> paramsfields =
@@ -212,11 +215,14 @@ object Format {
 			val iter = addjson.keys()
 			while (iter.hasNext()) {
 				val key = iter.next() as String
-				json[key] = addjson[key]
+//				json[key] = addjson[key]
+				json.put(key, addjson[key])
 			}
 		}
-		json["total"] = list.size
-		json["result"] = array
+//		json["total"] = list.size
+		json.put("total", list.size)
+//		json["result"] = array
+		json.put("result", array)
 
 		return json.toString()
 	}
@@ -476,10 +482,10 @@ object Format {
 	@JvmOverloads
 	@JvmStatic
 	fun beanToString(o: Any, getsuper: Boolean = false): String {
-		val jsonconfig = JsonConfig()
-		jsonconfig.isAllowNonStringKeys = true
+//		val jsonconfig = JsonConfig()
+//		jsonconfig.isAllowNonStringKeys = true
 
-		val json = JSONObject.fromObject("{}", jsonconfig)
+		val json = JSONObject()
 		val fields = getAllField(o, getsuper)
 
 		for (f in fields) {
@@ -496,17 +502,21 @@ object Format {
 				val po = f.get(o)
 
 				if (po != null && (po.javaClass.isArray || po is List<*>)) {
-					val arr = JSONArray.fromObject("[]", jsonconfig)
+					val arr = JSONArray()
 					if (po.javaClass.isArray) {
-						arr.add(po)
+//						arr.add(po)
+						arr.put(po)
 					} else if (po is List<*>) {
 						for (ppo in po) {
-							arr.add(ppo.toString())
+//							arr.add(ppo.toString())
+							arr.put(ppo.toString())
 						}
 					}
-					json[f.name] = arr
+//					json[f.name] = arr
+					json.put(f.name, arr)
 				} else {
-					json[f.name] = po
+//					json[f.name] = po
+					json.put(f.name, po)
 				}
 			} catch (e: IllegalArgumentException) {
 				// 根据需要处理
@@ -1103,8 +1113,7 @@ object Format {
 				String.format(
 					"@[[^@\\s%s]0-9]{1,20}",
 					"`~!@#\\$%\\^&*()=+\\[\\]{}\\|/\\?<>,\\.:\\u00D7\\u00B7\\u2014-\\u2026\\u3001-\\u3011\\uFE30-\\uFFE5"
-				             )
-			                             )
+				             ))
 			val matcher = pattern.matcher(str)
 			while (matcher.find()) {
 				list.add(matcher.group())
@@ -1266,22 +1275,26 @@ object Format {
 		val millis = durationMillis % 1000
 
 		return buildString {
-			if (days > 0) append("${days}天")
-			if (hours > 0) append("${hours}小时")
-			if (minutes > 0) append("${minutes}分")
-			if (seconds > 0 || (days == 0L && hours == 0L && minutes == 0L)) append("${seconds}秒")
-			if (millis > 0) append("${millis}毫秒")
+			if (days > 0) append("${days}d")
+			if (hours > 0) append("${hours}h")
+			if (minutes > 0) append("${minutes}m")
+			if (seconds > 0 || (days == 0L && hours == 0L && minutes == 0L)) append("${seconds}s")
+			if (millis > 0) append("${millis}ms")
 		}
 	}
-	/*	public static void main(String[] args)
-	{
-		String test = "aaabbcc";
-		System.out.println(Format.Md2(test));
-		System.out.println(Format.byte2hex(Format.Md5(test.getBytes())));
-		System.out.println(Format.Md5(test));
-		System.out.println(Format.Md5Str(Format.Md5(test.getBytes())));
-		System.out.println(Format.Sha1(test));
-		System.out.println(Format.Sha256(test));
 
-	}*/
+    /**
+     * 将数字转换为带千分位分隔符的字符串
+     *
+     * @param number 支持 Int, Long, Float, Double, BigInteger, BigDecimal 等
+     * @return 千分位格式字符串，如 1,234,567.89
+     */
+    @JvmStatic
+    fun toThousandsString(number: Number?): String {
+        if (number == null) {
+            return ""
+        }
+        val df = DecimalFormat("#,##0.################")
+        return df.format(number)
+    }
 }

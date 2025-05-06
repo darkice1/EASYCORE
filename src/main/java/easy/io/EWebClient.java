@@ -2,11 +2,11 @@ package easy.io;
 
 
 import easy.model.WebAgent;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.htmlunit.*;
 import org.htmlunit.util.Cookie;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -107,7 +107,7 @@ public class EWebClient implements  AutoCloseable
 		//System.out.println( JSONObject.fromObject(cm));
 		
 		
-		return JSONObject.fromObject(cm).toString();
+		return new JSONObject(cm).toString();
 	}
 	
 	public void jsonToCookieManager(String jsonstr)
@@ -115,12 +115,12 @@ public class EWebClient implements  AutoCloseable
 		
 		//client.setCookieManager(cookieManager);
 		
-		JSONObject json = JSONObject.fromObject(jsonstr);
+		JSONObject json = new JSONObject(jsonstr);
 		
 		CookieManager cm = client.getCookieManager();
 		
 		JSONArray arr = json.getJSONArray("cookies");
-		for (int i=0,len=arr.size();i<len;i++)
+		for (int i=0,len=arr.length();i<len;i++)
 		{
 			JSONObject cj = arr.getJSONObject(i);
 

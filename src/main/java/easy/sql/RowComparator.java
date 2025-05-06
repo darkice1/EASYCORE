@@ -2,14 +2,9 @@ package easy.sql;
 
 import java.util.Comparator;
 
-/**
- * @author Neo(starneo@gmail.com)2015年8月13日
- * @param <T>
- *
- */
 public class RowComparator implements Comparator<Row>
 {
-	private String sortfield;
+	private final String sortfield;
 	
 	public RowComparator(String sortfield)
 	{

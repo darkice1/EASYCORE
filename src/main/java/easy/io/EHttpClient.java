@@ -3,8 +3,6 @@ package easy.io;
 import easy.model.WebAgent;
 import easy.util.Format;
 import easy.util.Log;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -28,6 +26,8 @@ import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
@@ -158,7 +158,7 @@ public class EHttpClient
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
 		JSONArray arr = json.getJSONArray("cookies");
-		for (int i = 0, len = arr.size(); i < len; i++)
+		for (int i = 0, len = arr.length(); i < len; i++)
 		{
 			JSONObject cj = arr.getJSONObject(i);
 
@@ -211,12 +211,12 @@ public class EHttpClient
 
 	public JSONObject getCookieStoreJson()
 	{
-		return JSONObject.fromObject(cookieStore);
+		return new JSONObject(cookieStore);
 	}
 
 	public void setCookieStore(String jsonstr)
 	{
-		setCookieStore(jsonToBasicCookieStore(JSONObject.fromObject(jsonstr)));
+		setCookieStore(jsonToBasicCookieStore(new JSONObject(jsonstr)));
 	}
 
 	public void setCookieStore(JSONObject json)

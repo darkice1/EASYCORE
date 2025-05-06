@@ -7,3 +7,5 @@ web/WEB-INF/classes/*
 web/WEB-INF/lib/
 .idea/
 EASYCORE.iml
+.gradle/
+build/

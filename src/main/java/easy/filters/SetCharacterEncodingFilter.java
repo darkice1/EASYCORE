@@ -26,33 +26,9 @@ public class SetCharacterEncodingFilter implements Filter
 	{
 	}
 
-	/**
-	 * Select and set (if specified) the character encoding to be used to interpret request parameters for this request.
-	 * 
-	 * @param request
-	 *            The servlet request we are processing
-	 * @param result
-	 *            The servlet response we are creating
-	 * @param chain
-	 *            The filter chain we are processing
-	 * 
-	 * @exception IOException
-	 *                if an input/output error occurs
-	 * @exception ServletException
-	 *                if a servlet error occurs
-	 */
+
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
 	{
-//		if ("TRUE".equals(request.getAttribute("EC_SETCHARACTERENCODING_ISSET")))
-//		{
-//			chain.doFilter(request, response);
-//			return;	
-//		}
-//		else
-//		{
-//			request.setAttribute("EC_SETCHARACTERENCODING_ISSET","TRUE");
-//		}
-		
 		String request_charactencoding = Config.getProperty("REQUEST_CHARACTERENCODING");
 		String response_characterencoding = Config.getProperty("RESPONSE_CHARACTERENCODING");
 		
@@ -84,7 +60,7 @@ public class SetCharacterEncodingFilter implements Filter
 	public void init(FilterConfig filterConfig) throws ServletException
 	{
 		String tmp = filterConfig.getInitParameter("isshowurl");
-		if (tmp != null && "TRUE".equals(tmp.toUpperCase()))
+		if ("TRUE".equalsIgnoreCase(tmp))
 		{
 			isshowurl = true;
 		}
