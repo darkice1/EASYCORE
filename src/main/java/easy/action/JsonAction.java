@@ -1,7 +1,7 @@
 package easy.action;
 
 import easy.util.Format;
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 import java.io.PrintWriter;
 

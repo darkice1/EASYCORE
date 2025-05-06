@@ -31,7 +31,7 @@ public abstract class CommitAction extends Action
 
 	protected final static String ISUPDATE = "cmt_isupdate";
 
-	protected final static String TRUE = "true";
+//	protected final static String TRUE = "true";
 
 	protected boolean isupdate = false;
 	
@@ -67,7 +67,7 @@ public abstract class CommitAction extends Action
 
 	protected void commitdate() throws SQLException
 	{
-		if (tablemap.size() > 0)
+		if (!tablemap.isEmpty())
 		{
 			Enumeration<?> e = request.getParameterNames();
 			while (e.hasMoreElements())
@@ -156,7 +156,7 @@ public abstract class CommitAction extends Action
 		}
 		if (commitex != null)
 		{
-			error = "���ݿ����"+commitex.toString();
+			error = "error:"+ commitex;
 			message = error;
 		}
 	}

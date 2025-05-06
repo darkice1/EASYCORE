@@ -1,9 +1,11 @@
 package easy.sql;
 
 
-import net.sf.json.JSONObject;
+
+import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Col implements Comparable<Col>,Serializable
 {
@@ -31,27 +33,13 @@ public class Col implements Comparable<Col>,Serializable
 
 	public Col (String fieldname,Object value)
 	{
-		if (value == null)
-		{
-			this.value = "";
-		}
-		else
-		{
-			this.value = value;
-		}
+		this.value = Objects.requireNonNullElse(value, "");
 		this.fieldname = fieldname;
 	}
 
 	public Col (String fieldname,String value)
 	{
-		if (value == null)
-		{
-			this.value = "";
-		}
-		else
-		{
-			this.value = value;
-		}
+		this.value = Objects.requireNonNullElse(value, "");
 		this.fieldname = fieldname;
 	}
 
@@ -83,30 +71,15 @@ public class Col implements Comparable<Col>,Serializable
 	{
 //		Col c = (Col)o;
 
-		if (value instanceof Integer)
+		return switch (value)
 		{
-			return Integer.compare((Integer)value, (Integer)o.value);
-		}
-		else if (value instanceof Long)
-		{
-			return Long.compare((Long)value, (Long)o.value);
-		}
-		else if (value instanceof Float)
-		{
-			return Float.compare((Float)value, (Float)o.value);
-		}
-		else if (value instanceof Double)
-		{
-			return Double.compare((Double)value, (Double)o.value);
-		}
-		else if (value instanceof byte[])
-		{
-			return new String((byte[])value).compareTo(new String((byte[])o.value));
-		}
-		else
-		{
-			return value.toString().compareTo(o.value.toString());
-		}
+			case Integer i -> Integer.compare(i, (Integer) o.value);
+			case Long l -> Long.compare(l, (Long) o.value);
+			case Float v -> Float.compare(v, (Float) o.value);
+			case Double v -> Double.compare(v, (Double) o.value);
+			case byte[] bytes -> new String(bytes).compareTo(new String((byte[]) o.value));
+			default -> value.toString().compareTo(o.value.toString());
+		};
 	}
 
 
