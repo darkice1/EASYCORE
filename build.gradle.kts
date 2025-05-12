@@ -18,7 +18,7 @@ plugins {
 //}
 
 group = "com.github.darkice1"
-version = "1.0.80"
+version = "1.0.81"
 val projectName = "easy"
 val projectDesc = "Neo easy code."
 
@@ -40,25 +40,24 @@ repositories {
 // ---------------- 依赖 ----------------
 dependencies {
 	// 常规依赖（Maven 默认 compile）
-	implementation("com.zaxxer:HikariCP:4.0.3")
-	implementation("javax.servlet:jstl:1.2")
-	implementation("com.esotericsoftware:kryo:4.0.2")
-	implementation("org.apache.httpcomponents:httpclient:4.5.13")
-	implementation("de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4")
-	implementation("org.htmlunit:htmlunit:3.11.0")
-	implementation("com.googlecode.juniversalchardet:juniversalchardet:1.0.3")
-	implementation("org.json:json:20250107")
-	implementation("com.github.mwiede:jsch:0.2.22")
-	implementation("org.apache.commons:commons-pool2:2.12.0")
-	implementation("javax.jdo:jdo-api:3.1")
-	implementation("org.xerial:sqlite-jdbc:3.41.2.2")
-	implementation("javax.mail:mail:1.4.7")
-	implementation("commons-fileupload:commons-fileupload:1.5") {
+	api("com.zaxxer:HikariCP:4.0.3")
+	api("com.esotericsoftware:kryo:4.0.2")
+	api("org.apache.httpcomponents:httpclient:4.5.13")
+	api("de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4")
+	api("org.htmlunit:htmlunit:3.11.0")
+	api("com.googlecode.juniversalchardet:juniversalchardet:1.0.3")
+	api("org.json:json:20250107")
+	api("com.github.mwiede:jsch:0.2.22")
+	api("javax.mail:mail:1.4.7")
+	api("org.apache.commons:commons-pool2:2.12.0")
+	api("commons-fileupload:commons-fileupload:1.5") {
 		exclude(group = "commons-io", module = "commons-io")
 	}
-	implementation(kotlin("stdlib"))
+	api(kotlin("stdlib"))
 
+//	api("javax.jdo:jdo-api:3.1")
 	// Maven <scope>provided</scope> → Gradle compileOnly
+	compileOnly("javax.servlet:jstl:1.2")
 	compileOnly("javax.servlet:javax.servlet-api:3.1.0")
 	compileOnly("javax.servlet.jsp:javax.servlet.jsp-api:2.3.0")
 	compileOnly("javax.el:javax.el-api:3.0.0")
@@ -138,15 +137,15 @@ publishing {
 //	}
 }
 
-// ---------------- 快捷任务：上传并立即 Close ----------------
+val coords = "${project.group}:$projectName:$version"
 tasks.register("publishAndCloseSonatype") {
 	group = "mypublishing"
 	description =
 		"Publish artifacts to Sonatype OSSRH, then close the staging repository."
-	dependsOn("publishToSonatype","closeSonatypeStagingRepository")
-//	finalizedBy("closeSonatypeStagingRepository")   // 上传完成后再执行 close
+	dependsOn("publishToSonatype", "closeSonatypeStagingRepository")
+//	finalizedBy("closeSonatypeStagingRepository")// 上传完成后再执行 close
 	doLast {
-		println("close:[$group:$projectName:$version]")
+		println("close:[$coords]")
 	}
 }
 
@@ -155,16 +154,16 @@ tasks.register("publiclocal") {
 	description = "Close & release Sonatype staging repo, then print coordinates."
 	dependsOn("publishMavenJavaPublicationToMavenLocal")
 	doLast {
-		println("public local:[${project.group}:${project.name}:${project.version}]")
+		println("public local:[$coords]")
 	}
 }
 
 tasks.register("release") {
 	group = "mypublishing"
 	description = "Close & release Sonatype staging repo, then print coordinates."
-	dependsOn("publishToSonatype","closeAndReleaseSonatypeStagingRepository")
+	dependsOn("publishToSonatype", "closeAndReleaseSonatypeStagingRepository")
 	doLast {
-		println("release:[${project.group}:${project.name}:${project.version}]")
+		println("release:[$coords]")
 	}
 }
 
@@ -193,7 +192,7 @@ signing {
 
 	sign(publishing.publications["mavenJava"])
 }
-// # 仅上传   上传并 Close
+// # 仅上传上传并 Close
 // ./gradlew publishToSonatype closeSonatypeStagingRepository
 // 上传发布
 // ./gradlew closeAndReleaseSonatypeStagingRepository

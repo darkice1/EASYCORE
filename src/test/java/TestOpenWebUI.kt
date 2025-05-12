@@ -1,7 +1,8 @@
 import easy.io.EHttpClient
 import easy.util.OpenWebUI
-import net.sf.json.JSONArray
-import net.sf.json.JSONObject
+import org.json.JSONArray
+import org.json.JSONObject
+
 
 object TestOpenWebUI {
 	@JvmStatic
@@ -18,9 +19,12 @@ object TestOpenWebUI {
 		println(openwebui.getModels())
 		val messages = JSONArray()
 		val userMessage = JSONObject()
-		userMessage["role"] = "user"
-		userMessage["content"] = "请详细解释什么是生命?"
-		messages.add(userMessage)
+//		userMessage["role"] = "user"
+		userMessage.put("role", "user")
+//		userMessage["content"] = "请详细解释什么是生命?"
+		userMessage.put("content", "请详细解释什么是生命?")
+//		messages.add(userMessage)
+		messages.put(userMessage)
 
 		// 调用时使用可变参数，添加任意数量的键值对
 //		val result = openwebui.getChatCompletions(
