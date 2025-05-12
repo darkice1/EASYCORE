@@ -39,7 +39,8 @@ object Config {
 		{
 			val pps = Properties()
 			pps.load(Files.newInputStream(File(filepath).toPath()))
-			val loadclassname = pps.getProperty("CONFIGLOADCLASS")
+			val name = "CONFIGLOADCLASS"
+			val loadclassname = pps.getProperty(name)
 			if (loadclassname != null && loadclassname!="") {
 
 				val cl = try{
@@ -48,7 +49,7 @@ object Config {
 				catch (e:Exception)
 				{
 //					e.printStackTrace()
-					println("[$filepath][$loadclassname][${e}]")
+					println("[$filepath][$name->$loadclassname][${e}]")
 					null
 				}
 				properties = cl?.load(pps) ?: pps
