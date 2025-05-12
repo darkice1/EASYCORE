@@ -3,19 +3,10 @@
 plugins {
 	kotlin("jvm") version "2.1.20"
 	`java-library`
-//	id("org.jetbrains.dokka") version "2.0.0"
 	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 	`maven-publish`
 	signing
 }
-
-// ---------------- Dokka v2 ----------------
-//dokka {
-//    // Keep helpers during migration; switch to V2Enabled when all V1 APIs are removed
-//    dokkaPublications.html {
-//        outputDirectory.set(layout.buildDirectory.dir("dokka"))
-//    }
-//}
 
 group = "com.github.darkice1"
 version = "1.0.81"
@@ -114,27 +105,6 @@ publishing {
 			}
 		}
 	}
-
-//	repositories {
-//		// ---- Central Publisher Portal (OSSRH Staging API) ----
-//		maven {
-//			name = "ossrh-staging-api"
-//			url = uri(
-//				if (version.toString().endsWith("SNAPSHOT"))
-//					"https://central.sonatype.com/repository/maven-snapshots/"
-//				else
-//					"https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-//			)
-//			credentials {
-//				username = providers.gradleProperty("centralUsername")
-//					.orElse(providers.environmentVariable("CENTRAL_USERNAME"))
-//					.getOrNull()
-//				password = providers.gradleProperty("centralPassword")
-//					.orElse(providers.environmentVariable("CENTRAL_PASSWORD"))
-//					.getOrNull()
-//			}
-//		}
-//	}
 }
 
 val coords = "${project.group}:$projectName:$version"
@@ -175,8 +145,6 @@ nexusPublishing {
 			username.set(providers.gradleProperty("centralUsername"))
 			password.set(providers.gradleProperty("centralPassword"))
 		}
-//		repositoryDescription = "$group:$projectName:$version"
-//		description = "$group:$projectName:$version"
 	}
 }
 

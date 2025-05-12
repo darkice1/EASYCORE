@@ -2,7 +2,6 @@ package easy.config
 
 import easy.io.JFile
 import easy.util.Format
-import easy.util.Log
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
@@ -48,12 +47,11 @@ object Config {
 				}
 				catch (e:Exception)
 				{
-					Log.OutException(e)
+//					e.printStackTrace()
+					println("[$filepath][$loadclassname][${e}]")
 					null
 				}
-				if (cl != null) {
-					properties = cl.load(pps)
-				}
+				properties = cl?.load(pps) ?: pps
 			}
 			else
 			{
@@ -116,9 +114,10 @@ object Config {
 
 			//		System.out.println(String.format("载入配置文件错误[%s]",cpath));
 			fpath = getConfigPath(cpath)
+			println("Load config from [$fpath]")
 			load(fpath)
 		} catch (ex: Exception) {
-			System.out.printf("载入配置文件错误[$cpath]->[$fpath]%n")
+			println("载入配置文件错误[$cpath]->[$fpath]")
 			ex.printStackTrace()
 		}
 	}
