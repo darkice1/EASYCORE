@@ -12,23 +12,22 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Request
 {
-	private HttpServletRequest httpServletRequest = null;
+	private final HttpServletRequest httpServletRequest;
 	
 	private static final String SYS_TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
-	private Map<String,EFileItem> dataMap	= new HashMap<>();
+	private final Map<String,EFileItem> dataMap	= new HashMap<>();
 	
 	private boolean isMultipartContent = false;
 	private static final String UPLOAD = "multipart/form-data"; 
 	
-	public Request(HttpServletRequest hsRequest) throws IOException
+	public Request(HttpServletRequest hsRequest)
 	{		
 		this.httpServletRequest = hsRequest;
 		isMultipartContent = isMultipartContent();
@@ -119,10 +118,10 @@ public class Request
 		}
 		else
 		{
-			long limited_size = 1*1024*1024;
+			long limited_size = 1024 * 1024;
 			try
 			{
-				limited_size = Integer.parseInt(Config.getProperty("UPLOAD_FILE_MAX_SIZE"))*1024*1024;
+				limited_size = (long) Integer.parseInt(Objects.requireNonNull(Config.getProperty("UPLOAD_FILE_MAX_SIZE"))) *1024*1024;
 			}
 			catch (NumberFormatException e)
 			{
@@ -171,33 +170,7 @@ public class Request
     {
 		return saveAs(name,path,false);
     }
-	
-	/*
-	public String getSavedFileName()
-	{
-		if (REQUEST_CHARACTERENCODING == null)
-		{
-			return savedFileName;
-		}
-		else
-		{
-			try
-			{
-				return new String(savedFileName.getBytes(),REQUEST_CHARACTERENCODING);
-			}
-			catch (UnsupportedEncodingException e)
-			{
-				Log.OutException(e);
-				return null;
-			}
-		}
-	}
-	*/
-	/**
-	 *  取得表单文件名称，如果没有或者不是上传是null
-	 * @param name
-	 * @return
-	 */
+
 	public String getFileName(String name)
 	{
 		EFileItem t = dataMap.get(name);
@@ -252,20 +225,11 @@ public class Request
 		return httpServletRequest;
 	}
 
-	
-	/**
-	 *��httpServletRequest��Ч
-	 * @return
-	 */
 	public Enumeration getAttributeNames()
 	{
 		return httpServletRequest.getAttributeNames();	
 	}
-	
-	/**
-	 *��httpServletRequest��Ч
-	 * @return
-	 */
+
 	public Enumeration getParameterNames()
 	{
 		return httpServletRequest.getParameterNames();	
@@ -293,11 +257,7 @@ public class Request
 		
 		return null;
 	}	
-	
-	/**
-	 * �httpServletRequest��Ч
-	 * @return
-	 */
+
 	public String[] getParameterValues(String param)
 	{
 		return httpServletRequest.getParameterValues(param);
