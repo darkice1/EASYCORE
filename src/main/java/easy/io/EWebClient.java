@@ -2,6 +2,7 @@ package easy.io;
 
 
 import easy.model.WebAgent;
+import easy.util.Log;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.htmlunit.*;
 import org.htmlunit.util.Cookie;
@@ -15,6 +16,7 @@ import java.util.Date;
 /**
  * @author starneo@gmail.com 2016年8月17日
  */
+@SuppressWarnings("unused")
 public class EWebClient implements  AutoCloseable
 {
 	private final WebClient client;
@@ -50,17 +52,7 @@ public class EWebClient implements  AutoCloseable
 	public void setProxyAuthorization(String name,String passwd)
 	{
 		DefaultCredentialsProvider credentialsProvider = (DefaultCredentialsProvider) client.getCredentialsProvider();
-		credentialsProvider.addCredentials(name, passwd);
-
-//
-//		try
-//		{
-//			proxyAuthorization = String.format("Basic %s",Format.encodeBase64(String.format("%s:%s", name,passwd).getBytes()));
-//		}
-//		catch (IOException e)
-//		{
-//			Log.OutException(e);
-//		}
+		credentialsProvider.addCredentials(name, passwd.toCharArray());
 	}
 	
 	public void setProxy(String host, int port)
@@ -97,15 +89,7 @@ public class EWebClient implements  AutoCloseable
 		
 		
 		CookieManager cm = client.getCookieManager();
-//		List<Cookie> list = new ArrayList<Cookie>();
-//		for (Cookie c : cm.getCookies())
-//		{
-//			list.add(c);
-//		}
-//		//Set<Cookie> cs = cm.getCookies();
-		
-		//System.out.println( JSONObject.fromObject(cm));
-		
+
 		
 		return new JSONObject(cm).toString();
 	}
@@ -160,12 +144,7 @@ public class EWebClient implements  AutoCloseable
 	
 	public <P extends Page> P getPage(String url,String ref) throws FailingHttpStatusCodeException, IOException
 	{
-//		if (proxyAuthorization != null)
-//		{
-//			client.addRequestHeader("Proxy-Authorization", proxyAuthorization);
-//		}
-		
-		if (ref != null && !"".equals(ref))
+		if (ref != null && !ref.isEmpty())
 		{
 			client.addRequestHeader("referer", ref);
 		}
@@ -184,19 +163,8 @@ public class EWebClient implements  AutoCloseable
 			}
 			catch (SocketTimeoutException | ConnectTimeoutException e)
 			{
+				Log.OutException(e,url);
 			}
-
-//			else
-//			{
-//				try
-//				{
-//					Thread.sleep(500);
-//				}
-//				catch (InterruptedException e)
-//				{
-//					Log.OutException(e);
-//				}
-//			}
 		}
 		
 		return p;
@@ -210,28 +178,7 @@ public class EWebClient implements  AutoCloseable
 	public String get(String url,String ref) throws FailingHttpStatusCodeException, IOException
 	{
 		Page hp = getPage(url,ref);
-//		if (hp instanceof HtmlPage)
-//		{
-//			return ((HtmlPage)hp).getWebResponse().getContentAsString();			
-//		}
-//		else
-//		{
-//			return ((TextPage)hp).getw.getContent();			
-//		}	
-//		System.out.println(Format.beanToString(hp.getWebResponse()));
+
 		return hp.getWebResponse().getContentAsString();
 	}
-
-/*	public static void main(String[] args)
-	{
-		EWebClient client = new EWebClient();
-		try
-		{
-			System.out.println(client.get("http://www.baidu.com"));
-		}
-		catch (IOException e)
-		{
-			Log.OutException(e);
-		}
-	}*/
 }

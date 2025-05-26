@@ -333,7 +333,7 @@ public class Base64UrlSafe
     /**
      * Decodes Base64 data into octects
      *
-     * @param base64Data Byte array containing Base64 data
+     * @param basestr Byte array containing Base64 data
      * @return Array containing decoded data.
      */
     public static byte[] decodeBase64(String basestr)

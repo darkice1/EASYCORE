@@ -1,4 +1,4 @@
-@file:Suppress("VulnerableLibrariesLocal")
+//@file:Suppress("VulnerableLibrariesLocal")
 
 plugins {
 	kotlin("jvm") version "2.1.20"
@@ -31,11 +31,14 @@ repositories {
 // ---------------- 依赖 ----------------
 dependencies {
 	// 常规依赖（Maven 默认 compile）
-	api("com.zaxxer:HikariCP:4.0.3")
+	// https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+	api("com.zaxxer:HikariCP:6.3.0")
 	api("com.esotericsoftware:kryo:4.0.2")
-	api("org.apache.httpcomponents:httpclient:4.5.13")
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
+	api("org.apache.httpcomponents.client5:httpclient5:5.5")
 	api("de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4")
-	api("org.htmlunit:htmlunit:3.11.0")
+	// https://mvnrepository.com/artifact/org.htmlunit/htmlunit
+	api("org.htmlunit:htmlunit:4.12.0")
 	api("com.googlecode.juniversalchardet:juniversalchardet:1.0.3")
 	api("org.json:json:20250107")
 	api("com.github.mwiede:jsch:0.2.22")
