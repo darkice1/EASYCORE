@@ -1,4 +1,4 @@
-//@file:Suppress("VulnerableLibrariesLocal")
+@file:Suppress("VulnerableLibrariesLocal")
 
 plugins {
 	kotlin("jvm") version "2.1.20"
@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.darkice1"
-version = "1.0.81"
+version = "1.0.82"
 val projectName = "easy"
 val projectDesc = "Neo easy code."
 
