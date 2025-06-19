@@ -7,6 +7,7 @@ import easy.servlet.PageInfo
 import easy.sql.CPSql
 import easy.sql.DataSet
 import easy.sql.Row
+import jakarta.servlet.http.HttpServletRequest
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.json.JSONArray
@@ -38,7 +39,6 @@ import javax.crypto.NoSuchPaddingException
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
 import javax.crypto.spec.SecretKeySpec
-import javax.servlet.http.HttpServletRequest
 import kotlin.math.max
 
 /**

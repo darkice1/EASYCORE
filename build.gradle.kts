@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.darkice1"
-version = "1.0.82"
+version = "1.0.83"
 val projectName = "easy"
 val projectDesc = "Neo easy code."
 
@@ -44,17 +44,14 @@ dependencies {
 	api("com.github.mwiede:jsch:0.2.22")
 	api("javax.mail:mail:1.4.7")
 	api("org.apache.commons:commons-pool2:2.12.0")
-	api("commons-fileupload:commons-fileupload:1.5") {
-		exclude(group = "commons-io", module = "commons-io")
-	}
 	api(kotlin("stdlib"))
 
-//	api("javax.jdo:jdo-api:3.1")
-	// Maven <scope>provided</scope> → Gradle compileOnly
-	compileOnly("javax.servlet:jstl:1.2")
-	compileOnly("javax.servlet:javax.servlet-api:3.1.0")
-	compileOnly("javax.servlet.jsp:javax.servlet.jsp-api:2.3.0")
-	compileOnly("javax.el:javax.el-api:3.0.0")
+	val tomcatVersion = "11.0.8"
+	compileOnly("org.apache.tomcat:tomcat-catalina:$tomcatVersion")
+	compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
+	compileOnly("jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.0")
+	compileOnly("jakarta.el:jakarta.el-api:5.0.1")
+	compileOnly("jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0")
 
 	// 测试
 	testImplementation(kotlin("test"))

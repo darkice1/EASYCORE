@@ -2,9 +2,9 @@ package easy.action;
 
 import easy.servlet.Request;
 import easy.servlet.Response;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpSession;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**

@@ -2,10 +2,10 @@ package easy.filters;
 
 import easy.config.Config;
 import easy.filters.compression.CompressionServletResponseWrapper;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
 
@@ -74,18 +74,11 @@ public class CompressionFilter implements Filter
 		{
 			request.setAttribute("EC_COMPRESSION_ISSET","TRUE");
 			String str = Config.getProperty("COMPRESSIONTHRESHOLD",DEF_THRESHOLD);
-			if (str != null)
+			compressionThreshold = Integer.parseInt(str);
+			if (compressionThreshold != 0 && compressionThreshold < MIN_THRESHOLD)
 			{
-				compressionThreshold = Integer.parseInt(str);
-				if (compressionThreshold != 0 && compressionThreshold < MIN_THRESHOLD)
-				{
-					//压缩阀值(wrapper)要求大于MIN_THRESHOLD，如果小于MIN_THRESHOLD那么就设置为MIN_THRESHOLD
-					compressionThreshold = MIN_THRESHOLD;
-				}
-			}
-			else
-			{
-				compressionThreshold = 0;
+				//压缩阀值(wrapper)要求大于MIN_THRESHOLD，如果小于MIN_THRESHOLD那么就设置为MIN_THRESHOLD
+				compressionThreshold = MIN_THRESHOLD;
 			}
 		}
 		
@@ -108,7 +101,7 @@ public class CompressionFilter implements Filter
 				return;
 			}
 
-			Enumeration e = ((HttpServletRequest) request).getHeaders("Accept-Encoding");
+			Enumeration<String> e = ((HttpServletRequest) request).getHeaders("Accept-Encoding");
 			while (e.hasMoreElements())
 			{
 				String name = (String) e.nextElement();
