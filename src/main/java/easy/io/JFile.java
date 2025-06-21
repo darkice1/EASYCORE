@@ -1,9 +1,10 @@
 package easy.io;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.DefaultSerializers;
+
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.kryo.kryo5.io.Input;
+import com.esotericsoftware.kryo.kryo5.io.Output;
+import com.esotericsoftware.kryo.kryo5.serializers.DefaultSerializers;
 import easy.net.Proxy;
 import easy.sql.Col;
 import easy.sql.DataSet;
@@ -940,12 +941,13 @@ public class JFile
 		}
 	}
 	
-	public static Kryo getKryo() 
+	public static Kryo getKryo()
 	{
         Kryo kryo = new Kryo();
-        
-		kryo.getFieldSerializerConfig().setOptimizedGenerics(true);
-        kryo.setReferences(false); 
+
+//		kryo.getFieldSerializerConfig().setOptimizedGenerics(true);
+//		kryo.setOptimizedGenerics(true);
+        kryo.setReferences(false);
         kryo.setRegistrationRequired(false);
 
 		kryo.register(Message.class);

@@ -33,7 +33,8 @@ dependencies {
 	// 常规依赖（Maven 默认 compile）
 	// https://mvnrepository.com/artifact/com.zaxxer/HikariCP
 	api("com.zaxxer:HikariCP:6.3.0")
-	api("com.esotericsoftware:kryo:4.0.2")
+	// https://mvnrepository.com/artifact/com.esotericsoftware.kryo/kryo5
+	api("com.esotericsoftware.kryo:kryo5:5.6.2")
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
 	api("org.apache.httpcomponents.client5:httpclient5:5.5")
 	api("de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4")
@@ -43,7 +44,7 @@ dependencies {
 	api("org.json:json:20250107")
 	api("com.github.mwiede:jsch:0.2.22")
 	api("javax.mail:mail:1.4.7")
-	api("org.apache.commons:commons-pool2:2.12.0")
+//	api("org.apache.commons:commons-pool2:2.12.0")
 	api(kotlin("stdlib"))
 
 	val tomcatVersion = "11.0.8"
