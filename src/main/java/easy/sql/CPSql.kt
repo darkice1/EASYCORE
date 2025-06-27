@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import easy.config.Config.getProperty
 import easy.util.Format.isEmpty
 import easy.util.Log
+import org.json.JSONObject
 import java.sql.DriverManager
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -21,6 +22,15 @@ import javax.sql.DataSource
  */
 @Suppress("unused")
 open class CPSql : Sql {
+    companion object {
+        private val POOL_CACHE = ConcurrentHashMap<String, HikariDataSource>()
+
+        fun getOrCreate(key: String, configProvider: () -> HikariConfig): HikariDataSource =
+            POOL_CACHE.computeIfAbsent(key) { HikariDataSource(configProvider()) }
+
+        fun closeAll() = POOL_CACHE.values.forEach { runCatching { it.close() } }
+    }
+
 	protected var dbclass: String? = null
 	protected var dbclasswrite: String? = null
 
@@ -107,9 +117,8 @@ open class CPSql : Sql {
 		对此的合理值最好由您的执行环境决定。当池达到此大小且没有空闲连接可用时，对getConnection（）
 		的调用将connectionTimeout在超时前阻塞最多毫秒。请阅读有关连接池尺寸的信息。 默认值：10*/
 			// 此属性控制连接池允许达到的最大连接数（空闲 + 活跃）。当无可用连接且已达该上限时，请求将在 connectionTimeout 内阻塞。默认值：10。
-			conf.setMaximumPoolSize(
-				Objects.requireNonNull(getProperty("DBCONNECTMAX", "20")).toInt()
-			                       )
+			conf.setMaximumPoolSize(Objects.requireNonNull(getProperty("DBCONNECTMAX", "20")).toInt())
+
 			conf.addDataSourceProperty("cachePrepStmts", "true")
 			conf.addDataSourceProperty("prepStmtCacheSize", "250")
 			conf.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
@@ -126,45 +135,38 @@ open class CPSql : Sql {
 		}
 
 	private fun getDataSource(user: String?, password: String?, jdbcurl: String?, dbclass: String?): DataSource? {
-		var ds: DataSource?
-		val poolname: String?
+	    val poolKey = "$user@$jdbcurl"
 
-		if(config == null) {
-			poolname = jdbcurl + user
-			ds = DSMAP[poolname]
-
-			if(ds == null) {
-				val conf = this.properties
-				conf.username = user
-				conf.password = password
-				conf.setJdbcUrl(jdbcurl)
-				conf.setDriverClassName(dbclass)
-
-				conf.setPoolName(poolname)
-
-				ds = HikariDataSource(conf)
-				DSMAP.put(poolname, ds)
-				//				config = conf;
-			}
-		} else {
-			poolname = config!!.poolName
-			ds = DSMAP[poolname]
-		}
-
-		/*		if (ds == null)
-		{
-			ds = new HikariDataSource(config);
-			DSMAP.put(poolname,ds);
-		}*/
-		return ds
+	    return getOrCreate(poolKey) {
+	        val conf = if (this.config == null) {
+	            val conf = this.properties
+	            conf.username = user
+	            conf.setJdbcUrl(jdbcurl)
+	            conf.setDriverClassName(dbclass)
+	            conf.setPoolName(poolKey)
+		        Log.OutLog("初始化数据库[${JSONObject(conf)}]")
+	            conf.password = password
+	            conf
+	        } else {
+	            this.config!!
+	        }
+	        conf
+	    }
 	}
 
 
-	private val dataSource: DataSource?
-		get() = getDataSource(user, password, jdbcurl, dbclass)
+	private val dataSource by lazy {
+		getDataSource(user, password, jdbcurl, dbclass)
+	}
 
-	private val writeDataSource: DataSource?
-		get() = getDataSource(userwrite, passwordwrite, jdbcurlwrite, dbclasswrite)
+	private val writeDataSource by lazy {
+		getDataSource(userwrite, passwordwrite, jdbcurlwrite, dbclasswrite)
+	}
+
+    init {
+        // Ensure all pools are closed when the JVM shuts down
+        Runtime.getRuntime().addShutdownHook(Thread { closeAll() })
+    }
 
 	/**
 	 * @see Sql.initdb
@@ -203,42 +205,5 @@ open class CPSql : Sql {
 
 	constructor()
 
-	constructor(resultSetType: Int, resultSetConncurrency: Int) : super(resultSetType, resultSetConncurrency) /*	public static void main(String[] args)
-	{
-		HikariConfig conf = new HikariConfig();
-		conf.setPoolName("test");
-		conf.setJdbcUrl( Config.getProperty("DBURL"));
-		conf.setDriverClassName( Config.getProperty("DBCLASS"));
-		conf.setUsername( Config.getProperty("DBUSER"));
-		conf.setPassword( Config.getProperty("DBPASSWORD"));
-
-
-		CPSql sql = new CPSql(conf);
-		try
-		{
-			DataSet ds = sql.executeQuery("select * from real_test");
-			System.out.println(ds.getRowList());
-
-		}
-		catch (SQLException throwables)
-		{
-			Log.OutException(throwables);
-		}
-		sql.close();
-	}*/
-
-	companion object {
-		//	protected void finalize() throws Throwable
-		//	{
-		//		super.finalize();
-		//		alias = null;
-		//		poolurl = null;
-		//		dbclass = null;
-		//	}
-		/*	private String getAliasString(String user,String password,String dbclass,String jdbcurl)
-	{
-		return Config.getProperty("PROJECT")+Format.Md5(String.format("%s-%s-%s-%s", user,password,dbclass,jdbcurl));
-	}*/
-		private val DSMAP: MutableMap<String?, DataSource?> = ConcurrentHashMap<String?, DataSource?>()
-	}
+	constructor(resultSetType: Int, resultSetConncurrency: Int) : super(resultSetType, resultSetConncurrency)
 }
