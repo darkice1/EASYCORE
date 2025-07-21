@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.darkice1"
-version = "1.0.85"
+version = "1.0.86"
 val projectName = "easy"
 val projectDesc = "Neo easy code."
 

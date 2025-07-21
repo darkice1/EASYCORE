@@ -648,29 +648,53 @@ class BaseTable {
 
 			// 获取表定义
 			val tableDefSQL = """
-            SELECT 'CREATE TABLE ' || quote_ident(schemaname) || '.' || quote_ident(tablename) || E'\n(\n' ||
-            array_to_string(array_agg(
-                quote_ident(columnname) || ' ' || pg_catalog.format_type(a.atttypid, a.atttypmod)
-                || CASE WHEN a.attnotnull THEN ' NOT NULL' ELSE '' END
-                || CASE WHEN a.attcollation IS NOT NULL AND a.attcollation <> t.typcollation THEN ' COLLATE ' || quote_ident(tc.collname) ELSE '' END
-            ), E',\n') || E'\n);\n'
-            FROM pg_catalog.pg_attribute a
-            JOIN pg_catalog.pg_type t ON a.atttypid = t.oid
-            LEFT JOIN pg_catalog.pg_collation tc ON a.attcollation = tc.oid
-            JOIN (
-                SELECT c.oid AS table_oid,
-                    n.nspname AS schemaname,
-                    c.relname AS tablename,
-                    a.attname AS columnname
-                FROM pg_catalog.pg_class c
-                    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-                    JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid
-                WHERE a.attnum > 0 AND NOT a.attisdropped
-                AND c.relkind = 'r'
-                AND n.nspname = '$schemaName'
-                AND c.relname = '$tableName'
-            ) AS sub ON sub.table_oid = a.attrelid AND sub.columnname = a.attname
-            GROUP BY schemaname, tablename;
+            SELECT 'CREATE TABLE ' || quote_ident(n.nspname) || '.' || quote_ident(c.relname) || E'\n(\n' ||
+                   string_agg(
+                       '    ' || format(
+                           '%I %s%s%s%s%s%s',
+                           a.attname,
+                           pg_catalog.format_type(a.atttypid, a.atttypmod),
+
+                           /* ── Identity columns ───────────────────────────── */
+                           CASE WHEN a.attidentity <> '' THEN
+                               ' GENERATED ' || CASE a.attidentity WHEN 'd' THEN 'BY DEFAULT' ELSE 'ALWAYS' END || ' AS IDENTITY'
+                           ELSE '' END,
+
+                           /* ── Generated / virtual columns ───────────────── */
+                           CASE WHEN a.attgenerated <> '' THEN
+                               ' GENERATED ALWAYS AS (' || pg_get_expr(ad.adbin, ad.adrelid) || ') STORED'
+                           ELSE '' END,
+
+                           /* ── Ordinary DEFAULT expressions ───────────────── */
+                           CASE WHEN ad.adbin IS NOT NULL AND a.attgenerated = '' THEN
+                               ' DEFAULT ' || pg_get_expr(ad.adbin, ad.adrelid)
+                           ELSE '' END,
+
+                           /* ── NOT NULL constraint (IDENTITY already NOT NULL) */
+                           CASE WHEN a.attnotnull AND a.attidentity = '' THEN
+                               ' NOT NULL'
+                           ELSE '' END,
+
+                           /* ── Explicit COLLATE if differs from type collation */
+                           CASE WHEN a.attcollation <> t.typcollation THEN
+                               ' COLLATE ' || quote_ident(coll.collname)
+                           ELSE '' END
+                       ),
+                       E',\n' ORDER BY a.attnum
+                   ) || E'\n);\n'
+            FROM pg_catalog.pg_class      c
+            JOIN pg_catalog.pg_namespace  n   ON n.oid  = c.relnamespace
+            JOIN pg_catalog.pg_attribute  a   ON a.attrelid = c.oid
+            JOIN pg_catalog.pg_type       t   ON t.oid  = a.atttypid
+            LEFT JOIN pg_catalog.pg_collation coll ON coll.oid = a.attcollation
+            LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid = c.oid
+                                               AND ad.adnum  = a.attnum
+            WHERE a.attnum > 0
+              AND NOT a.attisdropped
+              AND c.relkind = 'r'
+              AND n.nspname = '$schemaName'
+              AND c.relname = '$tableName'
+            GROUP BY n.nspname, c.relname;
         """.trimIndent()
 
 			connection.createStatement().use { statement ->
