@@ -10,6 +10,7 @@ import java.util.*
 object SSHSessionManager {
 	private var session: Session? = null
 	private var pLocalPort: Int = -1
+	private var sessionConfigFingerprint: String? = null
 
 	init {
 		// Register a shutdown hook to close the SSH session on JVM exit
@@ -26,8 +27,12 @@ object SSHSessionManager {
 	 */
 	@Suppress("MemberVisibilityCanBePrivate")
 	fun getSession(prep: Properties): Session? {
-		if (session == null || !session!!.isConnected) {
+		val newFingerprint = computeConfigFingerprint(prep)
+		val isSameConfig = session != null && session!!.isConnected && sessionConfigFingerprint == newFingerprint
+		if(!isSameConfig) {
+			closeSession()
 			session = createSession(prep)
+			sessionConfigFingerprint = newFingerprint
 		}
 		return session
 	}
@@ -162,5 +167,14 @@ object SSHSessionManager {
 		session?.disconnect()
 		session = null
 		pLocalPort = -1
+		sessionConfigFingerprint = null
+	}
+
+	private fun computeConfigFingerprint(prep: Properties): String {
+		return prep.entries
+			.asSequence()
+			.map { it.key.toString() to (it.value?.toString() ?: "") }
+			.sortedBy { it.first }
+			.joinToString(separator = "|") { (key, value) -> "$key=$value" }
 	}
 }
