@@ -22,14 +22,21 @@ import javax.sql.DataSource
  */
 @Suppress("unused")
 open class CPSql : Sql {
-    companion object {
-        private val POOL_CACHE = ConcurrentHashMap<String, HikariDataSource>()
+	companion object {
+		private val POOL_CACHE = ConcurrentHashMap<String, HikariDataSource>()
+		private val shutdownHook by lazy {
+			Thread { closeAll() }.also { Runtime.getRuntime().addShutdownHook(it) }
+		}
 
-        fun getOrCreate(key: String, configProvider: () -> HikariConfig): HikariDataSource =
-            POOL_CACHE.computeIfAbsent(key) { HikariDataSource(configProvider()) }
+		fun getOrCreate(key: String, configProvider: () -> HikariConfig): HikariDataSource =
+			POOL_CACHE.computeIfAbsent(key) { HikariDataSource(configProvider()) }
 
-        fun closeAll() = POOL_CACHE.values.forEach { runCatching { it.close() } }
-    }
+		fun closeAll() = POOL_CACHE.values.forEach { runCatching { it.close() } }
+
+		init {
+			shutdownHook
+		}
+	}
 
 	protected var dbclass: String? = null
 	protected var dbclasswrite: String? = null
@@ -70,7 +77,7 @@ open class CPSql : Sql {
 	private val properties: HikariConfig
 		get() {
 			val conf = HikariConfig()
-			conf.setAutoCommit(true)
+			conf.isAutoCommit = true
 
 			// 此属性控制从连接池获取连接的等待超时时间（毫秒）。超过该时间未成功获取到连接将抛出 SQLException。默认值：30000。
 			conf.connectionTimeout =
@@ -86,9 +93,7 @@ open class CPSql : Sql {
 //		一旦池到达连接，空闲连接将不会退出minimumIdle。连接是否空闲退出的最大变化为+30秒，平均变化为+15秒。
 //		在此超时之前，连接永远不会被空闲。值为0表示永远不会从池中删除空闲连接。允许的最小值为10000毫秒（10秒）。
 //		默认值：600000（10分钟
-			conf.setIdleTimeout(
-				Objects.requireNonNull(getProperty("DBIDLETIMEOUT", "10000")).toLong()
-			                   )
+			conf.idleTimeout = Objects.requireNonNull(getProperty("DBIDLETIMEOUT", "10000")).toLong()
 
 			// 此属性控制空闲连接的心跳间隔（毫秒）。当连接空闲达到该时长，HikariCP 会调用 Connection.isValid() 保持或刷新连接；0 表示禁用。
 			// keepaliveTime 方法仅在 HikariCP 3.4.0+ 提供。
@@ -104,20 +109,16 @@ open class CPSql : Sql {
 //		如果空闲连接低于此值并且池中的总连接数小于maximumPoolSize，
 //		则HikariCP将尽最大努力快速有效地添加其他连接。但是，为了获得最高性能和对峰值需求的响应，我们建议不要设置此值，
 //		而是允许HikariCP充当固定大小的连接池。 默认值：与maximumPoolSize相同
-			conf.setMinimumIdle(
-				Objects.requireNonNull(getProperty("DBMINIDEL", "3")).toInt()
-			                   )
+			conf.minimumIdle = Objects.requireNonNull(getProperty("DBMINIDEL", "3")).toInt()
 
-			conf.setValidationTimeout(
-				Objects.requireNonNull(getProperty("DBVALIDATIONTIMEOUT", "10000")).toLong()
-			                         )
+			conf.validationTimeout = Objects.requireNonNull(getProperty("DBVALIDATIONTIMEOUT", "10000")).toLong()
 			// 用于检测连接泄漏的阈值（毫秒）。若连接被借出且在该时间内未归还，将记录堆栈跟踪。建议 ≥ 10000，0 表示禁用。
 			conf.leakDetectionThreshold =
 				Objects.requireNonNull(getProperty("DBLEAKDETECTIONTHRESHOLD", "2000")).toLong()/*		此属性控制允许池到达的最大大小，包括空闲和正在使用的连接。基本上，此值将确定数据库后端的最大实际连接数。
 		对此的合理值最好由您的执行环境决定。当池达到此大小且没有空闲连接可用时，对getConnection（）
 		的调用将connectionTimeout在超时前阻塞最多毫秒。请阅读有关连接池尺寸的信息。 默认值：10*/
 			// 此属性控制连接池允许达到的最大连接数（空闲 + 活跃）。当无可用连接且已达该上限时，请求将在 connectionTimeout 内阻塞。默认值：10。
-			conf.setMaximumPoolSize(Objects.requireNonNull(getProperty("DBCONNECTMAX", "20")).toInt())
+			conf.maximumPoolSize = Objects.requireNonNull(getProperty("DBCONNECTMAX", "20")).toInt()
 
 			conf.addDataSourceProperty("cachePrepStmts", "true")
 			conf.addDataSourceProperty("prepStmtCacheSize", "250")
@@ -134,16 +135,16 @@ open class CPSql : Sql {
 			return conf
 		}
 
-	private fun getDataSource(user: String?, password: String?, jdbcurl: String?, dbclass: String?): DataSource? {
+	private fun getDataSource(user: String?, password: String?, jdbcurl: String?, dbclass: String?): DataSource {
 	    val poolKey = "$user@$jdbcurl"
 
 	    return getOrCreate(poolKey) {
 	        val conf = if (this.config == null) {
 	            val conf = this.properties
 	            conf.username = user
-	            conf.setJdbcUrl(jdbcurl)
-	            conf.setDriverClassName(dbclass)
-	            conf.setPoolName(poolKey)
+		        conf.jdbcUrl = jdbcurl
+		        conf.driverClassName = dbclass
+		        conf.poolName = poolKey
 		        Log.OutLog("初始化数据库[${JSONObject(conf)}]")
 	            conf.password = password
 	            conf
@@ -162,12 +163,6 @@ open class CPSql : Sql {
 	private val writeDataSource by lazy {
 		getDataSource(userwrite, passwordwrite, jdbcurlwrite, dbclasswrite)
 	}
-
-    init {
-        // Ensure all pools are closed when the JVM shuts down
-        Runtime.getRuntime().addShutdownHook(Thread { closeAll() })
-    }
-
 	/**
 	 * @see Sql.initdb
 	 */
@@ -176,10 +171,10 @@ open class CPSql : Sql {
 
 		try {
 			if(usepool) {
-				conn = this.dataSource?.connection
+				conn = this.dataSource.connection
 
 				connwrite = if(!isEmpty(userwrite) && !isEmpty(jdbcurlwrite) && !isEmpty(dbclasswrite)) {
-					this.writeDataSource?.connection
+					this.writeDataSource.connection
 				} else {
 					conn
 				}

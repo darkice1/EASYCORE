@@ -78,8 +78,8 @@ object Config {
 					fpath = tpath + cfgname
 					break
 				}
-				if(JFile.exists("$tpath/WEB-INF$cfgname")) {
-					fpath = tpath + cfgname
+					if(JFile.exists("$tpath/WEB-INF$cfgname")) {
+						fpath = "$tpath/WEB-INF$cfgname"
 					break
 				}
 				cf = if(tpath == "/") {
