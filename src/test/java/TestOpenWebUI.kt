@@ -15,26 +15,16 @@ object TestOpenWebUI {
 			"__REDACTED_OPENWEBUI_TOKEN__",
 			client)
 
-		// 构造一条消息
-		println(openwebui.getModels())
 		val messages = JSONArray()
 		val userMessage = JSONObject()
-//		userMessage["role"] = "user"
 		userMessage.put("role", "user")
-//		userMessage["content"] = "请详细解释什么是生命?"
-		userMessage.put("content", "请详细解释什么是生命?")
-//		messages.add(userMessage)
+		userMessage.put("content", "你可以做什么")
 		messages.put(userMessage)
 
-		// 调用时使用可变参数，添加任意数量的键值对
-//		val result = openwebui.getChatCompletions(
-//			model = "gpt-4o",
-//			messages = messages,
-////			"temperature" to 0.1,
-////			"top_p" to 0.9,
-////			"max_tokens" to 1000
-//		                                         )
-//		println(result)
-		println(openwebui.uploadFile("/Users/Neo/Desktop/174.txt"))
+		val completion = openwebui.getChatCompletionsFromOllama(
+			model = "gpt-oss:20b-cloud",
+			messages = messages
+		                                                 )
+		println(completion.toString(2))
 	}
 }

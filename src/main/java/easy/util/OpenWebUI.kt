@@ -9,7 +9,7 @@ import java.net.HttpURLConnection
 import java.net.URI
 
 // https://docs.openwebui.com/getting-started/api-endpoints
-	@Suppress("unused")
+@Suppress("unused")
 class OpenWebUI(private val apiurl: String, private val token: String, private val client: EHttpClient = EHttpClient()) {
 
 	private val apiBaseUrl = apiurl.trimEnd('/')
@@ -121,67 +121,67 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 		}
 
 		val responseText = request("ollama/api/generate", postjson, rootUrl)
-			val responseBuilder = StringBuilder()
-			val thinkingBuilder = StringBuilder()
-			val meta = JSONObject()
-			var modelName: String? = null
-			var done = false
+		val responseBuilder = StringBuilder()
+		val thinkingBuilder = StringBuilder()
+		val meta = JSONObject()
+		var modelName: String? = null
+		var done = false
 		var doneReason: String? = null
 
-			responseText.lineSequence()
-				.map { it.trim() }
-				.filter { it.isNotEmpty() }
-				.forEach { line ->
-					try {
-						val chunk = JSONObject(line)
+		responseText.lineSequence()
+			.map { it.trim() }
+			.filter { it.isNotEmpty() }
+			.forEach { line ->
+				try {
+					val chunk = JSONObject(line)
 
-						if (chunk.has("error")) {
-							val errorMessage = chunk.optString("error")
-							Log.OutLog("OpenWebUI.generateFromOllama error: $errorMessage")
-							throw RuntimeException(errorMessage)
-						}
-
-						if (chunk.has("model")) {
-							val chunkModel = chunk.optString("model")
-							if (chunkModel.isNotEmpty()) {
-								modelName = chunkModel
-							}
-						}
-
-						val responsePart = chunk.optString("response")
-						if (responsePart.isNotEmpty()) {
-							responseBuilder.append(responsePart)
-						}
-
-						val thinkingPart = chunk.optString("thinking")
-						if (thinkingPart.isNotBlank()) {
-							thinkingBuilder.append(thinkingPart)
-						}
-
-						if (chunk.has("done") && chunk.optBoolean("done")) {
-							done = true
-						}
-
-						if (chunk.has("done_reason")) {
-							val chunkDoneReason = chunk.optString("done_reason")
-							if (chunkDoneReason.isNotEmpty()) {
-								doneReason = chunkDoneReason
-							}
-						}
-
-						val skipKeys = setOf("response", "thinking", "model", "done", "done_reason")
-						val keyIterator = chunk.keys()
-						while (keyIterator.hasNext()) {
-							val key = keyIterator.next()
-							if (!skipKeys.contains(key)) {
-								meta.put(key, chunk.get(key))
-							}
-						}
-					} catch (e: Throwable) {
-						Log.OutLog("OpenWebUI.generateFromOllama parse error:[${line}]")
-						throw e
+					if (chunk.has("error")) {
+						val errorMessage = chunk.optString("error")
+						Log.OutLog("OpenWebUI.generateFromOllama error: $errorMessage")
+						throw RuntimeException(errorMessage)
 					}
+
+					if (chunk.has("model")) {
+						val chunkModel = chunk.optString("model")
+						if (chunkModel.isNotEmpty()) {
+							modelName = chunkModel
+						}
+					}
+
+					val responsePart = chunk.optString("response")
+					if (responsePart.isNotEmpty()) {
+						responseBuilder.append(responsePart)
+					}
+
+					val thinkingPart = chunk.optString("thinking")
+					if (thinkingPart.isNotBlank()) {
+						thinkingBuilder.append(thinkingPart)
+					}
+
+					if (chunk.has("done") && chunk.optBoolean("done")) {
+						done = true
+					}
+
+					if (chunk.has("done_reason")) {
+						val chunkDoneReason = chunk.optString("done_reason")
+						if (chunkDoneReason.isNotEmpty()) {
+							doneReason = chunkDoneReason
+						}
+					}
+
+					val skipKeys = setOf("response", "thinking", "model", "done", "done_reason")
+					val keyIterator = chunk.keys()
+					while (keyIterator.hasNext()) {
+						val key = keyIterator.next()
+						if (!skipKeys.contains(key)) {
+							meta.put(key, chunk.get(key))
+						}
+					}
+				} catch (e: Throwable) {
+					Log.OutLog("OpenWebUI.generateFromOllama parse error:[${line}]")
+					throw e
 				}
+			}
 
 		val result = JSONObject()
 		if (modelName != null) {
@@ -195,13 +195,152 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 		result.put("done", done)
 		if (doneReason != null) {
 			result.put("done_reason", doneReason)
-			}
-			if (meta.length() > 0) {
-				result.put("meta", meta)
+		}
+		if (meta.length() > 0) {
+			result.put("meta", meta)
+		}
+
+		return result
+	}
+
+	fun getChatCompletionsFromOllama(
+		model: String,
+		messages: JSONArray,
+		vararg params: Pair<String, Any?>
+	                      ): JSONObject {
+		val prompt = extractPromptFromMessages(messages)
+		val ollamaResult = generateFromOllama(model, prompt, *params)
+
+		val completion = JSONObject()
+		val nowSeconds = System.currentTimeMillis() / 1000
+		completion.put("id", "ollama-${System.currentTimeMillis()}")
+		completion.put("object", "chat.completion")
+		completion.put("created", nowSeconds)
+		completion.put("model", ollamaResult.optString("model", model))
+
+		val choices = JSONArray()
+		val choice = JSONObject()
+		choice.put("index", 0)
+
+		val message = JSONObject()
+		message.put("role", "assistant")
+		message.put("content", ollamaResult.optString("response"))
+		choice.put("message", message)
+
+		val thinking = ollamaResult.optString("thinking", "")
+		if (thinking.isNotBlank()) {
+			choice.put("thinking", thinking)
+		}
+
+		val doneReason = ollamaResult.optString("done_reason")
+		val finishReason = when {
+			doneReason.isNotBlank() -> doneReason
+			ollamaResult.optBoolean("done") -> "stop"
+			else -> null
+		}
+		choice.put("finish_reason", finishReason ?: JSONObject.NULL)
+		choices.put(choice)
+		completion.put("choices", choices)
+
+		val usage = JSONObject()
+		val meta = ollamaResult.optJSONObject("meta")
+		var hasUsage = false
+
+		var promptTokens = -1L
+		var completionTokens = -1L
+
+		if (meta != null) {
+			if (meta.has("prompt_eval_count")) {
+				promptTokens = meta.optLong("prompt_eval_count", -1L)
+				if (promptTokens >= 0) {
+					usage.put("prompt_tokens", promptTokens)
+					hasUsage = true
+				}
 			}
 
-			return result
+			if (meta.has("eval_count")) {
+				completionTokens = meta.optLong("eval_count", -1L)
+				if (completionTokens >= 0) {
+					usage.put("completion_tokens", completionTokens)
+					hasUsage = true
+				}
+			}
+
+			if (promptTokens >= 0 && completionTokens >= 0) {
+				usage.put("total_tokens", promptTokens + completionTokens)
+				hasUsage = true
+			}
 		}
+
+		if (hasUsage) {
+			completion.put("usage", usage)
+		}
+
+		if (meta != null && meta.length() > 0) {
+			completion.put("ollama_meta", meta)
+		}
+
+		return completion
+	}
+
+	private fun extractPromptFromMessages(messages: JSONArray): String {
+		if (messages.length() == 0) {
+			throw IllegalArgumentException("messages 不能为空")
+		}
+
+		var fallback: String? = null
+		var index = messages.length() - 1
+		while (index >= 0) {
+			val message = messages.optJSONObject(index)
+			index--
+			if (message == null) {
+				continue
+			}
+
+			val content = normalizeMessageContent(message.opt("content"))?.trim()
+			if (content.isNullOrEmpty()) {
+				continue
+			}
+
+			if (message.optString("role").equals("user", ignoreCase = true)) {
+				return content
+			}
+
+			if (fallback == null) {
+				fallback = content
+			}
+		}
+
+		return fallback ?: throw IllegalArgumentException("messages 中缺少有效的用户 content")
+	}
+
+	private fun normalizeMessageContent(content: Any?): String? {
+		return when (content) {
+			is String -> content
+			is JSONArray -> {
+				if (content.length() == 0) {
+					null
+				} else {
+					val builder = StringBuilder()
+					for (i in 0 until content.length()) {
+						when (val part = content.opt(i)) {
+							is JSONObject -> {
+								when {
+									part.has("text") -> builder.append(part.optString("text"))
+									part.has("content") -> builder.append(part.optString("content"))
+									else -> builder.append(part.toString())
+								}
+							}
+							is String -> builder.append(part)
+							else -> builder.append(part.toString())
+						}
+					}
+					builder.toString()
+				}
+			}
+			else -> null
+		}
+	}
 
 	companion object{
 		@JvmStatic
