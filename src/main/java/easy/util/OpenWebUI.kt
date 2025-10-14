@@ -9,17 +9,19 @@ import java.net.HttpURLConnection
 import java.net.URI
 
 // https://docs.openwebui.com/getting-started/api-endpoints
-@Suppress("unused")
+	@Suppress("unused")
 class OpenWebUI(private val apiurl: String, private val token: String, private val client: EHttpClient = EHttpClient()) {
 
-	@Suppress("MemberVisibilityCanBePrivate")
-	fun api(func: String, postjson: JSONObject? = null): JSONObject {
-		val url = "$apiurl/$func"
+	private val apiBaseUrl = apiurl.trimEnd('/')
+	private val rootUrl = apiBaseUrl.removeSuffix("/api")
+
+	private fun request(func: String, postjson: JSONObject? = null, base: String = apiBaseUrl): String {
+		val url = "${base}/${func.removePrefix("/")}"
 		val head = mutableMapOf<String, String>()
 		head["Content-Type"] = "application/json"
 		head["Authorization"] = "Bearer $token"
 
-		val response = if (postjson != null) {
+		return if (postjson != null) {
 			val posthead = mutableMapOf<String, String>()
 			// 这里的键可以根据实际需要调整
 			posthead[""] = postjson.toString()
@@ -28,7 +30,11 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 			client.get(url, head, null)
 		}
 
-		return JSONObject(response)
+	}
+
+	@Suppress("MemberVisibilityCanBePrivate")
+	fun api(func: String, postjson: JSONObject? = null): JSONObject {
+		return JSONObject(request(func, postjson, apiBaseUrl))
 	}
 
 	fun uploadFile(filePath: String): JSONObject {
@@ -88,6 +94,114 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 
 		return api("/chat/completions", postjson)
 	}
+
+	/**
+	 * 调用 /ollama/api/generate 接口，返回包含响应片段、汇总文本、思考信息等的 JSON。
+	 *
+	 * @param model  指定模型
+	 * @param prompt 提示词内容
+	 * @param params 可选扩展参数，如 ("options" to JSONObject(...))
+	 */
+	fun generateFromOllama(
+		model: String,
+		prompt: String,
+		vararg params: Pair<String, Any?>
+	                      ): JSONObject {
+		val postjson = JSONObject()
+		postjson.put("model", model)
+		postjson.put("prompt", prompt)
+
+		val hasStreamParam = params.any { it.first == "stream" }
+		if (!hasStreamParam) {
+			postjson.put("stream", false)
+		}
+
+		for ((key, value) in params) {
+			postjson.put(key, value)
+		}
+
+		val responseText = request("ollama/api/generate", postjson, rootUrl)
+			val responseBuilder = StringBuilder()
+			val thinkingBuilder = StringBuilder()
+			val meta = JSONObject()
+			var modelName: String? = null
+			var done = false
+		var doneReason: String? = null
+
+			responseText.lineSequence()
+				.map { it.trim() }
+				.filter { it.isNotEmpty() }
+				.forEach { line ->
+					try {
+						val chunk = JSONObject(line)
+
+						if (chunk.has("error")) {
+							val errorMessage = chunk.optString("error")
+							Log.OutLog("OpenWebUI.generateFromOllama error: $errorMessage")
+							throw RuntimeException(errorMessage)
+						}
+
+						if (chunk.has("model")) {
+							val chunkModel = chunk.optString("model")
+							if (chunkModel.isNotEmpty()) {
+								modelName = chunkModel
+							}
+						}
+
+						val responsePart = chunk.optString("response")
+						if (responsePart.isNotEmpty()) {
+							responseBuilder.append(responsePart)
+						}
+
+						val thinkingPart = chunk.optString("thinking")
+						if (thinkingPart.isNotBlank()) {
+							thinkingBuilder.append(thinkingPart)
+						}
+
+						if (chunk.has("done") && chunk.optBoolean("done")) {
+							done = true
+						}
+
+						if (chunk.has("done_reason")) {
+							val chunkDoneReason = chunk.optString("done_reason")
+							if (chunkDoneReason.isNotEmpty()) {
+								doneReason = chunkDoneReason
+							}
+						}
+
+						val skipKeys = setOf("response", "thinking", "model", "done", "done_reason")
+						val keyIterator = chunk.keys()
+						while (keyIterator.hasNext()) {
+							val key = keyIterator.next()
+							if (!skipKeys.contains(key)) {
+								meta.put(key, chunk.get(key))
+							}
+						}
+					} catch (e: Throwable) {
+						Log.OutLog("OpenWebUI.generateFromOllama parse error:[${line}]")
+						throw e
+					}
+				}
+
+		val result = JSONObject()
+		if (modelName != null) {
+			result.put("model", modelName)
+		}
+
+		result.put("response", responseBuilder.toString())
+		if (thinkingBuilder.isNotEmpty()) {
+			result.put("thinking", thinkingBuilder.toString())
+		}
+		result.put("done", done)
+		if (doneReason != null) {
+			result.put("done_reason", doneReason)
+			}
+			if (meta.length() > 0) {
+				result.put("meta", meta)
+			}
+
+			return result
+		}
 
 	companion object{
 		@JvmStatic
