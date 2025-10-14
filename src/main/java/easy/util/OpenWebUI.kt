@@ -21,7 +21,7 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 		head["Content-Type"] = "application/json"
 		head["Authorization"] = "Bearer $token"
 
-		return if (postjson != null) {
+		val recon = if (postjson != null) {
 			val posthead = mutableMapOf<String, String>()
 			// 这里的键可以根据实际需要调整
 			posthead[""] = postjson.toString()
@@ -29,7 +29,8 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 		} else {
 			client.get(url, head, null)
 		}
-
+//		Log.OutLog("recon:[$recon]")
+		return recon
 	}
 
 	@Suppress("MemberVisibilityCanBePrivate")
@@ -93,6 +94,18 @@ class OpenWebUI(private val apiurl: String, private val token: String, private v
 		}
 
 		return api("/chat/completions", postjson)
+	}
+
+	fun getChatCompletionsAuto(
+		model: String,
+		messages: JSONArray,
+		vararg params: Pair<String, Any?>
+	                      ): JSONObject {
+		return if (model.endsWith("-cloud", ignoreCase = true)) {
+			getChatCompletionsFromOllama(model, messages, *params)
+		} else {
+			getChatCompletions(model, messages, *params)
+		}
 	}
 
 	/**

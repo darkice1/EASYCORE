@@ -21,10 +21,14 @@ object TestOpenWebUI {
 		userMessage.put("content", "你可以做什么")
 		messages.put(userMessage)
 
-		val completion = openwebui.getChatCompletionsFromOllama(
+		val completion1 = openwebui.getChatCompletionsAuto(
 			model = "gpt-oss:20b-cloud",
-			messages = messages
-		                                                 )
-		println(completion.toString(2))
+			messages = messages)
+		println(completion1.toString(2))
+
+		val completion2 = openwebui.getChatCompletionsAuto(
+			model = "gemini-2.5-pro",
+			messages = messages)
+		println(completion2.toString(2))
 	}
 }
