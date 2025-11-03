@@ -37,6 +37,13 @@
 - PR 应包含变更目的、关联 Issue、变更前后行为；涉及 Web/UI 的提供截图；标注配置/迁移步骤。
 - 合并前确保 `./gradlew build` 全绿，并为新增功能补充相应测试。
 
+## 修改清单维护
+- 在仓库根目录维护统一的修改清单（文件名为 `CHANGELOG.md`），用于记录重大代码或文档变更。
+- 每次执行代码或文档改动（含本地调试）前后，必须更新 `CHANGELOG.md`，按时间倒序追加当日条目，确保记录完整。
+- 条目格式需包含日期（YYYY-MM-DD）、修改人及主要变更摘要，可选补充关联 Issue 或 PR；修改人需使用当前 `git config user.name`。
+- 日期/修改人与变更内容请分行展示，保持信息清晰。
+- 同一日期同一修改人若有多项更新，需汇总在同一条目中，并将变更摘要分条列出，保持排版整洁。
+
 ## 安全与配置提示
 - 禁止提交任何密钥与凭据。通过 `web/WEB-INF/config.txt` 与自定义 `CONFIGLOADCLASS` 管理配置。
 - 发布所需 `signingKey`/`signingPassword` 与 OSSRH 账号请放入 `gradle.properties` 或环境变量。

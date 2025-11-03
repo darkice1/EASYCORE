@@ -2,6 +2,8 @@ package easy.sql
 
 import easy.sql.enums.ConflictAction
 import java.io.File
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -64,19 +66,27 @@ class BaseTable {
 	}
 
 	fun Add(field: String, value: Int) {
-		params[field] = "" + value
+		setNumber(field, value)
 	}
 
 	fun Add(field: String, value: Long) {
-		params[field] = "" + value
+		setNumber(field, value)
 	}
 
 	fun Add(field: String, value: Double) {
-		params[field] = "" + value
+		setNumber(field, value)
 	}
 
 	fun Add(field: String, value: Float) {
-		params[field] = "" + value
+		setNumber(field, value)
+	}
+
+	fun Add(field: String, value: BigInteger) {
+		setNumber(field, value)
+	}
+
+	fun Add(field: String, value: BigDecimal) {
+		setNumber(field, value)
 	}
 
 	/**
@@ -395,7 +405,7 @@ class BaseTable {
 		for ((fieldName, fieldValue) in params) {
 			columns.add(fieldName)
 			// 对普通字段进行转义并加引号
-			values.add(escapeSql(fieldValue))
+			values.add(doValue(fieldValue))
 
 			if (conflictAction == ConflictAction.UPDATE) {
 				val handler = customHandlerMap[fieldName]
@@ -612,13 +622,6 @@ class BaseTable {
 		return ds
 	}
 
-	private fun escapeSql(value: String?): String {
-		if(value.isNullOrEmpty()) {
-			return "''"
-		}
-		return "'" + value.replace("'", "''") + "'"
-	}
-
 	/**
 	 * 是否有信息
 	 */
@@ -626,20 +629,30 @@ class BaseTable {
 		return params.isNotEmpty() || proparams.isNotEmpty()
 	}
 
+	private fun setNumber(field: String, number: Number) {
+		params[field] = number.toSqlLiteral()
+	}
+
+	private fun Number.toSqlLiteral(): String {
+		return when (this) {
+			is BigDecimal -> this.toPlainString()
+			else -> this.toString()
+		}
+	}
+
 	companion object {
 		private const val LASTSQL: String = "SELECT LAST_INSERT_ID() id"
 
-		@JvmStatic
-		fun doValue(pvalue: String?): String {
-			var value = pvalue
+		private fun quoteSql(value: String?): String {
 			if(value.isNullOrEmpty()) {
 				return "''"
 			}
+			return "'" + value.replace("'", "''") + "'"
+		}
 
-			value = value.replace("'", "''")
-			value = "'$value'"
-
-			return value
+		@JvmStatic
+		fun doValue(pvalue: String?): String {
+			return quoteSql(pvalue)
 		}
 
 		@JvmStatic
