@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
@@ -29,7 +32,16 @@ public class EDate
 	private final static ZoneId TIMEZONE = ZoneId.of(Config.getProperty("DEFTIMEZONE", "GMT+8"));
 //	private final static int[] MYWEEK = {7,1,2,3,4,5,6};
 
-	private final static DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private final static String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	private final static DateTimeFormatter DATEFORMAT = new DateTimeFormatterBuilder()
+			.appendPattern(DEFAULT_PATTERN)
+			.appendOffset("+HH:MM", "+00:00")
+			.toFormatter();
+	private final static DateTimeFormatter DATEFORMAT_NOTZ = DateTimeFormatter.ofPattern(DEFAULT_PATTERN);
+	private final static DateTimeFormatter DATEFORMAT_SHORT_OFFSET = new DateTimeFormatterBuilder()
+			.appendPattern(DEFAULT_PATTERN)
+			.appendOffset("+HH", "+00")
+			.toFormatter();
 	private final static DateTimeFormatter LOGFORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
 	private final static DateTimeFormatter SQLDATEFORMAT =  DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -51,13 +63,13 @@ public class EDate
 
 	public EDate (String str)
 	{
-		 this (str, "yyyy-MM-dd HH:mm:ss");
+		localDateTime = parseDateTime(str);
 	}
 
 	public EDate (String datestr,String formatestr)
 	{
 		DateTimeFormatter df = DateTimeFormatter.ofPattern(formatestr).withZone(TIMEZONE);
-		localDateTime = LocalDateTime.parse(datestr, df);
+		localDateTime = parseDateTime(datestr, df);
 	}
 	public int getYear()
 	{
@@ -258,6 +270,47 @@ public class EDate
 		}
 
 		return isok;
+	}
+
+	private LocalDateTime parseDateTime(String text)
+	{
+		LocalDateTime parsed = tryParseOffset(text, DATEFORMAT);
+		if (parsed != null)
+		{
+			return parsed;
+		}
+
+		parsed = tryParseOffset(text, DATEFORMAT_SHORT_OFFSET);
+		if (parsed != null)
+		{
+			return parsed;
+		}
+
+		return LocalDateTime.parse(text, DATEFORMAT_NOTZ);
+	}
+
+	private LocalDateTime parseDateTime(String text, DateTimeFormatter formatter)
+	{
+		LocalDateTime parsed = tryParseOffset(text, formatter);
+		if (parsed != null)
+		{
+			return parsed;
+		}
+
+		return LocalDateTime.parse(text, formatter);
+	}
+
+	private LocalDateTime tryParseOffset(String text, DateTimeFormatter formatter)
+	{
+		try
+		{
+			OffsetDateTime odt = OffsetDateTime.parse(text, formatter);
+			return odt.atZoneSameInstant(TIMEZONE).toLocalDateTime();
+		}
+		catch (DateTimeParseException e)
+		{
+			return null;
+		}
 	}
 
 	/*public static void main(String[] args)
