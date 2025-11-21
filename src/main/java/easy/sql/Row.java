@@ -3,6 +3,7 @@ package easy.sql;
 import easy.util.Log;
 import org.json.JSONObject;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,21 +26,14 @@ public class Row implements Comparable<Row>,Serializable
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final Map<String, Col> row = new ConcurrentHashMap<>();
 	protected String sortfield;
 
 
-//	@Override
-//	protected void finalize() throws Throwable
-//	{
-//		super.finalize();
-//		//row.clear();
-//		row = null;
-//		sortfield = null;
-//	}
-
+	@SuppressWarnings("unused")
 	public boolean containsKey(String key)
 	{
 		return row.containsKey(key);
@@ -50,6 +44,7 @@ public class Row implements Comparable<Row>,Serializable
 		return get(sortfield).compareTo(o.get(sortfield));
 	}
 
+	@SuppressWarnings("unused")
 	public Object getObject(String key)
 	{
 		return row.get(key).getValue();
@@ -221,14 +216,6 @@ public class Row implements Comparable<Row>,Serializable
 		try
 		{
 			Object value = row.get(key).getValue();
-//			if (value == null)
-//			{
-//				return "";
-//			}
-//			else
-//			{
-//				return value.toString();
-//			}
 			return value.toString();
 		}
 		catch (Exception ex)
@@ -262,23 +249,25 @@ public class Row implements Comparable<Row>,Serializable
 	{
 		put(key,new Col(key,value));
 	}
-
+	@SuppressWarnings("unused")
 	public void putLong(String key, long value)
 	{
 		put(key,new Col(key,value));
 	}
 
-
+	@SuppressWarnings("unused")
 	public void putFloat(String key, float value)
 	{
 		put(key,new Col(key,value));
 	}
 
+	@SuppressWarnings("unused")
 	public void putDouble(String key, double value)
 	{
 		put(key,new Col(key,value));
 	}
 
+	@SuppressWarnings("unused")
 	public void putJSONObjet(JSONObject json)
 	{
 		putJSONObjet(json,null);
@@ -311,9 +300,7 @@ public class Row implements Comparable<Row>,Serializable
 		}
 	}
 
-	/**
-	 * @return Returns the sortfield.
-	 */
+	@SuppressWarnings("unused")
 	public String getSortfield()
 	{
 		return sortfield;
@@ -327,11 +314,8 @@ public class Row implements Comparable<Row>,Serializable
 		this.sortfield = sortfield;
 	}
 
-	/**
-	 * 锟斤拷锟斤拷sql
-	 * @param tablename
-	 * @return
-	 */
+
+	@SuppressWarnings("unused")
 	public String toBackSqlString(String tablename)
 	{
 		StringBuilder fieldbuf = new StringBuilder();

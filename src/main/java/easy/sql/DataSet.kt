@@ -92,7 +92,7 @@ class DataSet : Serializable {
 								if(ts != null && ts.getTime() != 0L) {
 					//								rowstr = rs.getString(i);
 									val d = EDate()
-									d.setTime(rs.getTimestamp(i).getTime())
+									d.time = ts.time
 									rowstr = d.toString()
 
 									//								System.out.println("DATE   " +    rowstr);
