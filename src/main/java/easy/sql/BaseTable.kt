@@ -151,6 +151,7 @@ class BaseTable {
 			val sqlbuf = StringBuffer("REPLACE INTO ")
 
 			sqlbuf.append(tablename)
+			sqlbuf.append(' ')
 
 			val fieldbuf = StringBuilder("(")
 			val valuebuf = StringBuilder("(")
@@ -212,6 +213,7 @@ class BaseTable {
 		val sqlbuf = StringBuffer(String.format("INSERT %s%sINTO ", delayed, ignore))
 
 		sqlbuf.append(tablename)
+		sqlbuf.append(' ')
 
 		val fieldbuf = StringBuilder("(")
 		val valuebuf = StringBuilder("(")

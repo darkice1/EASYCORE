@@ -1,5 +1,15 @@
 # CHANGELOG
 
+- 2025-12-06
+  修改人: Neo
+  变更摘要:
+  - 新增 PushDeerClient Kotlin 工具类，使用官方 POST 表单接口，支持 text/desp/type 等参数与多 key 推送，不内置密钥。
+  - 补充 PushDeerClient 测试，覆盖参数编码、重试成功与耗尽场景。
+  - 默认重试间隔调整为 100ms，保证短时间快速重试体验。
+  - pushMessage/pushText 改为返回布尔值，按 PushDeer code 与 result.success 判定成功，同时新增非零 code 失败重试的测试。
+  - PushDeer 请求构建阶段同步裁剪 pushkey 空白并校验非空，避免带空格的 key 生成异常体。
+  - BaseTable 的 INSERT/REPLACE 语句在表名后补充空格，输出 SQL 更贴合常规格式。
+
 - 2025-11-21
   修改人: Neo
   变更摘要:
