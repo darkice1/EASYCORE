@@ -17,11 +17,6 @@ import java.util.*
 
 /**
  *
- * *Copyright: 9esoft.com (c) 2005-2006<br></br>
- * Company: 閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹钀嶉敓鏂ゆ嫹閿熺Ц鐧告嫹閿熸枻鎷疯柊閿熷壙锟�i>*
- *
- * 閿熺殕璁规嫹閿熸枻鎷烽敓鏂ゆ嫹閿熻妭鎺ュ尅鎷�
- *
  * @version 1.0 (*2006-3-17 Neo*)
  */
 @Suppress("unused")
@@ -132,10 +127,23 @@ class EDate {
 //		return MYWEEK[dayOfWeek.getValue() - 1];
 			localDateTime.dayOfWeek.value
 
-	fun equals(pdate: Date): Boolean {
-//		localDateTime = pdate.toInstant().atZone(TIMEZONE).toLocalDateTime();
+	override fun equals(other: Any?): Boolean {
+		if (this === other) {
+			return true
+		}
+		if (other !is EDate) {
+			return false
+		}
+		return localDateTime == other.localDateTime
+	}
+
+	override fun hashCode(): Int {
+		return localDateTime.hashCode()
+	}
+
+	fun isEqual(pdate: Date): Boolean {
 		val target = pdate.toInstant().atZone(TIMEZONE).toLocalDateTime()
-		return localDateTime.isEqual(target)
+		return localDateTime == target
 	}
 
 	private fun parseDateTime(text: String): LocalDateTime {
@@ -197,7 +205,7 @@ class EDate {
 	}*/
 
 	companion object {
-		private val TIMEZONE: ZoneId = ZoneId.of(getProperty("DEFTIMEZONE", "GMT+8"))
+		private val TIMEZONE: ZoneId = ZoneId.of(getProperty("DEFTIMEZONE", ZoneId.systemDefault().id))
 
 		//	private final static int[] MYWEEK = {7,1,2,3,4,5,6};
 		private const val DEFAULT_PATTERN = "yyyy-MM-dd HH:mm:ss"

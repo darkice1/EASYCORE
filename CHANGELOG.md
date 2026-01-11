@@ -1,5 +1,11 @@
 # CHANGELOG
 
+- 2026-01-11
+  修改人: Neo
+  变更摘要:
+  - EDate 默认时区改为跟随 JVM 系统默认时区，保留 DEFTIMEZONE 可配置覆盖。
+  - EDate 增加标准 equals/hashCode，实现日期比较方法改为 isEqual。
+
 - 2025-12-06
   修改人: Neo
   变更摘要:
