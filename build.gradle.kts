@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.darkice1"
-version = "1.0.95"
+version = "1.0.96"
 val projectName = "easy"
 val projectDesc = "Neo easy code."
 
@@ -32,7 +32,7 @@ repositories {
 dependencies {
 	// 常规依赖（Maven 默认 compile）
 	// https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-	api("com.zaxxer:HikariCP:6.3.0")
+	api("com.zaxxer:HikariCP:7.0.2")
 	// https://mvnrepository.com/artifact/com.esotericsoftware.kryo/kryo5
 	api("com.esotericsoftware.kryo:kryo5:5.6.2")
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
