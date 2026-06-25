@@ -10,10 +10,14 @@ object TestOpenWebUI {
 		val client = EHttpClient()
 		client.setConnectionTimeout(180000)
 
-		val openwebui = OpenWebUI(
-			"__OPENWEBUI_API_URL__",
-			"__REDACTED_OPENWEBUI_TOKEN__",
-			client)
+		val apiUrl = System.getenv("OPENWEBUI_API_URL")
+		val apiToken = System.getenv("OPENWEBUI_API_TOKEN")
+		if (apiUrl.isNullOrBlank() || apiToken.isNullOrBlank()) {
+			System.err.println("Set OPENWEBUI_API_URL and OPENWEBUI_API_TOKEN to run this example.")
+			return
+		}
+
+		val openwebui = OpenWebUI(apiUrl, apiToken, client)
 
 		val messages = JSONArray()
 		val userMessage = JSONObject()
