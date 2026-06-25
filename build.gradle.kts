@@ -1,5 +1,7 @@
 @file:Suppress("VulnerableLibrariesLocal")
 
+import java.nio.charset.MalformedInputException
+
 plugins {
 	kotlin("jvm") version "2.1.20"
 	`java-library`
@@ -136,6 +138,89 @@ tasks.register("release") {
 	doLast {
 		println("release:[$coords]")
 	}
+}
+
+tasks.register("checkSensitiveConfig") {
+	group = "verification"
+	description = "Check tracked files for obvious database credentials and tokens."
+
+	doLast {
+		val gitLsFiles = ProcessBuilder("git", "ls-files")
+			.directory(rootDir)
+			.redirectErrorStream(true)
+			.start()
+		val trackedOutput = gitLsFiles.inputStream.bufferedReader(Charsets.UTF_8).readText()
+		val exitValue = gitLsFiles.waitFor()
+		if (exitValue != 0) {
+			logger.warn("Skip checkSensitiveConfig because git ls-files failed.")
+			return@doLast
+		}
+
+		val allowedSecretValue = Regex(
+			"""(?i)^(?:|your[_-].*|changeme|change_me|placeholder|example|<.*>|\$\{.*})$"""
+		)
+		val keyValuePattern = Regex(
+			"""^\s*([A-Za-z0-9_]*(?:DBPASSWORD|LOGPASSWORD|TOKEN|SECRET|APIKEY|API_KEY))\s*=\s*["']?([^"']*)["']?\s*$""",
+			RegexOption.IGNORE_CASE
+		)
+		val urlCredentialPattern = Regex(
+			"""(?i)(?:api[_-]?key|token|secret)=([^&\s"']+)"""
+		)
+		val dbRootPattern = Regex("""(?i)^\s*[A-Za-z0-9_]*DBUSER\s*=\s*root\s*$""")
+		val literalMysqlIpPattern = Regex("""(?i)jdbc:mysql://(?:\d{1,3}\.){3}\d{1,3}""")
+		val multiQueryPattern = Regex("""(?i)allowMultiQueries\s*=\s*true""")
+		val findings = mutableListOf<String>()
+		val trackedFiles = trackedOutput
+			.lineSequence()
+			.filter { it.isNotBlank() }
+			.map { project.file(it) }
+			.filter { it.isFile && it.length() <= 2_000_000 }
+			.toList()
+
+		trackedFiles.forEach { trackedFile ->
+			try {
+				trackedFile.useLines(Charsets.UTF_8) { lines ->
+					lines.forEachIndexed { index, line ->
+						val trimmed = line.trim()
+						val uncommented = trimmed
+							.removePrefix("#")
+							.removePrefix("//")
+							.trim()
+
+						val kv = keyValuePattern.matchEntire(uncommented)
+						if (kv != null && !allowedSecretValue.matches(kv.groupValues[2].trim())) {
+							findings.add("${trackedFile.path}:${index + 1}: secret-like value for ${kv.groupValues[1]}")
+						}
+						urlCredentialPattern.findAll(uncommented).forEach { credential ->
+							val value = credential.groupValues[1].trim()
+							if (!allowedSecretValue.matches(value)) {
+								findings.add("${trackedFile.path}:${index + 1}: URL credential-like value is not a placeholder")
+							}
+						}
+						if (dbRootPattern.containsMatchIn(uncommented)) {
+							findings.add("${trackedFile.path}:${index + 1}: database user is root")
+						}
+						if (literalMysqlIpPattern.containsMatchIn(uncommented)) {
+							findings.add("${trackedFile.path}:${index + 1}: MySQL URL uses a literal IPv4 address")
+						}
+						if (multiQueryPattern.containsMatchIn(uncommented)) {
+							findings.add("${trackedFile.path}:${index + 1}: multi-query JDBC option is enabled")
+						}
+					}
+				}
+			} catch (_: MalformedInputException) {
+				// Binary tracked file.
+			}
+		}
+
+		if (findings.isNotEmpty()) {
+			throw GradleException("Sensitive config check failed:\n" + findings.joinToString("\n"))
+		}
+	}
+}
+
+tasks.named("check") {
+	dependsOn("checkSensitiveConfig")
 }
 
 nexusPublishing {

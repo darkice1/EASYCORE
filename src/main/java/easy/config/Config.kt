@@ -20,6 +20,8 @@ import java.util.*
  */
 @Suppress("unused")
 object Config {
+	private const val CONFIG_PATH_PROPERTY = "easycore.config"
+	private const val CONFIG_PATH_ENV = "EASYCORE_CONFIG"
 	private var properties: Properties = Properties()
 
 /*	private val CFG: Config = Config()
@@ -35,10 +37,14 @@ object Config {
 	@Throws(FileNotFoundException::class)
 	fun load(filepath: String?) {
 //		System.out.println(filepath);
-		if (filepath!=null)
+		if (!filepath.isNullOrBlank())
 		{
+			val configFile = File(filepath)
+			if (!configFile.isFile) {
+				throw FileNotFoundException(filepath)
+			}
 			val pps = Properties()
-			pps.load(Files.newInputStream(File(filepath).toPath()))
+			pps.load(Files.newInputStream(configFile.toPath()))
 			val name = "CONFIGLOADCLASS"
 			val loadclassname = pps.getProperty(name)
 			if (loadclassname != null && loadclassname!="") {
@@ -62,7 +68,17 @@ object Config {
 		else
 		{
 			println("Config.load:filepath is null")
+			properties = Properties()
 		}
+	}
+
+	private fun nonBlank(value: String?): String? {
+		return value?.trim()?.takeIf { it.isNotEmpty() }
+	}
+
+	private fun getExternalConfigPath(): String? {
+		return nonBlank(System.getProperty(CONFIG_PATH_PROPERTY))
+			?: nonBlank(System.getenv(CONFIG_PATH_ENV))
 	}
 
 	private fun getConfigPath(startpath: String?): String? {
@@ -102,6 +118,13 @@ object Config {
 		var cpath: String? = null
 		var fpath: String? = null
 		try {
+			fpath = getExternalConfigPath()
+			if (fpath != null) {
+				println("Load config from [$fpath]")
+				load(fpath)
+				return
+			}
+
 			val u = javaClass.getResource("/")
 			cpath = if(u === null) {
 				System.getProperty("user.dir")

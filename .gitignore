@@ -1,6 +1,8 @@
 web/WEB-INF/classes/*
+web/WEB-INF/config.txt
 *.class
 *.iml
+.DS_Store
 /target/
 .idea
 .settings
@@ -9,3 +11,6 @@ web/WEB-INF/lib/
 EASYCORE.iml
 .gradle/
 build/
+*.local.properties
+.env
+*.env

@@ -1,0 +1,51 @@
+# EASYCORE 示例配置。
+# 本地开发可复制为 web/WEB-INF/config.txt，或将真实配置放在项目目录外并通过以下方式启动：
+#   -Deasycore.config=/etc/easycore/config.txt
+# 或：
+#   EASYCORE_CONFIG=/etc/easycore/config.txt
+
+PROJECT=EASYCORE
+CONFIGLOADCLASS=
+
+# 数据库
+DBTYPE=MYSQL
+DBVERSION=8.0
+DBUSER=your_db_user
+DBPASSWORD=your_db_password
+DBURL=jdbc:mysql://db.example.internal:3306/easycore?useUnicode=true&useCompression=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&useSSL=true&serverTimezone=Asia/Shanghai&allowMultiQueries=false
+DBCLASS=com.mysql.cj.jdbc.Driver
+
+# 连接池
+DBMAXACTIVETIME=60000000
+DBMAXCONNECTIONLIFTIME=600000
+DBMAXKEEPINGSLEEPTIME=30000
+DBMINIMUMCONNECTIONCOUNT=1
+DBBUILDTHROTTLE=5
+SIMULTANEOUSBUILDTHROTTLE=20
+DBDEFPAGESIZE=20
+DBCONNECTMAX=20
+DBENCODEING=UTF-8
+DBENSTRINGCODEING=UTF-8
+
+# Web/action
+ACTION_PACKAGE=demo.action.
+REQUEST_CHARACTERENCODING=UTF-8
+RESPONSE_CHARACTERENCODING=UTF-8
+
+# 日志
+WRITELOG=false
+WRITEERROR=false
+WRITESQL=false
+OUTLOG=true
+OUTERROR=true
+OUTSQL=false
+LOGSEND=false
+LOGSMTP=smtp.example.internal
+LOGUSERNAME=your_smtp_user
+LOGPASSWORD=your_smtp_password
+LOGSENDUSER=your_smtp_user
+LOGFROMUSER=EASYCORE ERROR REPORTER<errors@example.invalid>
+LOGTOUSER=EASYCORE ERROR REPORTER<errors@example.invalid>
+LOG_PATH=LOG.TXT
+SQL_PATH=SQL.TXT
+ERROR_PATH=ERROR.TXT
